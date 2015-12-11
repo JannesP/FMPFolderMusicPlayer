@@ -4,19 +4,19 @@
     <group android:checkableBehavior="single">
         <item
             android:id="@+id/nav_file_browser"
-            android:icon="@drawable/nav_folder"
+            android:icon="@drawable/ic_nav_folder"
             android:title="File Browser"/>
         <item
             android:id="@+id/nav_libraries"
-            android:icon="@drawable/nav_library_music"
+            android:icon="@drawable/ic_nav_library_music"
             android:title="Libraries"/>
         <item
             android:id="@+id/nav_playlists"
-            android:icon="@drawable/nav_playlist"
+            android:icon="@drawable/ic_nav_playlist"
             android:title="Playlists"/>
         <item
             android:id="@+id/nav_settings"
-            android:icon="@drawable/nav_settings"
+            android:icon="@drawable/ic_nav_settings"
             android:title="Settings"/>
     </group>
 
@@ -24,11 +24,11 @@
         <menu>
             <item
                 android:id="@+id/nav_recommend"
-                android:icon="@drawable/nav_share"
+                android:icon="@drawable/ic_nav_share"
                 android:title="Recommend This App"/>
             <item
                 android:id="@+id/nav_rate"
-                android:icon="@drawable/nav_plus_one"
+                android:icon="@drawable/ic_nav_plus_one"
                 android:title="Rate This App in Google Play"/>
         </menu>
     </item>
