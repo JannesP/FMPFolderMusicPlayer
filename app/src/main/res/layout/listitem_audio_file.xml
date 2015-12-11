@@ -10,7 +10,7 @@
         android:layout_height="50dp"
         android:layout_margin="5dp"
         android:id="@+id/imageViewFileIcon"
-        android:src="@drawable/icon_file"
+        android:src="@drawable/ic_music_file"
         android:contentDescription="File Icon"/>
 
     <LinearLayout
