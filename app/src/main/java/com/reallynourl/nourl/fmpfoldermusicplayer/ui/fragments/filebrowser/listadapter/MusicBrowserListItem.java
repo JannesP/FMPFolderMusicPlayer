@@ -1,13 +1,16 @@
 package com.reallynourl.nourl.fmpfoldermusicplayer.ui.fragments.filebrowser.listadapter;
 
 import android.content.Context;
-import android.support.annotation.IdRes;
 import android.support.annotation.LayoutRes;
+import android.util.AttributeSet;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 
+import com.reallynourl.nourl.fmpfoldermusicplayer.utility.FileType;
 import com.reallynourl.nourl.fmpfoldermusicplayer.utility.Util;
 
 import java.io.File;
@@ -28,31 +31,57 @@ import java.io.File;
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-public abstract class MusicBrowserListItem extends RelativeLayout {
-    private File mValidFile;
+public abstract class MusicBrowserListItem extends LinearLayout {
 
-    public MusicBrowserListItem(Context context) {
+    protected FileType mType;
+
+    public MusicBrowserListItem(Context context, FileType type) {
         super(context);
+        mType = type;
     }
+
+    public MusicBrowserListItem(Context context, AttributeSet attrs, FileType type) {
+        super(context, attrs);
+        mType = type;
+    }
+
+    public MusicBrowserListItem(Context context, AttributeSet attrs, int defStyleAttr, FileType type) {
+        super(context, attrs, defStyleAttr);
+        mType = type;
+    }
+
+    public abstract void setFile(File file);
 
     public static MusicBrowserListItem create(ViewGroup parent, File validFile) {
-        if (validFile.isDirectory()) {
-            return DirectoryListItem.inflate(parent, validFile);
-        } else if (validFile.isFile()) {
-            if (Util.hasAudioExtension(validFile)) {
-                return AudioFileListItem.inflate(parent, validFile);
-            } else {
-                return FileListItem.create(parent, validFile);
-            }
-
+        MusicBrowserListItem item = null;
+        switch (FileType.getType(validFile)) {
+            case DIRECTORY:
+                item = DirectoryListItem.inflate(parent);
+                break;
+            case AUDIO:
+                item = AudioFileListItem.inflate(parent);
+                break;
+            case FILE:
+                item = FileListItem.inflate(parent);
+                break;
+            default:
+                Log.i("File Browser", "File produced type error.");
         }
-        return null;
+        if (item != null) item.setFile(validFile);
+        return item;
     }
 
-    protected static MusicBrowserListItem inflate(ViewGroup parent, File validFile, @LayoutRes int layout) {
+    public boolean isType(File file) {
+        return mType.equals(FileType.getType(file));
+    }
+
+    public boolean isType(FileType type) {
+        return mType.equals(type);
+    }
+
+    protected static MusicBrowserListItem inflate(ViewGroup parent, @LayoutRes int layout) {
         MusicBrowserListItem item = (MusicBrowserListItem) LayoutInflater.from(parent.getContext()).inflate(layout, parent, false);
         item.setId(View.NO_ID);
-        item.mValidFile = validFile;
         return item;
     }
 

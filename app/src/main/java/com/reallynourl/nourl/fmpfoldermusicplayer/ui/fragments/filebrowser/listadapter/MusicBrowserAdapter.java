@@ -1,13 +1,14 @@
 package com.reallynourl.nourl.fmpfoldermusicplayer.ui.fragments.filebrowser.listadapter;
 
-import android.support.v7.view.menu.MenuView;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 
+import com.reallynourl.nourl.fmpfoldermusicplayer.utility.FileType;
+
 import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Arrays;
+import java.util.Comparator;
 
 /**
  * Copyright (C) 2015  Jannes Peters
@@ -26,26 +27,45 @@ import java.util.List;
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 public class MusicBrowserAdapter extends BaseAdapter{
-    private File mValidPath;
-    private List<File> mItems;
+    private File[] mItems;
 
-    public MusicBrowserAdapter(File validPath) {
-        mItems = new ArrayList<>();
-        mValidPath = validPath;
+    public MusicBrowserAdapter() {
+        mItems = new File[0];
     }
 
-    public void setPath(File validPath) {
-        mValidPath = validPath;
+    public void setData(File[] files) {
+        if (files == null) files = new File[0];
+        Arrays.sort(files, new Comparator<File>() {
+            @Override
+            public int compare(File lhs, File rhs) {
+                FileType lhsType = FileType.getType(lhs);
+                FileType rhsType = FileType.getType(rhs);
+
+                if (lhsType == rhsType) {
+                    return lhs.getName().compareToIgnoreCase(rhs.getName());
+                } else if (lhsType == FileType.DIRECTORY) {
+                    return -1;
+                } else if (rhsType == FileType.DIRECTORY) {
+                    return +1;
+                } else if (lhsType == FileType.AUDIO) {
+                    return -1;
+                } else {    //all other possibilities are already cut done
+                    return +1;
+                }
+            }
+        });
+        mItems = files;
+        notifyDataSetChanged();
     }
 
     @Override
     public int getCount() {
-        return mItems.size();
+        return mItems.length;
     }
 
     @Override
-    public Object getItem(int position) {
-        return mItems.get(position);
+    public File getItem(int position) {
+        return mItems[position];
     }
 
     @Override
@@ -61,7 +81,7 @@ public class MusicBrowserAdapter extends BaseAdapter{
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         MusicBrowserListItem item = (MusicBrowserListItem)convertView;
-        if (item == null) item = MusicBrowserListItem.create(parent, mItems.get(position));
+        item = MusicBrowserListItem.create(parent, mItems[position]);   //TODO: Fix reusing of already created convertViews.
         return item;
     }
 }

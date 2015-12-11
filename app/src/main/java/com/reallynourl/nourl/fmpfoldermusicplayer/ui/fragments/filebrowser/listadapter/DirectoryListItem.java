@@ -1,9 +1,12 @@
 package com.reallynourl.nourl.fmpfoldermusicplayer.ui.fragments.filebrowser.listadapter;
 
 import android.content.Context;
+import android.util.AttributeSet;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import com.reallynourl.nourl.fmpfoldermusicplayer.R;
+import com.reallynourl.nourl.fmpfoldermusicplayer.utility.FileType;
 
 import java.io.File;
 
@@ -24,12 +27,27 @@ import java.io.File;
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 public class DirectoryListItem extends MusicBrowserListItem {
-    protected DirectoryListItem(Context context) {
-        super(context);
+
+    public DirectoryListItem(Context context) {
+        super(context, FileType.DIRECTORY);
     }
 
-    protected static DirectoryListItem inflate(ViewGroup parent, File file) {
-        return (DirectoryListItem) MusicBrowserListItem.inflate(parent, file, R.layout.listitem_directory);
+    public DirectoryListItem(Context context, AttributeSet attrs) {
+        super(context, attrs, FileType.DIRECTORY);
+    }
+
+    public DirectoryListItem(Context context, AttributeSet attrs, int defStyleAttr) {
+        super(context, attrs, defStyleAttr, FileType.DIRECTORY);
+    }
+
+    public static MusicBrowserListItem inflate(ViewGroup parent) {
+        return MusicBrowserListItem.inflate(parent, R.layout.listitem_directory);
+    }
+
+    @Override
+    public void setFile(File file) {
+        TextView tv = (TextView) getRootView().findViewById(R.id.textViewListItemText);
+        tv.setText(file.getName());
     }
 
 

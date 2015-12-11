@@ -1,5 +1,6 @@
 package com.reallynourl.nourl.fmpfoldermusicplayer;
 
+import android.app.Application;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
@@ -39,6 +40,8 @@ import com.reallynourl.nourl.fmpfoldermusicplayer.ui.fragments.filebrowser.FileB
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
+    private Snackbar mCloseSnackBar = null;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -67,6 +70,8 @@ public class MainActivity extends AppCompatActivity
         //set default item to file browser
         //TODO remember last fragment
         setNavigationItem(R.id.nav_file_browser);
+
+        mCloseSnackBar = Snackbar.make(findViewById(android.R.id.content), "Press again to exit ...", Snackbar.LENGTH_SHORT);
     }
 
     @Override
@@ -75,7 +80,17 @@ public class MainActivity extends AppCompatActivity
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
         } else {
-            super.onBackPressed();
+            if (mCloseSnackBar.isShown()) {
+                finish();
+            } else {
+                mCloseSnackBar = Snackbar.make(findViewById(android.R.id.content), "Press again to exit ...", Snackbar.LENGTH_SHORT);
+            }
+            getFragmentManager().executePendingTransactions();
+            if (getFragmentManager().findFragmentById(R.id.content_panel).isVisible()) {
+                if (!((FileBrowserFragment)getFragmentManager().findFragmentById(R.id.content_panel)).onBackPressed()) {
+                    mCloseSnackBar.show();
+                }
+            }
         }
     }
 
