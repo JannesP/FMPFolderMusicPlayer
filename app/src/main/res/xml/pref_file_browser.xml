@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <PreferenceCategory
+        android:title="File Browser"
+        android:key="pref_file_browser">
+
+        <CheckBoxPreference
+            android:key="@string/pref_file_browser_show_hidden"
+            android:title="Show Hidden Files and Folders"
+            android:summary="Check this if you want to see files or folders, that are hidden."
+            android:defaultValue="false" />
+
+        <CheckBoxPreference
+            android:key="@string/pref_file_browser_show_non_audio"
+            android:title="Show non Audio Files"
+            android:summary="Check this if you want to see non audio files."
+            android:defaultValue="false" />
+
+    </PreferenceCategory>
+
+</PreferenceScreen>

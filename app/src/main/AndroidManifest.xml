@@ -20,6 +20,11 @@
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
+
+        <activity android:name=".activities.SettingsActivity"
+                  android:label="FMP Settings"
+                  android:theme="@style/AppTheme.NoActionBar"
+                  android:parentActivityName=".activities.MainActivity"/>
     </application>
 
 </manifest>

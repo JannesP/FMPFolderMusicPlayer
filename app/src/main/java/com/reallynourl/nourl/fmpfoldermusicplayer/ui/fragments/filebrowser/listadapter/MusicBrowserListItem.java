@@ -10,8 +10,7 @@ import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 
-import com.reallynourl.nourl.fmpfoldermusicplayer.utility.FileType;
-import com.reallynourl.nourl.fmpfoldermusicplayer.utility.Util;
+import com.reallynourl.nourl.fmpfoldermusicplayer.utility.file.FileType;
 
 import java.io.File;
 
@@ -31,9 +30,9 @@ import java.io.File;
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-public abstract class MusicBrowserListItem extends LinearLayout {
+public abstract class MusicBrowserListItem extends RelativeLayout {
 
-    protected FileType mType;
+    private final FileType mType;
 
     public MusicBrowserListItem(Context context, FileType type) {
         super(context);

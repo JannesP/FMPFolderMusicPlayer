@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <PreferenceCategory
+        android:title="General"
+        android:key="pref_general">
+
+        <CheckBoxPreference
+            android:key="@string/pref_general_use_light_theme"
+            android:title="Use Light Theme"
+            android:summary="You need to restart the app."
+            android:defaultValue="false"
+            android:enabled="false" />
+
+    </PreferenceCategory>
+
+
+
+</PreferenceScreen>

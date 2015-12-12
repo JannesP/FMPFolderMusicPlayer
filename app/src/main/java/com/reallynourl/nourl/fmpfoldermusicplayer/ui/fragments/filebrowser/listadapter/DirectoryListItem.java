@@ -6,7 +6,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.reallynourl.nourl.fmpfoldermusicplayer.R;
-import com.reallynourl.nourl.fmpfoldermusicplayer.utility.FileType;
+import com.reallynourl.nourl.fmpfoldermusicplayer.utility.file.FileType;
 
 import java.io.File;
 
@@ -46,7 +46,7 @@ public class DirectoryListItem extends MusicBrowserListItem {
 
     @Override
     public void setFile(File file) {
-        TextView tv = (TextView) getRootView().findViewById(R.id.textViewListItemText);
+        TextView tv = (TextView) getRootView().findViewById(R.id.textViewListItemTitle);
         tv.setText(file.getName());
     }
 

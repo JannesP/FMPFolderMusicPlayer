@@ -1,14 +1,18 @@
 package com.reallynourl.nourl.fmpfoldermusicplayer.ui.fragments.filebrowser.listadapter;
 
 import android.content.Context;
+import android.media.MediaMetadataRetriever;
+import android.media.MediaPlayer;
+import android.net.Uri;
 import android.util.AttributeSet;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.reallynourl.nourl.fmpfoldermusicplayer.R;
-import com.reallynourl.nourl.fmpfoldermusicplayer.utility.FileType;
+import com.reallynourl.nourl.fmpfoldermusicplayer.utility.file.FileType;
 
 import java.io.File;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Copyright (C) 2015  Jannes Peters
@@ -46,7 +50,18 @@ public class AudioFileListItem extends MusicBrowserListItem {
 
     @Override
     public void setFile(File file) {
-        TextView tv = (TextView) getRootView().findViewById(R.id.textViewListItemText);
+        TextView tv = (TextView) getRootView().findViewById(R.id.textViewListItemTitle);
         tv.setText(file.getName());
+        MediaMetadataRetriever mmr = new MediaMetadataRetriever();    //TODO: find threaded solution like caching it in some way.
+        mmr.setDataSource(getContext(), Uri.fromFile(file));
+        String durationString = mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION);
+        int duration = durationString == null ? 0 : Integer.parseInt(durationString);
+        String time = String.format("%d:%02d",
+                TimeUnit.MILLISECONDS.toMinutes(duration),
+                TimeUnit.MILLISECONDS.toSeconds(duration) -
+                        TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(duration))
+        );
+        tv = (TextView) getRootView().findViewById(R.id.textViewListItemMoreInfo);
+        tv.setText(time + " and I know everything is laggy!!!");
     }
 }

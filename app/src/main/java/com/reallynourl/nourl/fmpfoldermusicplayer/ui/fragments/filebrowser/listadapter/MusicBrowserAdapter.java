@@ -4,7 +4,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 
-import com.reallynourl.nourl.fmpfoldermusicplayer.utility.FileType;
+import com.reallynourl.nourl.fmpfoldermusicplayer.utility.file.FileType;
+import com.reallynourl.nourl.fmpfoldermusicplayer.utility.file.FileUtil;
 
 import java.io.File;
 import java.util.Arrays;
@@ -80,8 +81,6 @@ public class MusicBrowserAdapter extends BaseAdapter{
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
-        MusicBrowserListItem item = (MusicBrowserListItem)convertView;
-        item = MusicBrowserListItem.create(parent, mItems[position]);   //TODO: Fix reusing of already created convertViews.
-        return item;
+        return MusicBrowserListItem.create(parent, mItems[position]);   //TODO: Fix reusing of already created convertViews.
     }
 }

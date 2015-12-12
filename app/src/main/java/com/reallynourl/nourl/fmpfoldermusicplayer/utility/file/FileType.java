@@ -1,6 +1,4 @@
-package com.reallynourl.nourl.fmpfoldermusicplayer.utility;
-
-import android.os.Environment;
+package com.reallynourl.nourl.fmpfoldermusicplayer.utility.file;
 
 import java.io.File;
 
@@ -20,9 +18,20 @@ import java.io.File;
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-public final class Util {
-    private Util() {}
+public enum FileType {
+    ERROR, FILE, AUDIO, DIRECTORY;
 
+    public static FileType getType(File file) {
+        if (file.isDirectory()) {
+            return FileType.DIRECTORY;
+        } else if (file.isFile()) {
+            if (FileUtil.hasAudioExtension(file)) {
+                return FileType.AUDIO;
+            } else {
+                return FileType.FILE;
+            }
 
-
+        }
+        return FileType.ERROR;
+    }
 }

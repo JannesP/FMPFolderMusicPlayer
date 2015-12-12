@@ -1,8 +1,7 @@
-package com.reallynourl.nourl.fmpfoldermusicplayer.utility;
-
-import android.os.Environment;
+package com.reallynourl.nourl.fmpfoldermusicplayer.utility.file;
 
 import java.io.File;
+import java.io.FileFilter;
 
 /**
  * Copyright (C) 2015  Jannes Peters
@@ -20,9 +19,19 @@ import java.io.File;
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-public final class Util {
-    private Util() {}
+public class AudioFileFilter implements FileFilter {
+    private boolean mAllowHidden;
+    private boolean mAllowNonAudio;
 
+    public AudioFileFilter(boolean allowHidden, boolean allowNonAudio) {
+        this.mAllowHidden = allowHidden;
+        this.mAllowNonAudio = allowNonAudio;
+    }
 
-
+    @Override
+    public boolean accept(File file) {
+        if (!mAllowHidden && file.isHidden()) return false;
+        if (!mAllowNonAudio && (FileType.getType(file) == FileType.FILE)) return false;
+        return true;
+    }
 }

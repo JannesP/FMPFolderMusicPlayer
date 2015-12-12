@@ -1,8 +1,10 @@
-package com.reallynourl.nourl.fmpfoldermusicplayer.utility;
+package com.reallynourl.nourl.fmpfoldermusicplayer.utility.file;
 
 import android.os.Environment;
 
 import java.io.File;
+import java.io.FileFilter;
+import java.util.ArrayList;
 
 /**
  * Copyright (C) 2015  Jannes Peters
@@ -23,6 +25,7 @@ import java.io.File;
 public final class FileUtil {
     private FileUtil() {}
 
+    private static final char HIDDEN_MARKER = '.';
     private static final String[] AUDIO_FORMATS = { "3gp", "mp4", "m4a", "aac", "ts", "3gp", "flac", "mp3", "mid", "xmf", "mxmf", "rtttl", "rtx", "ota", "ogg", "mkv", "wav" };
 
     public static boolean hasAudioExtension(File file) {
@@ -55,5 +58,16 @@ public final class FileUtil {
             return true;
         }
         return false;
+    }
+
+    public static File[] removeHiddenFiles(File[] files) {
+        ArrayList<File> filtered = new ArrayList<>(files.length);
+        for (File file : files) {
+            if (!file.isHidden()) {
+                filtered.add(file);
+            }
+        }
+        files = filtered.toArray(new File[filtered.size()]);
+        return files;
     }
 }

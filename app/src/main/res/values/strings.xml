@@ -7,4 +7,7 @@
     <string name="action_settings">Settings</string>
     <string name="dev_mail">dev.placeholder@mail.com</string>
     <string name="title_activity_settings">Settings</string>
+    <string name="pref_general_use_light_theme">pref_general_use_light_theme</string>
+    <string name="pref_file_browser_show_hidden">pref_file_browser_show_hidden</string>
+    <string name="pref_file_browser_show_non_audio">pref_file_browser_show_non_audio</string>
 </resources>

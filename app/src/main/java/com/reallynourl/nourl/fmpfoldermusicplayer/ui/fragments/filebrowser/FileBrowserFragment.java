@@ -1,8 +1,10 @@
 package com.reallynourl.nourl.fmpfoldermusicplayer.ui.fragments.filebrowser;
 
 import android.app.Fragment;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Environment;
+import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
 import android.view.LayoutInflater;
@@ -13,9 +15,9 @@ import android.widget.ListView;
 
 import com.reallynourl.nourl.fmpfoldermusicplayer.R;
 import com.reallynourl.nourl.fmpfoldermusicplayer.ui.fragments.filebrowser.listadapter.MusicBrowserAdapter;
-import com.reallynourl.nourl.fmpfoldermusicplayer.utility.FileType;
-import com.reallynourl.nourl.fmpfoldermusicplayer.utility.FileUtil;
-import com.reallynourl.nourl.fmpfoldermusicplayer.utility.Util;
+import com.reallynourl.nourl.fmpfoldermusicplayer.utility.file.AudioFileFilter;
+import com.reallynourl.nourl.fmpfoldermusicplayer.utility.file.FileType;
+import com.reallynourl.nourl.fmpfoldermusicplayer.utility.file.FileUtil;
 
 import java.io.File;
 
@@ -48,7 +50,7 @@ public class FileBrowserFragment extends Fragment implements AdapterView.OnItemC
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (FileUtil.isExternalStorageWritable() || FileUtil.isExternalStorageReadable()) {
-            mStartPath = Environment.getExternalStorageDirectory();
+            mStartPath = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MUSIC);//getExternalStorageDirectory() for root
         }
         mCurrentPath = mStartPath;
     }
@@ -138,7 +140,11 @@ public class FileBrowserFragment extends Fragment implements AdapterView.OnItemC
                 if (lv != null) lv.setAdapter(new MusicBrowserAdapter());
             }
 
-            File[] files = mCurrentPath.listFiles();
+            SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
+            boolean allowHidden = prefs.getBoolean(getString(R.string.pref_file_browser_show_hidden), false);
+            boolean allowNonAudio = prefs.getBoolean(getString(R.string.pref_file_browser_show_non_audio), false);
+
+            File[] files = mCurrentPath.listFiles(new AudioFileFilter(allowHidden, allowNonAudio));
             getBrowserAdapter().setData(files);
         }
     }

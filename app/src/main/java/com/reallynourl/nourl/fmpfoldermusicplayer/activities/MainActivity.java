@@ -107,10 +107,10 @@ public class MainActivity extends AppCompatActivity
                 loadFragmentToContent(new FileBrowserFragment());
                 Log.d("Navigation", "Loading file browser fragment!");
                 break;
-            //case R.id.nav_settings:
-                //Intent intent = new Intent(this, SettingsActivity.class);
-                //startActivity(intent);
-                //break;
+            case R.id.nav_settings:
+                Intent intent = new Intent(this, SettingsActivity.class);
+                startActivity(intent);
+                break;
             default:
                 Log.e("Navigation", "Navigation button has no action, id: " + id + " text: " + item.getTitle());
         }
