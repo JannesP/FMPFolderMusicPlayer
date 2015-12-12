@@ -1,9 +1,10 @@
-package com.reallynourl.nourl.fmpfoldermusicplayer;
+package com.reallynourl.nourl.fmpfoldermusicplayer.activities;
 
 import android.app.Application;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.IdRes;
 import android.support.design.widget.FloatingActionButton;
@@ -18,6 +19,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 
+import com.reallynourl.nourl.fmpfoldermusicplayer.R;
 import com.reallynourl.nourl.fmpfoldermusicplayer.ui.fragments.filebrowser.FileBrowserFragment;
 
 /**
@@ -105,6 +107,10 @@ public class MainActivity extends AppCompatActivity
                 loadFragmentToContent(new FileBrowserFragment());
                 Log.d("Navigation", "Loading file browser fragment!");
                 break;
+            //case R.id.nav_settings:
+                //Intent intent = new Intent(this, SettingsActivity.class);
+                //startActivity(intent);
+                //break;
             default:
                 Log.e("Navigation", "Navigation button has no action, id: " + id + " text: " + item.getTitle());
         }

@@ -14,6 +14,7 @@ import android.widget.ListView;
 import com.reallynourl.nourl.fmpfoldermusicplayer.R;
 import com.reallynourl.nourl.fmpfoldermusicplayer.ui.fragments.filebrowser.listadapter.MusicBrowserAdapter;
 import com.reallynourl.nourl.fmpfoldermusicplayer.utility.FileType;
+import com.reallynourl.nourl.fmpfoldermusicplayer.utility.FileUtil;
 import com.reallynourl.nourl.fmpfoldermusicplayer.utility.Util;
 
 import java.io.File;
@@ -46,7 +47,7 @@ public class FileBrowserFragment extends Fragment implements AdapterView.OnItemC
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (Util.isExternalStorageWritable() || Util.isExternalStorageReadable()) {
+        if (FileUtil.isExternalStorageWritable() || FileUtil.isExternalStorageReadable()) {
             mStartPath = Environment.getExternalStorageDirectory();
         }
         mCurrentPath = mStartPath;

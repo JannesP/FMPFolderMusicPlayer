@@ -23,38 +23,4 @@ import java.io.File;
 public final class Util {
     private Util() {}
 
-    private static final String[] AUDIO_FORMATS = { "3gp", "mp4", "m4a", "aac", "ts", "3gp", "flac", "mp3", "mid", "xmf", "mxmf", "rtttl", "rtx", "ota", "ogg", "mkv", "wav" };
-
-    public static boolean hasAudioExtension(File file) {
-        String[] parts = file.getAbsolutePath().split("\\.");
-        if (parts.length == 0) {
-            return false;
-        }
-        for (String format : AUDIO_FORMATS) {
-            if (format.equals(parts[parts.length - 1])) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    /* Checks if external storage is available for read and write */
-    public static boolean isExternalStorageWritable() {
-        String state = Environment.getExternalStorageState();
-        if (Environment.MEDIA_MOUNTED.equals(state)) {
-            return true;
-        }
-        return false;
-    }
-
-    /* Checks if external storage is available to at least read */
-    public static boolean isExternalStorageReadable() {
-        String state = Environment.getExternalStorageState();
-        if (Environment.MEDIA_MOUNTED.equals(state) ||
-                Environment.MEDIA_MOUNTED_READ_ONLY.equals(state)) {
-            return true;
-        }
-        return false;
-    }
-
 }
