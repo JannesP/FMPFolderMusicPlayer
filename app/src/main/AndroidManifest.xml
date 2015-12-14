@@ -3,6 +3,7 @@
           xmlns:android="http://schemas.android.com/apk/res/android">
 
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
 
     <application
         android:allowBackup="true"
@@ -11,7 +12,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
-            android:name=".activities.MainActivity"
+            android:name=".ui.activities.MainActivity"
             android:label="@string/app_name"
             android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
@@ -21,10 +22,18 @@
             </intent-filter>
         </activity>
 
-        <activity android:name=".activities.SettingsActivity"
+        <activity android:name=".ui.activities.SettingsActivity"
                   android:label="FMP Settings"
                   android:theme="@style/AppTheme.NoActionBar"
-                  android:parentActivityName=".activities.MainActivity"/>
+                  android:parentActivityName=".ui.activities.MainActivity"/>
+
+        <service android:name=".utility.music.MediaService" />
+
+        <receiver android:name=".utility.music.MusicIntentReceiver">
+            <intent-filter>
+                <action android:name="android.media.AUDIO_BECOMING_NOISY" />
+            </intent-filter>
+        </receiver>
     </application>
 
 </manifest>

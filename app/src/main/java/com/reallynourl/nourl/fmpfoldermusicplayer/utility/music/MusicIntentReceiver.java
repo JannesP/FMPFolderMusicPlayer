@@ -1,9 +1,9 @@
-package com.reallynourl.nourl.fmpfoldermusicplayer.utility;
+package com.reallynourl.nourl.fmpfoldermusicplayer.utility.music;
 
-import android.os.Environment;
-
-import java.io.File;
-import java.util.concurrent.TimeUnit;
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.media.AudioManager;
 
 /**
  * Copyright (C) 2015  Jannes Peters
@@ -21,16 +21,13 @@ import java.util.concurrent.TimeUnit;
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-public final class Util {
-    private Util() {}
-
-    public static String getDurationString(int msec) {
-        String time = String.format("%d:%02d",
-                TimeUnit.MILLISECONDS.toMinutes(msec),
-                TimeUnit.MILLISECONDS.toSeconds(msec) -
-                        TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(msec))
-        );
-        return time;
+public class MusicIntentReceiver extends BroadcastReceiver{
+    @Override
+    public void onReceive(Context context, Intent intent) {
+        if (intent.getAction().equals(AudioManager.ACTION_AUDIO_BECOMING_NOISY)) {
+            if (MediaService.getInstance() != null) {
+                MediaService.getInstance().pause();
+            }
+        }
     }
-
 }

@@ -18,6 +18,7 @@ import com.reallynourl.nourl.fmpfoldermusicplayer.ui.fragments.filebrowser.lista
 import com.reallynourl.nourl.fmpfoldermusicplayer.utility.file.AudioFileFilter;
 import com.reallynourl.nourl.fmpfoldermusicplayer.utility.file.FileType;
 import com.reallynourl.nourl.fmpfoldermusicplayer.utility.file.FileUtil;
+import com.reallynourl.nourl.fmpfoldermusicplayer.utility.music.MediaManager;
 
 import java.io.File;
 
@@ -61,7 +62,7 @@ public class FileBrowserFragment extends Fragment implements AdapterView.OnItemC
         //inflate layout for fragment
         if (!mIsCreated) {
             mIsCreated = true;
-            mRootView = inflater.inflate(R.layout.file_browser, container, false);
+            mRootView = inflater.inflate(R.layout.fragment_file_browser, container, false);
         }
         return mRootView;
     }
@@ -163,7 +164,7 @@ public class FileBrowserFragment extends Fragment implements AdapterView.OnItemC
                 Snackbar.make(parent, "You clicked on " + file.getName(), Snackbar.LENGTH_LONG).show();
                 break;
             case AUDIO:
-                Snackbar.make(parent, "You want to play music, nope ... for now.", Snackbar.LENGTH_LONG).show();
+                MediaManager.getInstance().play(file);
                 break;
             default:
                 Snackbar.make(parent, "What did you do? You selected an non existing file!", Snackbar.LENGTH_LONG).show();
