@@ -1,6 +1,8 @@
 package com.reallynourl.nourl.fmpfoldermusicplayer.utility;
 
+import android.content.Context;
 import android.os.Environment;
+import android.util.TypedValue;
 
 import java.io.File;
 import java.util.concurrent.TimeUnit;
@@ -31,6 +33,12 @@ public final class Util {
                         TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(msec))
         );
         return time;
+    }
+
+    public static int getAccentColor(final Context context) {
+        final TypedValue value = new TypedValue();
+        context.getTheme().resolveAttribute(android.support.design.R.attr.colorAccent, value, true);
+        return value.data;
     }
 
 }

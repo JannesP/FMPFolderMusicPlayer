@@ -11,6 +11,7 @@ import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.IBinder;
 import android.os.PowerManager;
+import android.provider.MediaStore;
 import android.support.annotation.Nullable;
 import android.util.Log;
 import android.widget.Toast;
@@ -40,6 +41,7 @@ public class MediaService extends Service implements MediaPlayer.OnPreparedListe
 
     private static MediaService sInstance = null;
     private MediaPlayer mMediaPlayer;
+    private boolean mIsPreparedToPlay;
 
     private void setupMediaPlayer(Uri file) {
         if (mMediaPlayer == null) {
@@ -49,12 +51,13 @@ public class MediaService extends Service implements MediaPlayer.OnPreparedListe
             mMediaPlayer.setOnErrorListener(this);
             mMediaPlayer.setOnCompletionListener(this);
         } else {
+            if (mMediaPlayer.isPlaying()) mMediaPlayer.stop();
             mMediaPlayer.reset();
         }
         try {
             mMediaPlayer.setDataSource(getApplicationContext(), file);
         } catch (IOException e) {
-
+            Toast.makeText(getApplicationContext(), "Failed to load the file.", Toast.LENGTH_LONG).show();
         }
         mMediaPlayer.prepareAsync();
     }
@@ -71,6 +74,7 @@ public class MediaService extends Service implements MediaPlayer.OnPreparedListe
             Toast.makeText(getApplicationContext(), "Failed to get audio focus. Not starting playback.", Toast.LENGTH_LONG).show();
             if (mMediaPlayer != null) {
                 mMediaPlayer.stop();
+                mIsPreparedToPlay = false;
             }
             return false;
         }
@@ -81,6 +85,7 @@ public class MediaService extends Service implements MediaPlayer.OnPreparedListe
     public void onCreate() {
         super.onCreate();
         MediaService.sInstance = this;
+        mIsPreparedToPlay = false;
         Log.d("Media Service", "Media Service created!");
     }
 
@@ -92,6 +97,7 @@ public class MediaService extends Service implements MediaPlayer.OnPreparedListe
 
     @Override
     public void onDestroy() {
+        mIsPreparedToPlay = false;
         mMediaPlayer.release();
         mMediaPlayer = null;
         sInstance = null;
@@ -106,8 +112,9 @@ public class MediaService extends Service implements MediaPlayer.OnPreparedListe
 
     @Override
     public void onPrepared(MediaPlayer mp) {
-        mp.start();
         if (requestAudioFocus()) {
+            mp.start();
+            mIsPreparedToPlay = true;
             Notification notification = MusicNotification.create(getApplicationContext(), "TextName");
             startForeground(MusicNotification.NOTIFICATION_ID, notification);
         }
@@ -115,11 +122,13 @@ public class MediaService extends Service implements MediaPlayer.OnPreparedListe
 
     @Override
     public void onCompletion(MediaPlayer mp) {
+        mIsPreparedToPlay = false;
         stopForeground(false);
     }
 
     @Override
     public boolean onError(MediaPlayer mp, int what, int extra) {
+        mIsPreparedToPlay = false;
         String message = "";
         switch (what) {
             case MediaPlayer.MEDIA_ERROR_SERVER_DIED:
@@ -178,6 +187,7 @@ public class MediaService extends Service implements MediaPlayer.OnPreparedListe
     }
 
     private void releasePlayer() {
+        mIsPreparedToPlay = false;
         if (mMediaPlayer.isPlaying()) mMediaPlayer.stop();
         mMediaPlayer.release();
         mMediaPlayer = null;
@@ -205,14 +215,14 @@ public class MediaService extends Service implements MediaPlayer.OnPreparedListe
         if (mMediaPlayer != null) {
             return mMediaPlayer.getDuration();
         }
-        return -1;
+        return 0;
     }
 
     public int getPosition() {
         if (mMediaPlayer != null) {
             return mMediaPlayer.getCurrentPosition();
         }
-        return -1;
+        return 0;
     }
 
     public boolean isPlaying() {
@@ -221,7 +231,12 @@ public class MediaService extends Service implements MediaPlayer.OnPreparedListe
 
     public void stop() {
         if (mMediaPlayer != null) {
+            mIsPreparedToPlay = false;
             if (mMediaPlayer.isPlaying()) mMediaPlayer.stop();
         }
+    }
+
+    public boolean isPreparedToPlay() {
+        return mIsPreparedToPlay;
     }
 }

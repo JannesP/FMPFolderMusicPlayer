@@ -1,7 +1,10 @@
 package com.reallynourl.nourl.fmpfoldermusicplayer.ui.fragments.music;
 
 import android.app.Fragment;
+import android.content.res.ColorStateList;
+import android.graphics.Color;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -9,10 +12,12 @@ import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.SeekBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.reallynourl.nourl.fmpfoldermusicplayer.R;
 import com.reallynourl.nourl.fmpfoldermusicplayer.utility.Util;
 import com.reallynourl.nourl.fmpfoldermusicplayer.utility.music.MediaManager;
+import com.reallynourl.nourl.fmpfoldermusicplayer.utility.music.RepeatMode;
 
 /**
  * Copyright (C) 2015  Jannes Peters
@@ -30,9 +35,24 @@ import com.reallynourl.nourl.fmpfoldermusicplayer.utility.music.MediaManager;
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-public class MusicControlFragment extends Fragment implements View.OnClickListener, Runnable {
+public class MusicControlFragment extends Fragment implements View.OnClickListener, Runnable, SeekBar.OnSeekBarChangeListener {
     private boolean mIsCreated = false;
     private View mRootView = null;
+
+    //control references
+    private ImageButton mButtonPlay;
+    private ImageButton mButtonStop;
+    private ImageButton mButtonNext;
+    private ImageButton mButtonPrevious;
+    private ImageButton mButtonShuffle;
+    private ImageButton mButtonRepeat;
+
+    private TextView mTvPosition;
+    private TextView mTvDuration;
+
+    private SeekBar mSeekBar;
+
+    private int mAccentColor;
 
     public MusicControlFragment() {}
 
@@ -45,7 +65,7 @@ public class MusicControlFragment extends Fragment implements View.OnClickListen
                 while (!Thread.interrupted()) {
                     getActivity().runOnUiThread(MusicControlFragment.this);
                     try {
-                        Thread.sleep(250);
+                        Thread.sleep(120);
                     } catch (InterruptedException e) {
                         return;
                     }
@@ -62,12 +82,14 @@ public class MusicControlFragment extends Fragment implements View.OnClickListen
         if (!mIsCreated) {
             mIsCreated = true;
             mRootView = inflater.inflate(R.layout.fragment_music_controls, container, false);
+            mAccentColor = Util.getAccentColor(getActivity());
         }
         return mRootView;
     }
 
     @Override
     public void onResume() {
+        setupReferences();
         addListeners();
         startRefresh();
         super.onResume();
@@ -77,6 +99,7 @@ public class MusicControlFragment extends Fragment implements View.OnClickListen
     public void onPause() {
         removeListeners();
         mRefreshThread.interrupt();
+        destroyReferences();
         super.onPause();
     }
 
@@ -87,18 +110,54 @@ public class MusicControlFragment extends Fragment implements View.OnClickListen
         super.onDestroy();
     }
 
+    private void setupReferences() {
+        mButtonPlay = (ImageButton) mRootView.findViewById(R.id.imageButtonPlayPause);
+        mButtonStop = (ImageButton) mRootView.findViewById(R.id.imageButtonStop);
+        mButtonNext = (ImageButton) mRootView.findViewById(R.id.imageButtonSkipNext);
+        mButtonPrevious = (ImageButton) mRootView.findViewById(R.id.imageButtonSkipPrevious);
+        mButtonShuffle = (ImageButton) mRootView.findViewById(R.id.imageButtonShuffle);
+        mButtonRepeat = (ImageButton) mRootView.findViewById(R.id.imageButtonRepeat);
+
+        mTvPosition = (TextView) mRootView.findViewById(R.id.textViewTimeCurrent);
+        mTvDuration = (TextView) mRootView.findViewById(R.id.textViewDuration);
+
+        mSeekBar = (SeekBar) mRootView.findViewById(R.id.seekBar);
+    }
+
+    private void destroyReferences() {
+        mButtonPlay = null;
+        mButtonStop = null;
+        mButtonNext = null;
+        mButtonPrevious = null;
+        mButtonShuffle = null;
+        mButtonRepeat = null;
+
+        mTvPosition = null;
+        mTvDuration = null;
+
+        mSeekBar = null;
+    }
+
     private void addListeners() {
-        ImageButton lv = (ImageButton) mRootView.findViewById(R.id.imageButtonPlayPause);
-        lv.setOnClickListener(this);
-        lv = (ImageButton) mRootView.findViewById(R.id.imageButtonStop);
-        lv.setOnClickListener(this);
+        mButtonPlay.setOnClickListener(this);
+        mButtonStop.setOnClickListener(this);
+        mButtonNext.setOnClickListener(this);
+        mButtonPrevious.setOnClickListener(this);
+        mButtonShuffle.setOnClickListener(this);
+        mButtonRepeat.setOnClickListener(this);
+
+        mSeekBar.setOnSeekBarChangeListener(this);
     }
 
     private void removeListeners() {
-        ImageButton lv = (ImageButton) mRootView.findViewById(R.id.imageButtonPlayPause);
-        lv.setOnClickListener(null);
-        lv = (ImageButton) mRootView.findViewById(R.id.imageButtonStop);
-        lv.setOnClickListener(null);
+        mButtonPlay.setOnClickListener(null);
+        mButtonStop.setOnClickListener(null);
+        mButtonNext.setOnClickListener(null);
+        mButtonPrevious.setOnClickListener(null);
+        mButtonShuffle.setOnClickListener(null);
+        mButtonRepeat.setOnClickListener(null);
+
+        mSeekBar.setOnSeekBarChangeListener(null);
     }
 
     @Override
@@ -115,25 +174,102 @@ public class MusicControlFragment extends Fragment implements View.OnClickListen
             case R.id.imageButtonStop:
                 MediaManager.getInstance().stop();
                 break;
+            case R.id.imageButtonSkipNext:
+                MediaManager.getInstance().next();
+                break;
+            case R.id.imageButtonSkipPrevious:
+                MediaManager.getInstance().previous();
+                break;
+            case R.id.imageButtonShuffle:
+                MediaManager.getInstance().getPlaylist().setShuffle(
+                       !MediaManager.getInstance().getPlaylist().isShuffle());
+                break;
+            case R.id.imageButtonRepeat:
+                RepeatMode currentMode = MediaManager.getInstance().getPlaylist().getRepeatMode();
+                RepeatMode newMode = RepeatMode.OFF;
+                switch (currentMode) {
+                    case OFF:
+                        newMode = RepeatMode.ALL;
+                        break;
+                    case ALL:
+                        newMode = RepeatMode.SINGLE;
+                        break;
+                    case SINGLE:
+                        newMode = RepeatMode.OFF;
+                        break;
+                }
+                MediaManager.getInstance().getPlaylist().setRepeatMode(newMode);
+                break;
+            default:
+                Toast.makeText(getActivity(), "Click handler missing!", Toast.LENGTH_SHORT).show();
         }
     }
 
     @Override
     public void run() {
-        ImageButton lv = (ImageButton) mRootView.findViewById(R.id.imageButtonPlayPause);
+        //Play button
+        int resource;
         if (MediaManager.getInstance().isPlaying()) {
-            lv.setImageResource(R.drawable.ic_pause);
+            resource = R.drawable.ic_pause;
         } else {
-            lv.setImageResource(R.drawable.ic_play_arrow);
+            resource = R.drawable.ic_play_arrow;
         }
-        SeekBar sb = (SeekBar) mRootView.findViewById(R.id.seekBar);
+        mButtonPlay.setImageResource(resource);
+        mButtonPlay.setEnabled(MediaManager.getInstance().canPlay());
+
+        mButtonStop.setEnabled(!MediaManager.getInstance().isStopped());
+        mButtonNext.setEnabled(MediaManager.getInstance().hasNext());
+        mButtonPrevious.setEnabled(MediaManager.getInstance().hasPrevious());
+
+        if (MediaManager.getInstance().getPlaylist().isShuffle()) {
+            mButtonShuffle.setColorFilter(mAccentColor);
+        } else {
+            mButtonShuffle.setColorFilter(Color.WHITE);
+        }
+
+        RepeatMode repeatMode = MediaManager.getInstance().getPlaylist().getRepeatMode();
+        int color = Color.WHITE;
+        switch (repeatMode) {
+            case OFF:
+                resource = R.drawable.ic_repeat_white;
+                break;
+            case ALL:
+                color = mAccentColor;
+                resource = R.drawable.ic_repeat_white;
+                break;
+            case SINGLE:
+                color = mAccentColor;
+                resource = R.drawable.ic_repeat_one_white;
+                break;
+        }
+        mButtonRepeat.setImageResource(resource);
+        mButtonRepeat.setColorFilter(color);
+
+        //SeekBar
         int duration = MediaManager.getInstance().getDuration();
         int position = MediaManager.getInstance().getPosition();
-        sb.setMax(duration);
-        sb.setProgress(position);
-        TextView tv = (TextView) mRootView.findViewById(R.id.textViewTimeCurrent);
-        tv.setText(Util.getDurationString(position));
-        tv = (TextView) mRootView.findViewById(R.id.textViewDuration);
-        tv.setText(Util.getDurationString(duration));
+        mSeekBar.setMax(duration);
+        mSeekBar.setProgress(position);
+
+        //SeekBar labels
+        mTvDuration.setText(Util.getDurationString(position));
+        mTvPosition.setText(Util.getDurationString(duration));
+    }
+
+    @Override
+    public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+        if (fromUser) {
+            MediaManager.getInstance().seekTo(progress);
+        }
+    }
+
+    @Override
+    public void onStartTrackingTouch(SeekBar seekBar) {
+
+    }
+
+    @Override
+    public void onStopTrackingTouch(SeekBar seekBar) {
+
     }
 }

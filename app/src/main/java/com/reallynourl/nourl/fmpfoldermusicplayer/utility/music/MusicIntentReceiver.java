@@ -25,9 +25,7 @@ public class MusicIntentReceiver extends BroadcastReceiver{
     @Override
     public void onReceive(Context context, Intent intent) {
         if (intent.getAction().equals(AudioManager.ACTION_AUDIO_BECOMING_NOISY)) {
-            if (MediaService.getInstance() != null) {
-                MediaService.getInstance().pause();
-            }
+            MediaManager.getInstance().pause();
         }
     }
 }

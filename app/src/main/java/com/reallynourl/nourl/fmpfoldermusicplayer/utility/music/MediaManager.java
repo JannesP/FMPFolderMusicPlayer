@@ -4,8 +4,10 @@ import android.content.Context;
 import android.content.Intent;
 import android.media.MediaPlayer;
 import android.net.Uri;
+import android.widget.Toast;
 
 import java.io.File;
+import java.util.List;
 
 /**
  * Copyright (C) 2015  Jannes Peters
@@ -26,9 +28,12 @@ import java.io.File;
 public class MediaManager {
     private static MediaManager sInstance;
 
+    private Playlist mPlaylist;
+
     private Context mContext;
     private MediaManager(Context mContext) {
         this.mContext = mContext;
+        this.mPlaylist = new Playlist();
         mContext.startService(new Intent(mContext, MediaService.class));
     }
 
@@ -42,7 +47,14 @@ public class MediaManager {
         return sInstance;
     }
 
+    public Playlist getPlaylist() {
+        return mPlaylist;
+    }
+
     public void play(File file) {
+        mPlaylist.clear();//FIXME: Obvious testing code.
+        mPlaylist.appendNext(file);
+        file = mPlaylist.selectNext();
         MediaService.getInstance().play(Uri.fromFile(file));
     }
 
@@ -74,4 +86,27 @@ public class MediaManager {
         return MediaService.getInstance().isPlaying();
     }
 
+    public boolean hasNext() {
+        return mPlaylist.hasNext();
+    }
+
+    public boolean hasPrevious() {
+        return mPlaylist.hasPrevious();
+    }
+
+    public boolean canPlay() {
+        return mPlaylist.getCurrent() != null;
+    }
+
+    public boolean isStopped() {
+        return !MediaService.getInstance().isPreparedToPlay();
+    }
+
+    public void next() {
+        Toast.makeText(mContext, "Next not implemented!", Toast.LENGTH_LONG).show();
+    }
+
+    public void previous() {
+        Toast.makeText(mContext, "Previous not implemented!", Toast.LENGTH_LONG).show();
+    }
 }
