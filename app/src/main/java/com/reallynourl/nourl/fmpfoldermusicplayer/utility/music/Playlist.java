@@ -2,6 +2,7 @@ package com.reallynourl.nourl.fmpfoldermusicplayer.utility.music;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
@@ -48,7 +49,11 @@ public class Playlist {
         return mFiles.size() - 1;
     }
 
-    public void appendAll(List<File> files) {
+    public void appendAll(File[] files) {
+        Collections.addAll(mFiles, files);
+    }
+
+    public void appendAll(Collection<? extends File> files) {
         mFiles.addAll(files);
     }
 
@@ -141,5 +146,13 @@ public class Playlist {
             mCurrentFile = -1;
         }
         return selectedNext;
+    }
+
+    public int getCurrentIndex() {
+        return mCurrentFile;
+    }
+
+    public void setCurrent(int current) {
+        this.mCurrentFile = current;
     }
 }

@@ -51,11 +51,18 @@ public class MediaManager {
         return mPlaylist;
     }
 
-    public void play(File file) {
-        mPlaylist.clear();//FIXME: Obvious testing code.
+    public void addPlaylistAndPlay(File file) {
         mPlaylist.appendNext(file);
         file = mPlaylist.selectNext();
         MediaService.getInstance().play(Uri.fromFile(file));
+    }
+
+    public void playPlayListItem(int index) {
+        File file = mPlaylist.getList().get(index);
+        if (file != null) {
+            mPlaylist.setCurrent(index);
+            MediaService.getInstance().play(Uri.fromFile(file));
+        }
     }
 
     public void play() {
@@ -103,7 +110,10 @@ public class MediaManager {
     }
 
     public void next() {
-        Toast.makeText(mContext, "Next not implemented!", Toast.LENGTH_LONG).show();
+        File file = mPlaylist.selectNext();
+        if (file != null) {
+            MediaService.getInstance().play(Uri.fromFile(file));
+        }
     }
 
     public void previous() {

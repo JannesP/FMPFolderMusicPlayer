@@ -194,13 +194,13 @@ public class MediaService extends Service implements MediaPlayer.OnPreparedListe
     }
 
     public void pause() {
-        if (mMediaPlayer != null && mMediaPlayer.isPlaying()) {
+        if (mMediaPlayer != null && mIsPreparedToPlay && mMediaPlayer.isPlaying()) {
             mMediaPlayer.pause();
         }
     }
 
     public void play() {
-        if (mMediaPlayer != null && !mMediaPlayer.isPlaying()) {
+        if (mMediaPlayer != null && mIsPreparedToPlay && !mMediaPlayer.isPlaying()) {
             mMediaPlayer.start();
         }
     }
@@ -230,7 +230,7 @@ public class MediaService extends Service implements MediaPlayer.OnPreparedListe
     }
 
     public void stop() {
-        if (mMediaPlayer != null) {
+        if (mMediaPlayer != null && mIsPreparedToPlay) {
             mIsPreparedToPlay = false;
             if (mMediaPlayer.isPlaying()) mMediaPlayer.stop();
         }

@@ -71,7 +71,7 @@ public class MusicBrowserAdapter extends BaseAdapter{
 
     @Override
     public long getItemId(int position) {
-        return position;
+        return mItems[position].hashCode();
     }
 
     @Override
@@ -81,6 +81,18 @@ public class MusicBrowserAdapter extends BaseAdapter{
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
-        return MusicBrowserListItem.create(parent, mItems[position]);   //TODO: Fix reusing of already created convertViews.
+        convertView = null; //FIXME: recycling of views is not working correctly.
+        if (convertView == null) {
+            convertView = MusicBrowserListItem.create(parent, mItems[position]);
+        } else {
+            MusicBrowserListItem mbli = (MusicBrowserListItem) convertView;
+            if (mbli.isType(mItems[position])) {
+                mbli.setFile(mItems[position]);
+                convertView = mbli;
+            } else {
+                convertView = MusicBrowserListItem.create(parent, mItems[position]);
+            }
+        }
+        return convertView;
     }
 }

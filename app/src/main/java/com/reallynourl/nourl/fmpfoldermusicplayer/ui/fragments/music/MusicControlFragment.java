@@ -1,10 +1,8 @@
 package com.reallynourl.nourl.fmpfoldermusicplayer.ui.fragments.music;
 
 import android.app.Fragment;
-import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.os.Bundle;
-import android.provider.MediaStore;
 import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
 import android.view.View;

@@ -1,6 +1,7 @@
 package com.reallynourl.nourl.fmpfoldermusicplayer.ui.fragments.filebrowser;
 
 import android.app.Fragment;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Environment;
@@ -14,6 +15,7 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 
 import com.reallynourl.nourl.fmpfoldermusicplayer.R;
+import com.reallynourl.nourl.fmpfoldermusicplayer.ui.activities.MainActivity;
 import com.reallynourl.nourl.fmpfoldermusicplayer.ui.fragments.filebrowser.listadapter.MusicBrowserAdapter;
 import com.reallynourl.nourl.fmpfoldermusicplayer.utility.file.AudioFileFilter;
 import com.reallynourl.nourl.fmpfoldermusicplayer.utility.file.FileType;
@@ -164,7 +166,14 @@ public class FileBrowserFragment extends Fragment implements AdapterView.OnItemC
                 Snackbar.make(parent, "You clicked on " + file.getName(), Snackbar.LENGTH_LONG).show();
                 break;
             case AUDIO:
-                MediaManager.getInstance().play(file);
+                MediaManager.getInstance().getPlaylist().clear();
+                MediaManager.getInstance().getPlaylist().appendAll(mCurrentPath.listFiles(new AudioFileFilter(false, false)));
+                MediaManager.getInstance().playPlayListItem(position);
+                Bundle b = new Bundle(1);
+                b.putString(MainActivity.FRAGMENT_EXTRA, "CONTROLS");
+                Intent intent = new Intent(getActivity(), MainActivity.class);
+                intent.putExtras(b);
+                startActivity(intent);
                 break;
             default:
                 Snackbar.make(parent, "What did you do? You selected an non existing file!", Snackbar.LENGTH_LONG).show();
