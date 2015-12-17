@@ -3,9 +3,12 @@ package com.reallynourl.nourl.fmpfoldermusicplayer.ui.activities;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.support.annotation.IdRes;
+import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.util.Log;
@@ -22,6 +25,7 @@ import com.reallynourl.nourl.fmpfoldermusicplayer.R;
 import com.reallynourl.nourl.fmpfoldermusicplayer.ui.fragments.filebrowser.FileBrowserFragment;
 import com.reallynourl.nourl.fmpfoldermusicplayer.ui.fragments.music.MusicControlFragment;
 import com.reallynourl.nourl.fmpfoldermusicplayer.ui.fragments.music.MusicPlayingFragment;
+import com.reallynourl.nourl.fmpfoldermusicplayer.utility.MyUncaughtExceptionHandler;
 import com.reallynourl.nourl.fmpfoldermusicplayer.utility.music.MediaManager;
 import com.reallynourl.nourl.fmpfoldermusicplayer.utility.music.MediaService;
 
@@ -45,10 +49,14 @@ import com.reallynourl.nourl.fmpfoldermusicplayer.utility.music.MediaService;
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
     public final static String FRAGMENT_EXTRA = "fragment";
+    private static MainActivity sInstance;
     private Snackbar mCloseSnackBar = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        Thread.currentThread().setName("main");
+        Thread.setDefaultUncaughtExceptionHandler(new MyUncaughtExceptionHandler(Thread.getDefaultUncaughtExceptionHandler()));
+        sInstance = this;
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -63,21 +71,42 @@ public class MainActivity extends AppCompatActivity
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
-        //set default item to file browser
-        //TODO remember last fragment
-        Bundle bundle = getIntent().getExtras();
+        mCloseSnackBar = Snackbar.make(findViewById(android.R.id.content), "Press again to exit ...", Snackbar.LENGTH_SHORT);
+    }
+
+    @Override
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+        setIntent(intent);
+        Log.d("MainActivity", "onNewIntent called!");
+    }
+
+    private void loadFragmentFromBundle(Bundle bundle) {
         String res = "";
         if (bundle != null) {
             res = bundle.getString(FRAGMENT_EXTRA, "none");
         }
-        if (res.equals("CONTROLS")) {
+        if (res.equals(MusicControlFragment.NAME)) {
             setNavigationItem(R.id.nav_libraries);
         } else {
             setNavigationItem(R.id.nav_file_browser);
         }
+    }
 
-        mCloseSnackBar = Snackbar.make(findViewById(android.R.id.content), "Press again to exit ...", Snackbar.LENGTH_SHORT);
-        MediaManager.create(getApplicationContext());
+    public static void selectFragment(Context context, @NonNull String fragment) {
+        if (sInstance == null) {
+            Bundle b = new Bundle(1);
+            b.putString(MainActivity.FRAGMENT_EXTRA, fragment);
+            Intent intent = new Intent(context, MainActivity.class);
+            intent.putExtras(b);
+            context.startActivity(intent);
+        } else {
+            if (fragment.equals(MusicControlFragment.NAME)) {
+                sInstance.setNavigationItem(R.id.nav_libraries);
+            } else {
+                Log.i("MainActivity", "Something tried to load the unknown fragment: " + fragment);
+            }
+        }
     }
 
     @Override
@@ -117,7 +146,7 @@ public class MainActivity extends AppCompatActivity
                 break;
             case R.id.nav_libraries:
                 loadFragmentToContent(new MusicPlayingFragment());
-                Log.d("Navigation", "Loading Player fragemnt");
+                Log.d("Navigation", "Loading Player fragment");
                 break;
             default:
                 Log.e("Navigation", "Navigation button has no action, id: " + id + " text: " + item.getTitle());
@@ -129,10 +158,28 @@ public class MainActivity extends AppCompatActivity
     }
 
     @Override
-    protected void onDestroy() {
-        if (!MediaManager.getInstance().isPlaying()) {
-            getApplicationContext().stopService(new Intent(getApplicationContext(), MediaService.class));
+    protected void onResume() {
+        MediaManager mediaManager = MediaManager.getInstance();
+        if (mediaManager == null) {
+            MediaManager.create(getApplicationContext());
         }
+        Bundle bundle = getIntent().getExtras();
+        loadFragmentFromBundle(bundle);
+        super.onResume();
+    }
+
+    @Override
+    protected void onPause() {
+        MediaManager mediaManager = MediaManager.getInstance();
+        if (mediaManager != null) {
+            mediaManager.onMainActivityClosed();
+        }
+        super.onPause();
+    }
+
+    @Override
+    protected void onDestroy() {
+        sInstance = null;
         super.onDestroy();
     }
 

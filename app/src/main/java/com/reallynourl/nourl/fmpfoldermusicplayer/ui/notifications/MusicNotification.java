@@ -8,6 +8,7 @@ import android.os.Bundle;
 
 import com.reallynourl.nourl.fmpfoldermusicplayer.R;
 import com.reallynourl.nourl.fmpfoldermusicplayer.ui.activities.MainActivity;
+import com.reallynourl.nourl.fmpfoldermusicplayer.ui.fragments.music.MusicControlFragment;
 
 /**
  * Copyright (C) 2015  Jannes Peters
@@ -30,9 +31,10 @@ public class MusicNotification {
 
     public static Notification create(Context context, String songName) {
         Bundle b = new Bundle(1);
-        b.putString(MainActivity.FRAGMENT_EXTRA, "CONTROLS");
+        b.putString(MainActivity.FRAGMENT_EXTRA, MusicControlFragment.NAME);
         PendingIntent pi = PendingIntent.getActivity(context, 0,
-                new Intent(context, MainActivity.class).putExtras(b), PendingIntent.FLAG_UPDATE_CURRENT);
+                new Intent(context, MainActivity.class).putExtras(b),
+                PendingIntent.FLAG_UPDATE_CURRENT);
         Notification.Builder builder = new Notification.Builder(context);
         builder.setContentTitle("Playing Music!");
         builder.setContentText(songName);

@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.media.MediaPlayer;
 import android.net.Uri;
+import android.util.Log;
 import android.widget.Toast;
 
 import java.io.File;
@@ -25,7 +26,7 @@ import java.util.List;
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-public class MediaManager {
+public class MediaManager implements MediaPlayer.OnCompletionListener {
     private static MediaManager sInstance;
 
     private Playlist mPlaylist;
@@ -57,7 +58,7 @@ public class MediaManager {
         MediaService.getInstance().play(Uri.fromFile(file));
     }
 
-    public void playPlayListItem(int index) {
+    public void playPlaylistItem(int index) {
         File file = mPlaylist.getList().get(index);
         if (file != null) {
             mPlaylist.setCurrent(index);
@@ -118,5 +119,25 @@ public class MediaManager {
 
     public void previous() {
         Toast.makeText(mContext, "Previous not implemented!", Toast.LENGTH_LONG).show();
+    }
+
+    @Override
+    public void onCompletion(MediaPlayer mp) {
+        next();
+    }
+
+    public void release() {
+        sInstance = null;
+        mPlaylist = null;
+        mContext = null;
+        Log.v("MediaManager", "MediaManager released!");
+    }
+
+    public void onMainActivityClosed() {
+        MediaService mediaService = MediaService.getInstance();
+        if (mediaService != null && !isPlaying()) {
+            release();
+            mediaService.stopSelf();
+        }
     }
 }

@@ -34,6 +34,8 @@ import com.reallynourl.nourl.fmpfoldermusicplayer.utility.music.RepeatMode;
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 public class MusicControlFragment extends Fragment implements View.OnClickListener, Runnable, SeekBar.OnSeekBarChangeListener {
+    public final static String NAME = "controls";
+
     private boolean mIsCreated = false;
     private View mRootView = null;
 

@@ -49,7 +49,6 @@ public class MediaService extends Service implements MediaPlayer.OnPreparedListe
             mMediaPlayer.setWakeMode(getApplicationContext(), PowerManager.PARTIAL_WAKE_LOCK);
             mMediaPlayer.setOnPreparedListener(this);
             mMediaPlayer.setOnErrorListener(this);
-            mMediaPlayer.setOnCompletionListener(this);
         } else {
             if (mMediaPlayer.isPlaying()) mMediaPlayer.stop();
             mMediaPlayer.reset();
@@ -84,8 +83,13 @@ public class MediaService extends Service implements MediaPlayer.OnPreparedListe
     @Override
     public void onCreate() {
         super.onCreate();
-        MediaService.sInstance = this;
+        if (sInstance != null) {
+            sInstance = null;
+        }
+        sInstance = this;
         mIsPreparedToPlay = false;
+        Notification notification = MusicNotification.create(getApplicationContext(), "TextName");
+        startForeground(MusicNotification.NOTIFICATION_ID, notification);
         Log.d("Media Service", "Media Service created!");
     }
 
@@ -97,12 +101,12 @@ public class MediaService extends Service implements MediaPlayer.OnPreparedListe
 
     @Override
     public void onDestroy() {
-        mIsPreparedToPlay = false;
-        mMediaPlayer.release();
-        mMediaPlayer = null;
+        releasePlayer();
         sInstance = null;
-        NotificationManager nm = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
-        nm.cancel(MusicNotification.NOTIFICATION_ID);
+        MediaManager mediaManager = MediaManager.getInstance();
+        if (mediaManager != null) mediaManager.release();
+        stopForeground(true);
+        Log.d("Media Service", "Media Service stopped!");
         super.onDestroy();
     }
 
@@ -114,16 +118,21 @@ public class MediaService extends Service implements MediaPlayer.OnPreparedListe
     public void onPrepared(MediaPlayer mp) {
         if (requestAudioFocus()) {
             mp.start();
+            mp.setOnCompletionListener(this);
             mIsPreparedToPlay = true;
-            Notification notification = MusicNotification.create(getApplicationContext(), "TextName");
-            startForeground(MusicNotification.NOTIFICATION_ID, notification);
         }
     }
 
     @Override
     public void onCompletion(MediaPlayer mp) {
         mIsPreparedToPlay = false;
-        stopForeground(false);
+        Log.d("MediaService", "onCompletion got called!");
+        MediaManager mediaManager = MediaManager.getInstance();
+        if (mediaManager == null) {
+            stopSelf();
+        } else {
+            MediaManager.getInstance().onCompletion(mp);
+        }
     }
 
     @Override
@@ -188,9 +197,13 @@ public class MediaService extends Service implements MediaPlayer.OnPreparedListe
 
     private void releasePlayer() {
         mIsPreparedToPlay = false;
-        if (mMediaPlayer.isPlaying()) mMediaPlayer.stop();
-        mMediaPlayer.release();
-        mMediaPlayer = null;
+        if (mMediaPlayer != null) {
+            if (mMediaPlayer.isPlaying()) {
+                mMediaPlayer.stop();
+            }
+            mMediaPlayer.release();
+            mMediaPlayer = null;
+        }
     }
 
     public void pause() {

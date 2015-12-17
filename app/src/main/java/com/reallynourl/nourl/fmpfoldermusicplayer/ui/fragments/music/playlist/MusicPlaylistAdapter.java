@@ -8,6 +8,7 @@ import android.widget.BaseAdapter;
 import com.reallynourl.nourl.fmpfoldermusicplayer.R;
 import com.reallynourl.nourl.fmpfoldermusicplayer.ui.fragments.filebrowser.listadapter.AudioFileListItem;
 import com.reallynourl.nourl.fmpfoldermusicplayer.utility.music.MediaManager;
+import com.reallynourl.nourl.fmpfoldermusicplayer.utility.music.Playlist;
 import com.reallynourl.nourl.fmpfoldermusicplayer.utility.music.RepeatMode;
 
 import java.io.File;
@@ -28,12 +29,13 @@ import java.io.File;
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-public class MusicPlaylistAdapter extends BaseAdapter {
+public class MusicPlaylistAdapter extends BaseAdapter implements Playlist.OnPlaylistChangedListener {
 
     private int mAccentColor;
 
     public MusicPlaylistAdapter(int accentColor) {
         this.mAccentColor = accentColor;
+        MediaManager.getInstance().getPlaylist().addOnPlayListChangedListener(this);
     }
 
     @Override
@@ -66,5 +68,10 @@ public class MusicPlaylistAdapter extends BaseAdapter {
             convertView.findViewById(R.id.textViewListItemTitle).setBackgroundColor(Color.TRANSPARENT);
         }
         return convertView;
+    }
+
+    @Override
+    public void onPlaylistChanged(Playlist playlist) {
+        notifyDataSetChanged();
     }
 }

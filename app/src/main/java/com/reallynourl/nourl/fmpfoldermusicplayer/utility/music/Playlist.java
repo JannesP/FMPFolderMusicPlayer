@@ -27,6 +27,7 @@ public class Playlist {
     private int mCurrentFile;
     private boolean mIsShuffle;
     private RepeatMode mRepeatMode;
+    private List<OnPlaylistChangedListener> mPlaylistChangedListeners;
 
 
     public Playlist() {
@@ -34,6 +35,18 @@ public class Playlist {
         mIsShuffle = false;
         mCurrentFile = -1;
         mRepeatMode = RepeatMode.OFF;
+        mPlaylistChangedListeners = new ArrayList<>(1);
+    }
+
+    public void addOnPlayListChangedListener(OnPlaylistChangedListener listener) {
+        mPlaylistChangedListeners.remove(listener);
+        mPlaylistChangedListeners.add(listener);
+    }
+
+    public void removeOnPlaylistChangedListener(OnPlaylistChangedListener listener) {
+        while (true) {
+            if (!(mPlaylistChangedListeners.remove(listener))) break;
+        }
     }
 
     public boolean isShuffle() {
@@ -154,5 +167,9 @@ public class Playlist {
 
     public void setCurrent(int current) {
         this.mCurrentFile = current;
+    }
+
+    public interface OnPlaylistChangedListener {
+        void onPlaylistChanged(Playlist playlist);
     }
 }

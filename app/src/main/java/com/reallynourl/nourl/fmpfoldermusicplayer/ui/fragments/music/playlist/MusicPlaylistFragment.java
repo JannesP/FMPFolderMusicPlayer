@@ -46,6 +46,6 @@ public class MusicPlaylistFragment extends Fragment implements AdapterView.OnIte
 
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-        MediaManager.getInstance().playPlayListItem(position);
+        MediaManager.getInstance().playPlaylistItem(position);
     }
 }
