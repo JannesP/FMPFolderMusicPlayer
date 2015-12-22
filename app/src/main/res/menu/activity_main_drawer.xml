@@ -3,6 +3,10 @@
 
     <group android:checkableBehavior="single">
         <item
+            android:id="@+id/nav_currently_playing"
+            android:icon="@drawable/ic_play_arrow"
+            android:title="Currently Playing"/>
+        <item
             android:id="@+id/nav_file_browser"
             android:icon="@drawable/ic_nav_folder"
             android:title="File Browser"/>

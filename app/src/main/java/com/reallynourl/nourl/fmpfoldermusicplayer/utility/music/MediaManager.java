@@ -8,7 +8,6 @@ import android.util.Log;
 import android.widget.Toast;
 
 import java.io.File;
-import java.util.List;
 
 /**
  * Copyright (C) 2015  Jannes Peters
@@ -49,6 +48,9 @@ public class MediaManager implements MediaPlayer.OnCompletionListener {
     }
 
     public Playlist getPlaylist() {
+        if (mPlaylist == null) {
+            mPlaylist = new Playlist();
+        }
         return mPlaylist;
     }
 
@@ -107,7 +109,7 @@ public class MediaManager implements MediaPlayer.OnCompletionListener {
     }
 
     public boolean isStopped() {
-        return !MediaService.getInstance().isPreparedToPlay();
+        return !MediaService.getInstance().isInitialized();
     }
 
     public void next() {

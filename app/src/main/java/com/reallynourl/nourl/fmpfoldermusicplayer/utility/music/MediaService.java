@@ -219,20 +219,20 @@ public class MediaService extends Service implements MediaPlayer.OnPreparedListe
     }
 
     public void seekTo(int msec) {
-        if (mMediaPlayer != null && mMediaPlayer.getDuration() > msec) {
+        if (mMediaPlayer != null && mIsPreparedToPlay && mMediaPlayer.getDuration() > msec) {
             mMediaPlayer.seekTo(msec);
         }
     }
 
     public int getDuration() {
-        if (mMediaPlayer != null) {
+        if (mMediaPlayer != null && mIsPreparedToPlay) {
             return mMediaPlayer.getDuration();
         }
         return 0;
     }
 
     public int getPosition() {
-        if (mMediaPlayer != null) {
+        if (mMediaPlayer != null && mIsPreparedToPlay) {
             return mMediaPlayer.getCurrentPosition();
         }
         return 0;
@@ -249,7 +249,7 @@ public class MediaService extends Service implements MediaPlayer.OnPreparedListe
         }
     }
 
-    public boolean isPreparedToPlay() {
+    public boolean isInitialized() {
         return mIsPreparedToPlay;
     }
 }

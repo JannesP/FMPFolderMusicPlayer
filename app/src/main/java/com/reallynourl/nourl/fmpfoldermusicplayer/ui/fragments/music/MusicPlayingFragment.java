@@ -9,6 +9,7 @@ import android.view.ViewGroup;
 import android.widget.ListView;
 
 import com.reallynourl.nourl.fmpfoldermusicplayer.R;
+import com.reallynourl.nourl.fmpfoldermusicplayer.ui.fragments.MainContentFragment;
 import com.reallynourl.nourl.fmpfoldermusicplayer.ui.fragments.music.playlist.MusicPlaylistAdapter;
 import com.reallynourl.nourl.fmpfoldermusicplayer.utility.Util;
 
@@ -28,7 +29,7 @@ import com.reallynourl.nourl.fmpfoldermusicplayer.utility.Util;
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-public class MusicPlayingFragment extends Fragment {
+public class MusicPlayingFragment extends MainContentFragment {
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {

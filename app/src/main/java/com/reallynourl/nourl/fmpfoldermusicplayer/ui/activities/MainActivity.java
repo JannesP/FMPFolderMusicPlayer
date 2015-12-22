@@ -22,6 +22,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 
 import com.reallynourl.nourl.fmpfoldermusicplayer.R;
+import com.reallynourl.nourl.fmpfoldermusicplayer.ui.fragments.MainContentFragment;
 import com.reallynourl.nourl.fmpfoldermusicplayer.ui.fragments.filebrowser.FileBrowserFragment;
 import com.reallynourl.nourl.fmpfoldermusicplayer.ui.fragments.music.MusicControlFragment;
 import com.reallynourl.nourl.fmpfoldermusicplayer.ui.fragments.music.MusicPlayingFragment;
@@ -51,6 +52,7 @@ public class MainActivity extends AppCompatActivity
     public final static String FRAGMENT_EXTRA = "fragment";
     private static MainActivity sInstance;
     private Snackbar mCloseSnackBar = null;
+    private MainContentFragment mActiveFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -102,7 +104,7 @@ public class MainActivity extends AppCompatActivity
             context.startActivity(intent);
         } else {
             if (fragment.equals(MusicControlFragment.NAME)) {
-                sInstance.setNavigationItem(R.id.nav_libraries);
+                sInstance.setNavigationItem(R.id.nav_currently_playing);
             } else {
                 Log.i("MainActivity", "Something tried to load the unknown fragment: " + fragment);
             }
@@ -117,12 +119,12 @@ public class MainActivity extends AppCompatActivity
         } else {
             if (mCloseSnackBar.isShown()) {
                 finish();
+                return;
             } else {
                 mCloseSnackBar = Snackbar.make(findViewById(android.R.id.content), "Press again to exit ...", Snackbar.LENGTH_SHORT);
             }
-            getFragmentManager().executePendingTransactions();
-            if (getFragmentManager().findFragmentById(R.id.content_panel).isVisible()) {
-                if (!((FileBrowserFragment)getFragmentManager().findFragmentById(R.id.content_panel)).onBackPressed()) {
+            if (mActiveFragment != null) {
+                if (!mActiveFragment.onBackPressed()) {
                     mCloseSnackBar.show();
                 }
             }
@@ -144,7 +146,7 @@ public class MainActivity extends AppCompatActivity
                 Intent intent = new Intent(this, SettingsActivity.class);
                 startActivity(intent);
                 break;
-            case R.id.nav_libraries:
+            case R.id.nav_currently_playing:
                 loadFragmentToContent(new MusicPlayingFragment());
                 Log.d("Navigation", "Loading Player fragment");
                 break;
@@ -183,11 +185,12 @@ public class MainActivity extends AppCompatActivity
         super.onDestroy();
     }
 
-    private void loadFragmentToContent(Fragment fragment) {
+    private void loadFragmentToContent(MainContentFragment fragment) {
         FragmentManager fm = getFragmentManager();
         FragmentTransaction ft = fm.beginTransaction();
         ft.replace(R.id.content_panel, fragment);
         ft.commit();
+        mActiveFragment = fragment;
     }
 
     private void setNavigationItem(@IdRes int id) {

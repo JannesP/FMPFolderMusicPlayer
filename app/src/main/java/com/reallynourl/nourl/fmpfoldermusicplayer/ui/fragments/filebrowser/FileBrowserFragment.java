@@ -16,6 +16,7 @@ import android.widget.ListView;
 
 import com.reallynourl.nourl.fmpfoldermusicplayer.R;
 import com.reallynourl.nourl.fmpfoldermusicplayer.ui.activities.MainActivity;
+import com.reallynourl.nourl.fmpfoldermusicplayer.ui.fragments.MainContentFragment;
 import com.reallynourl.nourl.fmpfoldermusicplayer.ui.fragments.filebrowser.listadapter.MusicBrowserAdapter;
 import com.reallynourl.nourl.fmpfoldermusicplayer.ui.fragments.music.MusicControlFragment;
 import com.reallynourl.nourl.fmpfoldermusicplayer.utility.file.AudioFileFilter;
@@ -41,7 +42,7 @@ import java.io.File;
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-public class FileBrowserFragment extends Fragment implements AdapterView.OnItemClickListener {
+public class FileBrowserFragment extends MainContentFragment implements AdapterView.OnItemClickListener {
     private boolean mIsCreated = false;
 
     private View mRootView;
@@ -100,9 +101,7 @@ public class FileBrowserFragment extends Fragment implements AdapterView.OnItemC
         lv.setOnItemClickListener(null);
     }
 
-    /**
-     * @return If the back press did anything.
-     */
+    @Override
     public boolean onBackPressed() {
         File parent = getValidParent();
         if (parent != null) {
