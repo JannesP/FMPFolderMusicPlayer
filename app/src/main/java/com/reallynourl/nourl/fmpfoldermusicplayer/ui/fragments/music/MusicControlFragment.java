@@ -65,7 +65,7 @@ public class MusicControlFragment extends Fragment implements View.OnClickListen
                 while (!Thread.interrupted()) {
                     getActivity().runOnUiThread(MusicControlFragment.this);
                     try {
-                        Thread.sleep(120);
+                        Thread.sleep(350);
                     } catch (InterruptedException e) {
                         return;
                     }
@@ -203,6 +203,7 @@ public class MusicControlFragment extends Fragment implements View.OnClickListen
             default:
                 Toast.makeText(getActivity(), "Click handler missing!", Toast.LENGTH_SHORT).show();
         }
+        run();
     }
 
     @Override
@@ -252,8 +253,8 @@ public class MusicControlFragment extends Fragment implements View.OnClickListen
         mSeekBar.setProgress(position);
 
         //SeekBar labels
-        mTvDuration.setText(Util.getDurationString(position));
-        mTvPosition.setText(Util.getDurationString(duration));
+        mTvDuration.setText(Util.getDurationString(duration));
+        mTvPosition.setText(Util.getDurationString(position));
     }
 
     @Override

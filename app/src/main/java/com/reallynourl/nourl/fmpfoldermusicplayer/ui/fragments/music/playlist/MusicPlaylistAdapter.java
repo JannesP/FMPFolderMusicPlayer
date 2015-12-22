@@ -55,17 +55,15 @@ public class MusicPlaylistAdapter extends BaseAdapter implements Playlist.OnPlay
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
-        if (convertView == null) {
+        //if (convertView == null) {
             convertView = AudioFileListItem.create(parent, MediaManager.getInstance().getPlaylist().getList().get(position));
-        } else {
-            AudioFileListItem audioFileListItem = (AudioFileListItem) convertView;
-            audioFileListItem.setFile(MediaManager.getInstance().getPlaylist().getList().get(position));
-            convertView = audioFileListItem;
-        }
+        //} else {
+          //  AudioFileListItem audioFileListItem = (AudioFileListItem) convertView;
+          //  audioFileListItem.setFile(MediaManager.getInstance().getPlaylist().getList().get(position));
+          //  convertView = audioFileListItem;
+        //}
         if (MediaManager.getInstance().getPlaylist().getCurrentIndex() == position) {
-            convertView.findViewById(R.id.textViewListItemTitle).setBackgroundColor(mAccentColor);
-        } else {
-            convertView.findViewById(R.id.textViewListItemTitle).setBackgroundColor(Color.TRANSPARENT);
+            convertView.setBackgroundColor(mAccentColor);
         }
         return convertView;
     }

@@ -49,6 +49,12 @@ public class Playlist {
         }
     }
 
+    protected void playlistChanged() {
+        for (OnPlaylistChangedListener listener : mPlaylistChangedListeners) {
+            listener.onPlaylistChanged(this);
+        }
+    }
+
     public boolean isShuffle() {
         return mIsShuffle;
     }
@@ -59,32 +65,40 @@ public class Playlist {
 
     public int append(File file) {
         mFiles.add(file);
+        playlistChanged();
         return mFiles.size() - 1;
     }
 
     public void appendAll(File[] files) {
         Collections.addAll(mFiles, files);
+        playlistChanged();
     }
 
     public void appendAll(Collection<? extends File> files) {
         mFiles.addAll(files);
+        playlistChanged();
     }
 
     public void clear() {
         mFiles.clear();
+        playlistChanged();
     }
 
     public void remove(int index) {
         if (index >= 0 && mFiles.size() < index) {
-            mFiles.remove(index);
+            if (mFiles.remove(index) != null) {
+                playlistChanged();
+            }
         }
     }
 
     public int appendNext(File file) {
         if (mFiles.size() >= (mCurrentFile + 1)) {
             mFiles.add(mCurrentFile + 1, file);
+            playlistChanged();
         } else if (mFiles.isEmpty()) {
             mFiles.add(file);
+            playlistChanged();
         }
         return mCurrentFile + 1;
     }
@@ -121,6 +135,16 @@ public class Playlist {
         File result = null;
         if (selectNextInternal()) {
             result = getItemAt(mCurrentFile);
+            playlistChanged();
+        }
+        return result;
+    }
+
+    public File selectPrevious() {
+        File result = null;
+        if (selectPreviousInternal()) {
+            result = getItemAt(mCurrentFile);
+            playlistChanged();
         }
         return result;
     }
@@ -140,25 +164,61 @@ public class Playlist {
     private boolean selectNextInternal() {
         boolean selectedNext = false;
         if (mFiles.size() > 0) {
-            switch (mRepeatMode) {
-                case OFF:
-                    if (mFiles.size() >= (mCurrentFile + 1)) {
-                        mCurrentFile++;
+            if (mIsShuffle) {
+                mCurrentFile = shufflePlay();
+                selectedNext = true;
+            } else {
+                switch (mRepeatMode) {
+                    case OFF:
+                        if (mFiles.size() >= (mCurrentFile + 1)) {
+                            mCurrentFile++;
+                            selectedNext = true;
+                        }
+                        break;
+                    case ALL:
+                        mCurrentFile = mCurrentFile % mFiles.size();
                         selectedNext = true;
-                    }
-                    break;
-                case ALL:
-                    mCurrentFile = mCurrentFile % mFiles.size();
-                    selectedNext = true;
-                    break;
-                case SINGLE:
-                    selectedNext = true;
-                    break;
+                        break;
+                    case SINGLE:
+                        selectedNext = true;
+                        break;
+                }
             }
         } else {
             mCurrentFile = -1;
         }
         return selectedNext;
+    }
+
+    //TODO: Implement good shuffle. Since I'm currently not tracking the last played songs this has to wait.
+    private int shufflePlay() {
+        return (int)(Math.random() * (double)mFiles.size());
+    }
+
+    private boolean selectPreviousInternal() {
+        boolean selectedPrevious = false;
+        if (mFiles.size() > 0) {
+            switch (mRepeatMode) {
+                case OFF:
+                    if (mCurrentFile > 0) {
+                        mCurrentFile--;
+                        selectedPrevious = true;
+                    }
+                    break;
+                case ALL:
+                    if (mCurrentFile-- == 0) {
+                        mCurrentFile = mFiles.size() - 1;
+                    }
+                    selectedPrevious = true;
+                    break;
+                case SINGLE:
+                    selectedPrevious = true;
+                    break;
+            }
+        } else {
+            mCurrentFile = -1;
+        }
+        return selectedPrevious;
     }
 
     public int getCurrentIndex() {
@@ -167,6 +227,7 @@ public class Playlist {
 
     public void setCurrent(int current) {
         this.mCurrentFile = current;
+        playlistChanged();
     }
 
     public interface OnPlaylistChangedListener {

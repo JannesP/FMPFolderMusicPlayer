@@ -120,7 +120,10 @@ public class MediaManager implements MediaPlayer.OnCompletionListener {
     }
 
     public void previous() {
-        Toast.makeText(mContext, "Previous not implemented!", Toast.LENGTH_LONG).show();
+        File file = mPlaylist.selectPrevious();
+        if (file != null) {
+            MediaService.getInstance().play(Uri.fromFile(file));
+        }
     }
 
     @Override
