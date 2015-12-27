@@ -93,7 +93,8 @@ public class MediaManager implements MediaPlayer.OnCompletionListener {
     }
 
     public boolean isPlaying() {
-        return MediaService.getInstance().isPlaying();
+        MediaService mediaService = MediaService.getInstance();
+        return mediaService != null && mediaService.isPlaying();
     }
 
     public boolean hasNext() {

@@ -41,9 +41,10 @@ public class MediaService extends Service implements MediaPlayer.OnPreparedListe
 
     private static MediaService sInstance = null;
     private MediaPlayer mMediaPlayer;
-    private boolean mIsPreparedToPlay;
+    private boolean mIsPreparedToPlay = false;
 
     private void setupMediaPlayer(Uri file) {
+        mIsPreparedToPlay = false;
         if (mMediaPlayer == null) {
             mMediaPlayer = new MediaPlayer();
             mMediaPlayer.setWakeMode(getApplicationContext(), PowerManager.PARTIAL_WAKE_LOCK);
@@ -70,10 +71,10 @@ public class MediaService extends Service implements MediaPlayer.OnPreparedListe
         int result = audioManager.requestAudioFocus(this, AudioManager.STREAM_MUSIC, AudioManager.AUDIOFOCUS_GAIN);
 
         if (result != AudioManager.AUDIOFOCUS_REQUEST_GRANTED) {
+            mIsPreparedToPlay = false;
             Toast.makeText(getApplicationContext(), "Failed to get audio focus. Not starting playback.", Toast.LENGTH_LONG).show();
             if (mMediaPlayer != null) {
                 mMediaPlayer.stop();
-                mIsPreparedToPlay = false;
             }
             return false;
         }
@@ -83,11 +84,11 @@ public class MediaService extends Service implements MediaPlayer.OnPreparedListe
     @Override
     public void onCreate() {
         super.onCreate();
+        mIsPreparedToPlay = false;
         if (sInstance != null) {
             sInstance = null;
         }
         sInstance = this;
-        mIsPreparedToPlay = false;
         Notification notification = MusicNotification.create(getApplicationContext(), "TextName");
         startForeground(MusicNotification.NOTIFICATION_ID, notification);
         Log.d("Media Service", "Media Service created!");
@@ -110,6 +111,7 @@ public class MediaService extends Service implements MediaPlayer.OnPreparedListe
         super.onDestroy();
     }
 
+    @Nullable
     public static MediaService getInstance() {
         return sInstance;
     }
@@ -138,7 +140,7 @@ public class MediaService extends Service implements MediaPlayer.OnPreparedListe
     @Override
     public boolean onError(MediaPlayer mp, int what, int extra) {
         mIsPreparedToPlay = false;
-        String message = "";
+        String message = "undefined media player error";
         switch (what) {
             case MediaPlayer.MEDIA_ERROR_SERVER_DIED:
                 message = "The media server died. This is probably not my fault, but playback had to be stopped, feel free to start it again.";
