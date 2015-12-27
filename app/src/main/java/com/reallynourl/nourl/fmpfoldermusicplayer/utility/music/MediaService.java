@@ -36,7 +36,7 @@ import java.io.IOException;
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-public class MediaService extends Service implements MediaPlayer.OnPreparedListener, MediaPlayer.OnErrorListener, AudioManager.OnAudioFocusChangeListener, MediaPlayer.OnCompletionListener {
+public class MediaService extends Service implements MediaPlayer.OnPreparedListener, MediaPlayer.OnErrorListener, AudioManager.OnAudioFocusChangeListener, MediaPlayer.OnCompletionListener, MediaPlayer.OnInfoListener {
     private final static int MEDIA_ERROR_SYSTEM = -2147483648;
 
     private static MediaService sInstance = null;
@@ -50,6 +50,7 @@ public class MediaService extends Service implements MediaPlayer.OnPreparedListe
             mMediaPlayer.setWakeMode(getApplicationContext(), PowerManager.PARTIAL_WAKE_LOCK);
             mMediaPlayer.setOnPreparedListener(this);
             mMediaPlayer.setOnErrorListener(this);
+            mMediaPlayer.setOnInfoListener(this);
         } else {
             if (mMediaPlayer.isPlaying()) mMediaPlayer.stop();
             mMediaPlayer.reset();
@@ -248,10 +249,17 @@ public class MediaService extends Service implements MediaPlayer.OnPreparedListe
         if (mMediaPlayer != null && mIsPreparedToPlay) {
             mIsPreparedToPlay = false;
             if (mMediaPlayer.isPlaying()) mMediaPlayer.stop();
+            releasePlayer();
         }
     }
 
     public boolean isInitialized() {
         return mIsPreparedToPlay;
+    }
+
+    @Override
+    public boolean onInfo(MediaPlayer mp, int what, int extra) {
+        Toast.makeText(this, "An info event was fired by the mediaplayer.", Toast.LENGTH_SHORT).show();
+        return true;
     }
 }

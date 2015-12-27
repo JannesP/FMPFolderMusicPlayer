@@ -105,7 +105,7 @@ public class Playlist {
 
     public boolean hasNext() {
         boolean result = false;
-        if (mFiles.size() <= 0) {
+        if (mFiles.size() <= 0 || mCurrentFile == -1) {
           result = false;
         } else if (isShuffle()) {
             result = true;
@@ -119,7 +119,7 @@ public class Playlist {
 
     public boolean hasPrevious() {
         boolean result = false;
-        if (isShuffle() || mFiles.size() > 0) {
+        if (isShuffle() || mFiles.size() <= 0 || mCurrentFile == -1) {
             result = false;
         } else if (mRepeatMode != RepeatMode.OFF) {
             result = true;
@@ -244,6 +244,10 @@ public class Playlist {
     public void setCurrent(int current) {
         this.mCurrentFile = current;
         playlistChanged();
+    }
+
+    public void clearCurrent() {
+        setCurrent(-1);
     }
 
     public interface OnPlaylistChangedListener {

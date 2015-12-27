@@ -78,6 +78,7 @@ public class MediaManager implements MediaPlayer.OnCompletionListener {
 
     public void stop() {
         MediaService.getInstance().stop();
+        mPlaylist.clearCurrent();
     }
 
     public void seekTo(int msec) {
