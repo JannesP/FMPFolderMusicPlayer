@@ -44,7 +44,7 @@ public class Playlist {
     }
 
     public void removeOnPlaylistChangedListener(OnPlaylistChangedListener listener) {
-        while (true) {
+        while (true) {  //could be done without while(true) but looks cleaner this way
             if (!(mPlaylistChangedListeners.remove(listener))) break;
         }
     }
@@ -105,7 +105,13 @@ public class Playlist {
 
     public boolean hasNext() {
         boolean result = false;
-        if (getItemAt(mCurrentFile + 1) != null) {
+        if (mFiles.size() <= 0) {
+          result = false;
+        } else if (isShuffle()) {
+            result = true;
+        } else if (mRepeatMode != RepeatMode.OFF) {
+            result = true;
+        } else if (getItemAt(mCurrentFile + 1) != null) {
             result = true;
         }
         return result;
@@ -113,7 +119,11 @@ public class Playlist {
 
     public boolean hasPrevious() {
         boolean result = false;
-        if (getItemAt(mCurrentFile - 1) != null) {
+        if (isShuffle() || mFiles.size() > 0) {
+            result = false;
+        } else if (mRepeatMode != RepeatMode.OFF) {
+            result = true;
+        } else if (getItemAt(mCurrentFile - 1) != null) {
             result = true;
         }
         return result;
@@ -170,13 +180,13 @@ public class Playlist {
             } else {
                 switch (mRepeatMode) {
                     case OFF:
-                        if (mFiles.size() >= (mCurrentFile + 1)) {
+                        if (mFiles.size() - 1 > mCurrentFile) {
                             mCurrentFile++;
                             selectedNext = true;
                         }
                         break;
                     case ALL:
-                        mCurrentFile = mCurrentFile % mFiles.size();
+                        mCurrentFile = ++mCurrentFile % mFiles.size();
                         selectedNext = true;
                         break;
                     case SINGLE:
@@ -192,7 +202,11 @@ public class Playlist {
 
     //TODO: Implement good shuffle. Since I'm currently not tracking the last played songs this has to wait.
     private int shufflePlay() {
-        return (int)(Math.random() * (double)mFiles.size());
+        int result = mCurrentFile;
+        if (getRepeatMode() != RepeatMode.SINGLE) {
+            result = (int)(Math.random() * (double)mFiles.size());
+        }
+        return result;
     }
 
     private boolean selectPreviousInternal() {
@@ -206,8 +220,10 @@ public class Playlist {
                     }
                     break;
                 case ALL:
-                    if (mCurrentFile-- == 0) {
+                    if (mCurrentFile == 0) {
                         mCurrentFile = mFiles.size() - 1;
+                    } else {
+                        mCurrentFile--;
                     }
                     selectedPrevious = true;
                     break;
