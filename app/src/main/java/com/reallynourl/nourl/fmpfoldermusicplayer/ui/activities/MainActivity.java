@@ -91,7 +91,11 @@ public class MainActivity extends AppCompatActivity
         if (res.equals(MusicControlFragment.NAME)) {
             setNavigationItem(R.id.nav_libraries);
         } else {
-            setNavigationItem(R.id.nav_file_browser);
+            if (MediaManager.getInstance().isPlaying()) {
+                setNavigationItem(R.id.nav_currently_playing);
+            } else {
+                setNavigationItem(R.id.nav_file_browser);
+            }
         }
     }
 
@@ -131,7 +135,6 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
-    @SuppressWarnings("StatementWithEmptyBody")
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
         // Handle navigation view item clicks here.
