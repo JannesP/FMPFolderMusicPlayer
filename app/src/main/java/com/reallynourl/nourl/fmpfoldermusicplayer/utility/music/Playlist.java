@@ -1,5 +1,9 @@
 package com.reallynourl.nourl.fmpfoldermusicplayer.utility.music;
 
+import android.content.Context;
+import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
+
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -23,19 +27,43 @@ import java.util.List;
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 public class Playlist {
+    public static final String PREF_REPEAT_MODE = "pref_playlist_repeat_mode";
+    public static final String PREF_SHUFFLE = "pref_playlist_shuffle";
+
     private ArrayList<File> mFiles;
     private int mCurrentFile;
     private boolean mIsShuffle;
     private RepeatMode mRepeatMode;
     private List<OnPlaylistChangedListener> mPlaylistChangedListeners;
+    private Context mContext;
 
 
-    public Playlist() {
+    public Playlist(Context context) {
+        mContext = context;
+        loadPreferences(context);
         mFiles = new ArrayList<>();
-        mIsShuffle = false;
         mCurrentFile = -1;
-        mRepeatMode = RepeatMode.OFF;
         mPlaylistChangedListeners = new ArrayList<>(1);
+    }
+
+    private void loadPreferences(Context context) {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(mContext);
+        mIsShuffle = prefs.getBoolean(PREF_SHUFFLE, false);
+        mRepeatMode = RepeatMode.get(prefs.getInt(PREF_REPEAT_MODE, 0));
+    }
+
+    private void saveRepeatMode() {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(mContext);
+        SharedPreferences.Editor editor = prefs.edit();
+        editor.putInt(PREF_REPEAT_MODE, mRepeatMode.getValue());
+        editor.apply();
+    }
+
+    private void saveShuffle() {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(mContext);
+        SharedPreferences.Editor editor = prefs.edit();
+        editor.putBoolean(PREF_SHUFFLE, mIsShuffle);
+        editor.apply();
     }
 
     public void addOnPlayListChangedListener(OnPlaylistChangedListener listener) {
@@ -61,6 +89,7 @@ public class Playlist {
 
     public void setShuffle(boolean isShuffle) {
         this.mIsShuffle = isShuffle;
+        saveShuffle();
     }
 
     public int append(File file) {
@@ -169,6 +198,7 @@ public class Playlist {
 
     public void setRepeatMode(RepeatMode repeatMode) {
         this.mRepeatMode = repeatMode;
+        saveRepeatMode();
     }
 
     private boolean selectNextInternal() {

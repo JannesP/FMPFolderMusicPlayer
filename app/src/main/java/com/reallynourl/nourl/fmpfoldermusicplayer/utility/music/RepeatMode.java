@@ -17,5 +17,25 @@ package com.reallynourl.nourl.fmpfoldermusicplayer.utility.music;
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 public enum RepeatMode {
-    OFF, ALL, SINGLE
+    OFF(0), ALL(1), SINGLE(2);
+
+    private int mId;
+    RepeatMode(int val) {
+        mId = val;
+    }
+
+    public static RepeatMode get(int id) {
+        RepeatMode result = null;
+        for (RepeatMode type : values()) {
+            if (type.getValue() == id) {
+                result = type;
+                break;
+            }
+        }
+        return result;
+    }
+
+    public int getValue() {
+        return mId;
+    }
 }

@@ -33,7 +33,7 @@ public class MediaManager implements MediaPlayer.OnCompletionListener {
     private Context mContext;
     private MediaManager(Context mContext) {
         this.mContext = mContext;
-        this.mPlaylist = new Playlist();
+        this.mPlaylist = new Playlist(mContext);
         mContext.startService(new Intent(mContext, MediaService.class));
     }
 
@@ -49,7 +49,7 @@ public class MediaManager implements MediaPlayer.OnCompletionListener {
 
     public Playlist getPlaylist() {
         if (mPlaylist == null) {
-            mPlaylist = new Playlist();
+            mPlaylist = new Playlist(mContext);
         }
         return mPlaylist;
     }
