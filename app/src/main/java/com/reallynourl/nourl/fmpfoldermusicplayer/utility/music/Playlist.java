@@ -34,7 +34,8 @@ public class Playlist {
     private int mCurrentFile;
     private boolean mIsShuffle;
     private RepeatMode mRepeatMode;
-    private List<OnPlaylistChangedListener> mPlaylistChangedListeners;
+    private List<OnPlaylistItemsChangedListener> mPlaylistChangedListeners;
+    private List<OnPlaylistCurrentItemChangedListener> mPlaylistCurrentItemChangedListeners;
     private Context mContext;
 
 
@@ -44,6 +45,7 @@ public class Playlist {
         mFiles = new ArrayList<>();
         mCurrentFile = -1;
         mPlaylistChangedListeners = new ArrayList<>(1);
+        mPlaylistCurrentItemChangedListeners = new ArrayList<>(1);
     }
 
     private void loadPreferences(Context context) {
@@ -66,20 +68,37 @@ public class Playlist {
         editor.apply();
     }
 
-    public void addOnPlayListChangedListener(OnPlaylistChangedListener listener) {
+    public void addOnPlayListChangedListener(OnPlaylistItemsChangedListener listener) {
         mPlaylistChangedListeners.remove(listener);
         mPlaylistChangedListeners.add(listener);
     }
 
-    public void removeOnPlaylistChangedListener(OnPlaylistChangedListener listener) {
+    public void addOnPlaylistCurrentItemChangedListener(OnPlaylistCurrentItemChangedListener listener) {
+        mPlaylistCurrentItemChangedListeners.remove(listener);
+        mPlaylistCurrentItemChangedListeners.add(listener);
+    }
+
+    public void removeOnPlaylistChangedListener(OnPlaylistItemsChangedListener listener) {
         while (true) {  //could be done without while(true) but looks cleaner this way
             if (!(mPlaylistChangedListeners.remove(listener))) break;
         }
     }
 
+    public void removeOnPlaylistCurrentItemChangedListener(OnPlaylistCurrentItemChangedListener listener) {
+        while (true) {  //could be done without while(true) but looks cleaner this way
+            if (!(mPlaylistCurrentItemChangedListeners.remove(listener))) break;
+        }
+    }
+
     protected void playlistChanged() {
-        for (OnPlaylistChangedListener listener : mPlaylistChangedListeners) {
-            listener.onPlaylistChanged(this);
+        for (OnPlaylistItemsChangedListener listener : mPlaylistChangedListeners) {
+            listener.onPlaylistItemsChanged(this);
+        }
+    }
+
+    protected void currentItemChanged() {
+        for (OnPlaylistCurrentItemChangedListener listener : mPlaylistCurrentItemChangedListeners) {
+            listener.onPlaylistCurrentItemChanged(this);
         }
     }
 
@@ -174,7 +193,6 @@ public class Playlist {
         File result = null;
         if (selectNextInternal()) {
             result = getItemAt(mCurrentFile);
-            playlistChanged();
         }
         return result;
     }
@@ -183,7 +201,6 @@ public class Playlist {
         File result = null;
         if (selectPreviousInternal()) {
             result = getItemAt(mCurrentFile);
-            playlistChanged();
         }
         return result;
     }
@@ -205,18 +222,18 @@ public class Playlist {
         boolean selectedNext = false;
         if (mFiles.size() > 0) {
             if (mIsShuffle) {
-                mCurrentFile = shufflePlay();
+                setCurrent(shufflePlay());
                 selectedNext = true;
             } else {
                 switch (mRepeatMode) {
                     case OFF:
                         if (mFiles.size() - 1 > mCurrentFile) {
-                            mCurrentFile++;
+                            setCurrent(mCurrentFile + 1);
                             selectedNext = true;
                         }
                         break;
                     case ALL:
-                        mCurrentFile = ++mCurrentFile % mFiles.size();
+                        setCurrent(++mCurrentFile % mFiles.size());
                         selectedNext = true;
                         break;
                     case SINGLE:
@@ -225,7 +242,7 @@ public class Playlist {
                 }
             }
         } else {
-            mCurrentFile = -1;
+            setCurrent(-1);
         }
         return selectedNext;
     }
@@ -245,15 +262,15 @@ public class Playlist {
             switch (mRepeatMode) {
                 case OFF:
                     if (mCurrentFile > 0) {
-                        mCurrentFile--;
+                        setCurrent(mCurrentFile - 1);
                         selectedPrevious = true;
                     }
                     break;
                 case ALL:
                     if (mCurrentFile == 0) {
-                        mCurrentFile = mFiles.size() - 1;
+                        setCurrent(mFiles.size() - 1);
                     } else {
-                        mCurrentFile--;
+                        setCurrent(mCurrentFile - 1);
                     }
                     selectedPrevious = true;
                     break;
@@ -262,7 +279,7 @@ public class Playlist {
                     break;
             }
         } else {
-            mCurrentFile = -1;
+            setCurrent(-1);
         }
         return selectedPrevious;
     }
@@ -273,14 +290,18 @@ public class Playlist {
 
     public void setCurrent(int current) {
         this.mCurrentFile = current;
-        playlistChanged();
+        currentItemChanged();
     }
 
     public void clearCurrent() {
         setCurrent(-1);
     }
 
-    public interface OnPlaylistChangedListener {
-        void onPlaylistChanged(Playlist playlist);
+    public interface OnPlaylistItemsChangedListener {
+        void onPlaylistItemsChanged(Playlist playlist);
+    }
+
+    public interface OnPlaylistCurrentItemChangedListener {
+        void onPlaylistCurrentItemChanged(Playlist playlist);
     }
 }

@@ -80,7 +80,6 @@ public abstract class MusicBrowserListItem extends RelativeLayout {
 
     protected static MusicBrowserListItem inflate(ViewGroup parent, @LayoutRes int layout) {
         MusicBrowserListItem item = (MusicBrowserListItem) LayoutInflater.from(parent.getContext()).inflate(layout, parent, false);
-        item.setId(View.NO_ID);
         return item;
     }
 

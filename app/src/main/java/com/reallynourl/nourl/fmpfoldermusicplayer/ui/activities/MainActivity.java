@@ -5,6 +5,7 @@ import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.annotation.IdRes;
@@ -20,6 +21,7 @@ import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
+import android.widget.Toast;
 
 import com.reallynourl.nourl.fmpfoldermusicplayer.R;
 import com.reallynourl.nourl.fmpfoldermusicplayer.ui.fragments.MainContentFragment;
@@ -27,6 +29,7 @@ import com.reallynourl.nourl.fmpfoldermusicplayer.ui.fragments.filebrowser.FileB
 import com.reallynourl.nourl.fmpfoldermusicplayer.ui.fragments.music.MusicControlFragment;
 import com.reallynourl.nourl.fmpfoldermusicplayer.ui.fragments.music.MusicPlayingFragment;
 import com.reallynourl.nourl.fmpfoldermusicplayer.utility.MyUncaughtExceptionHandler;
+import com.reallynourl.nourl.fmpfoldermusicplayer.utility.Util;
 import com.reallynourl.nourl.fmpfoldermusicplayer.utility.music.MediaManager;
 import com.reallynourl.nourl.fmpfoldermusicplayer.utility.music.MediaService;
 
@@ -49,6 +52,7 @@ import com.reallynourl.nourl.fmpfoldermusicplayer.utility.music.MediaService;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
+    public final static int REQUEST_PERMISSION_STORAGE = 123;
     public final static String FRAGMENT_EXTRA = "fragment";
     private static MainActivity sInstance;
     private Snackbar mCloseSnackBar = null;
@@ -164,13 +168,21 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     protected void onResume() {
+        if (Util.hasStoragePermission(this)) {
+            loadUi();
+        } else {
+            Util.requestStoragePermission(this, REQUEST_PERMISSION_STORAGE);
+        }
+        super.onResume();
+    }
+
+    private void loadUi() {
         MediaManager mediaManager = MediaManager.getInstance();
         if (mediaManager == null) {
             MediaManager.create(getApplicationContext());
         }
         Bundle bundle = getIntent().getExtras();
         loadFragmentFromBundle(bundle);
-        super.onResume();
     }
 
     @Override
@@ -201,5 +213,22 @@ public class MainActivity extends AppCompatActivity
         navigationView.setCheckedItem(id);
         MenuItem selected = navigationView.getMenu().findItem(id);
         onNavigationItemSelected(selected);
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        switch (requestCode) {
+            case REQUEST_PERMISSION_STORAGE:
+                if (grantResults.length > 0
+                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    loadUi();
+                } else {
+                    Toast.makeText(this, "Storage permission denied. Can't play music without :(\nYou can still manually enable them in the settings.", Toast.LENGTH_LONG).show();
+                    finish();
+                }
+
+                break;
+        }
     }
 }

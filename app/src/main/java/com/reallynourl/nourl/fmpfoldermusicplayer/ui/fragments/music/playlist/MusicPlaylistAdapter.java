@@ -1,17 +1,22 @@
 package com.reallynourl.nourl.fmpfoldermusicplayer.ui.fragments.music.playlist;
 
 import android.graphics.Color;
+import android.media.MediaMetadataRetriever;
+import android.os.*;
+import android.os.Process;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 
-import com.reallynourl.nourl.fmpfoldermusicplayer.R;
 import com.reallynourl.nourl.fmpfoldermusicplayer.ui.fragments.filebrowser.listadapter.AudioFileListItem;
 import com.reallynourl.nourl.fmpfoldermusicplayer.utility.music.MediaManager;
 import com.reallynourl.nourl.fmpfoldermusicplayer.utility.music.Playlist;
-import com.reallynourl.nourl.fmpfoldermusicplayer.utility.music.RepeatMode;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Copyright (C) 2015  Jannes Peters
@@ -29,13 +34,18 @@ import java.io.File;
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-public class MusicPlaylistAdapter extends BaseAdapter implements Playlist.OnPlaylistChangedListener {
-
+public class MusicPlaylistAdapter extends BaseAdapter implements Playlist.OnPlaylistItemsChangedListener, Runnable, Playlist.OnPlaylistCurrentItemChangedListener {
+    private final Object mDataLock = new Object();
     private int mAccentColor;
+    private ArrayList<ItemData> mData;
+    private View mParent = null;
+
 
     public MusicPlaylistAdapter(int accentColor) {
         this.mAccentColor = accentColor;
+        reloadData();
         MediaManager.getInstance().getPlaylist().addOnPlayListChangedListener(this);
+        MediaManager.getInstance().getPlaylist().addOnPlaylistCurrentItemChangedListener(this);
     }
 
     @Override
@@ -55,21 +65,109 @@ public class MusicPlaylistAdapter extends BaseAdapter implements Playlist.OnPlay
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
-        //if (convertView == null) {
-            convertView = AudioFileListItem.create(parent, MediaManager.getInstance().getPlaylist().getList().get(position));
-        //} else {
-          //  AudioFileListItem audioFileListItem = (AudioFileListItem) convertView;
-          //  audioFileListItem.setFile(MediaManager.getInstance().getPlaylist().getList().get(position));
-          //  convertView = audioFileListItem;
-        //}
-        if (MediaManager.getInstance().getPlaylist().getCurrentIndex() == position) {
-            convertView.setBackgroundColor(mAccentColor);
+        mParent = parent;
+        AudioFileListItem audioFileListItem =
+                (AudioFileListItem) AudioFileListItem.create(parent,
+                        MediaManager.getInstance().getPlaylist().getList().get(position));
+
+        synchronized (mDataLock) {
+            audioFileListItem.setTitle(mData.get(position).getFile().getName());
+            audioFileListItem.setSecondaryData(mData.get(position).getSecondaryData());
         }
-        return convertView;
+        if (MediaManager.getInstance().getPlaylist().getCurrentIndex() == position) {
+            audioFileListItem.setBackgroundColor(mAccentColor);
+        } else {
+            audioFileListItem.setBackgroundColor(Color.TRANSPARENT);
+        }
+        return audioFileListItem;
     }
 
     @Override
-    public void onPlaylistChanged(Playlist playlist) {
+    public void onPlaylistItemsChanged(Playlist playlist) {
+        reloadData();
+    }
+
+    private void reloadData() {
+        List<File> files = MediaManager.getInstance().getPlaylist().getList();
+        mData = new ArrayList<>(files.size());
+        for (int i = 0; i < files.size(); i++) {
+            mData.add(i, new ItemData(files.get(i)));
+        }
         notifyDataSetChanged();
+
+        Thread thread = new Thread(this);
+        thread.start();
+    }
+
+    @Override
+    public void run() {
+        android.os.Process.setThreadPriority(Process.THREAD_PRIORITY_BACKGROUND);
+
+        int length;
+        synchronized (mDataLock) {
+            length = mData.size();
+        }
+
+        for (int i = 0; i < length; i++) {
+            MediaMetadataRetriever mmr = new MediaMetadataRetriever();
+            String path;
+            synchronized (mDataLock) {
+                path = mData.get(i).getFile().getAbsolutePath();
+            }
+            boolean error = false;
+            try {
+                mmr.setDataSource(mData.get(i).getFile().getAbsolutePath());
+            } catch (IllegalArgumentException e) {
+                Log.i("PlayList Adapter", "Failed to load data for: " + path);
+                error = true;
+            }
+            if (!error) {
+                String durationString = mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION);
+                int duration = durationString == null ? 0 : Integer.parseInt(durationString);
+                String time = String.format("%d:%02d",
+                        TimeUnit.MILLISECONDS.toMinutes(duration),
+                        TimeUnit.MILLISECONDS.toSeconds(duration) -
+                                TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(duration))
+                );
+                synchronized (mDataLock) {
+                    mData.get(i).setSecondaryData(time);
+                }
+                if (mParent != null) {
+                    mParent.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            notifyDataSetChanged();
+                        }
+                    });
+                }
+            }
+        }
+    }
+
+    @Override
+    public void onPlaylistCurrentItemChanged(Playlist playlist) {
+        notifyDataSetChanged();
+    }
+
+    private class ItemData {
+        private File mFile;
+        private String mSecondaryData;
+
+        public ItemData(File mFile) {
+            this.mFile = mFile;
+            this.mSecondaryData = "";
+        }
+
+        public File getFile() {
+            return mFile;
+        }
+
+        public void setSecondaryData(String secondaryData) {
+            this.mSecondaryData = secondaryData;
+        }
+
+        public String getSecondaryData() {
+            return mSecondaryData;
+        }
     }
 }

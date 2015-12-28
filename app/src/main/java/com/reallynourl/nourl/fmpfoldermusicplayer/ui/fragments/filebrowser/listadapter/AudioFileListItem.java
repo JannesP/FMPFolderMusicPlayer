@@ -5,6 +5,7 @@ import android.media.MediaMetadataRetriever;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
@@ -52,16 +53,25 @@ public class AudioFileListItem extends MusicBrowserListItem {
     public void setFile(File file) {
         TextView tv = (TextView) getRootView().findViewById(R.id.textViewListItemTitle);
         tv.setText(file.getName());
-        MediaMetadataRetriever mmr = new MediaMetadataRetriever();    //TODO: find threaded solution like caching it in some way.
-        mmr.setDataSource(getContext(), Uri.fromFile(file));
-        String durationString = mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION);
-        int duration = durationString == null ? 0 : Integer.parseInt(durationString);
-        String time = String.format("%d:%02d",
-                TimeUnit.MILLISECONDS.toMinutes(duration),
-                TimeUnit.MILLISECONDS.toSeconds(duration) -
-                        TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(duration))
-        );
         tv = (TextView) getRootView().findViewById(R.id.textViewListItemMoreInfo);
-        tv.setText(time + " and I know everything is laggy!!!");
+        tv.setText("loading ...");
+    }
+
+    public void setTitle(String title) {
+        TextView tv = (TextView) getRootView().findViewById(R.id.textViewListItemTitle);
+        if (tv != null) {
+            tv.setText(title);
+        } else {
+            Log.e("AudioFile Item", "The textview for the item with the title: " + title + " could not be found!");
+        }
+    }
+
+    public void setSecondaryData(String data) {
+        TextView tv = (TextView) getRootView().findViewById(R.id.textViewListItemMoreInfo);
+        if (tv != null) {
+            tv.setText(data);
+        } else {
+            Log.e("AudioFile Item", "The textview for the item with the data: " + data + " could not be found!");
+        }
     }
 }
