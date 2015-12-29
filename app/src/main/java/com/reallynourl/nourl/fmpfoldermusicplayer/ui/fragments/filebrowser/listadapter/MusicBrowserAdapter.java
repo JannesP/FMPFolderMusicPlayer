@@ -4,6 +4,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 
+import com.reallynourl.nourl.fmpfoldermusicplayer.ui.controls.OptionView;
+import com.reallynourl.nourl.fmpfoldermusicplayer.ui.controls.OptionsListView;
 import com.reallynourl.nourl.fmpfoldermusicplayer.utility.file.FileType;
 import com.reallynourl.nourl.fmpfoldermusicplayer.utility.file.FileUtil;
 
@@ -27,7 +29,8 @@ import java.util.Comparator;
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-public class MusicBrowserAdapter extends BaseAdapter{
+public class MusicBrowserAdapter extends BaseAdapter implements OptionView {
+    private OnOptionsClickedListener mOnItemOptionsClickedListener;
     private File[] mItems;
 
     public MusicBrowserAdapter() {
@@ -71,12 +74,7 @@ public class MusicBrowserAdapter extends BaseAdapter{
 
     @Override
     public long getItemId(int position) {
-        return mItems[position].hashCode();
-    }
-
-    @Override
-    public boolean hasStableIds() {
-        return false;
+        return 0;
     }
 
     @Override
@@ -93,6 +91,13 @@ public class MusicBrowserAdapter extends BaseAdapter{
                 convertView = MusicBrowserListItem.create(parent, mItems[position]);
             }
         }
+        ((OptionView)convertView).setOnItemOptionsClickedListener(mOnItemOptionsClickedListener);
         return convertView;
+    }
+
+    @Override
+    public void setOnItemOptionsClickedListener(OnOptionsClickedListener listener) {
+        mOnItemOptionsClickedListener = listener;
+        notifyDataSetChanged();
     }
 }

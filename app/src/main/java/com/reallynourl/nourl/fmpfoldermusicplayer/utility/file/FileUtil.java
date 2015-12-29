@@ -70,4 +70,8 @@ public final class FileUtil {
         files = filtered.toArray(new File[filtered.size()]);
         return files;
     }
+
+    public static String getNameWithoutExtension(File file) {
+        return file.getName().replaceFirst("[.][^.]+$", "");
+    }
 }

@@ -9,6 +9,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 
+import com.reallynourl.nourl.fmpfoldermusicplayer.ui.controls.OptionView;
 import com.reallynourl.nourl.fmpfoldermusicplayer.ui.fragments.filebrowser.listadapter.AudioFileListItem;
 import com.reallynourl.nourl.fmpfoldermusicplayer.utility.music.MediaManager;
 import com.reallynourl.nourl.fmpfoldermusicplayer.utility.music.Playlist;
@@ -34,8 +35,9 @@ import java.util.concurrent.TimeUnit;
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-public class MusicPlaylistAdapter extends BaseAdapter implements Playlist.OnPlaylistItemsChangedListener, Runnable, Playlist.OnPlaylistCurrentItemChangedListener {
+public class MusicPlaylistAdapter extends BaseAdapter implements Playlist.OnPlaylistItemsChangedListener, Runnable, Playlist.OnPlaylistCurrentItemChangedListener, OptionView {
     private final Object mDataLock = new Object();
+    private OnOptionsClickedListener mOnItemOptionsClickedListener;
     private int mAccentColor;
     private ArrayList<ItemData> mData;
     private View mParent = null;
@@ -79,7 +81,9 @@ public class MusicPlaylistAdapter extends BaseAdapter implements Playlist.OnPlay
         } else {
             audioFileListItem.setBackgroundColor(Color.TRANSPARENT);
         }
-        return audioFileListItem;
+        convertView = audioFileListItem;
+        ((OptionView)convertView).setOnItemOptionsClickedListener(mOnItemOptionsClickedListener);
+        return convertView;
     }
 
     @Override
@@ -101,7 +105,7 @@ public class MusicPlaylistAdapter extends BaseAdapter implements Playlist.OnPlay
 
     @Override
     public void run() {
-        android.os.Process.setThreadPriority(Process.THREAD_PRIORITY_BACKGROUND);
+        android.os.Process.setThreadPriority(Process.THREAD_PRIORITY_LOWEST);
 
         int length;
         synchronized (mDataLock) {
@@ -146,6 +150,12 @@ public class MusicPlaylistAdapter extends BaseAdapter implements Playlist.OnPlay
 
     @Override
     public void onPlaylistCurrentItemChanged(Playlist playlist) {
+        notifyDataSetChanged();
+    }
+
+    @Override
+    public void setOnItemOptionsClickedListener(OnOptionsClickedListener listener) {
+        mOnItemOptionsClickedListener = listener;
         notifyDataSetChanged();
     }
 

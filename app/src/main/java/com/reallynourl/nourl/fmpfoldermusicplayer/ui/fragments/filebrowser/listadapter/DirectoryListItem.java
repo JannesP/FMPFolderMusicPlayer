@@ -48,6 +48,7 @@ public class DirectoryListItem extends MusicBrowserListItem {
     public void setFile(File file) {
         TextView tv = (TextView) getRootView().findViewById(R.id.textViewListItemTitle);
         tv.setText(file.getName());
+        super.setFile(file);
     }
 
 

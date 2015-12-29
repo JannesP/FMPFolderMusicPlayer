@@ -13,6 +13,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.reallynourl.nourl.fmpfoldermusicplayer.R;
+import com.reallynourl.nourl.fmpfoldermusicplayer.ui.controls.OptionView;
 import com.reallynourl.nourl.fmpfoldermusicplayer.utility.Util;
 import com.reallynourl.nourl.fmpfoldermusicplayer.utility.music.MediaManager;
 import com.reallynourl.nourl.fmpfoldermusicplayer.utility.music.RepeatMode;
@@ -33,7 +34,7 @@ import com.reallynourl.nourl.fmpfoldermusicplayer.utility.music.RepeatMode;
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-public class MusicControlFragment extends Fragment implements View.OnClickListener, Runnable, SeekBar.OnSeekBarChangeListener {
+public class MusicControlFragment extends Fragment implements View.OnClickListener, Runnable, SeekBar.OnSeekBarChangeListener{
     public final static String NAME = "controls";
 
     private boolean mIsCreated = false;

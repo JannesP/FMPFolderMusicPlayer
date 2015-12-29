@@ -8,8 +8,12 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import com.reallynourl.nourl.fmpfoldermusicplayer.R;
+import com.reallynourl.nourl.fmpfoldermusicplayer.ui.controls.OptionView;
+import com.reallynourl.nourl.fmpfoldermusicplayer.ui.controls.OptionsListView;
+import com.reallynourl.nourl.fmpfoldermusicplayer.ui.fragments.filebrowser.listadapter.AudioFileListItem;
 import com.reallynourl.nourl.fmpfoldermusicplayer.utility.Util;
 import com.reallynourl.nourl.fmpfoldermusicplayer.utility.music.MediaManager;
 
@@ -29,23 +33,29 @@ import com.reallynourl.nourl.fmpfoldermusicplayer.utility.music.MediaManager;
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-public class MusicPlaylistFragment extends Fragment implements AdapterView.OnItemClickListener {
+public class MusicPlaylistFragment extends Fragment implements AdapterView.OnItemClickListener, OptionView.OnOptionsClickedListener {
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         //inflate layout for fragment
         View rootView = inflater.inflate(R.layout.fragment_music_playlist, container, false);
-        ListView lv = (ListView) rootView.findViewById(R.id.listViewPlaylist);
+        OptionsListView lv = (OptionsListView) rootView.findViewById(R.id.listViewPlaylist);
         int mAccentColor = Util.getAccentColor(getActivity());
         MusicPlaylistAdapter mpa = new MusicPlaylistAdapter(mAccentColor);
         lv.setAdapter(mpa);
         lv.setOnItemClickListener(this);
+        lv.setOnItemOptionsClickedListener(this);
         return rootView;
     }
 
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
         MediaManager.getInstance().playPlaylistItem(position);
+    }
+
+    @Override
+    public void onItemOptionsClicked(View view) {
+        Toast.makeText(getActivity(), "Clicked on options for:\n" + ((AudioFileListItem)view).getFile().getName(), Toast.LENGTH_SHORT).show();
     }
 }

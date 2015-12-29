@@ -6,11 +6,15 @@ import android.media.MediaPlayer;
 import android.net.Uri;
 import android.util.AttributeSet;
 import android.util.Log;
+import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.reallynourl.nourl.fmpfoldermusicplayer.R;
+import com.reallynourl.nourl.fmpfoldermusicplayer.ui.controls.OptionView;
 import com.reallynourl.nourl.fmpfoldermusicplayer.utility.file.FileType;
+import com.reallynourl.nourl.fmpfoldermusicplayer.utility.file.FileUtil;
 
 import java.io.File;
 import java.util.concurrent.TimeUnit;
@@ -31,7 +35,8 @@ import java.util.concurrent.TimeUnit;
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-public class AudioFileListItem extends MusicBrowserListItem {
+public class AudioFileListItem extends MusicBrowserListItem implements View.OnClickListener {
+    private OnOptionsClickedListener mOnItemOptionsClickedListener = null;
     
     public AudioFileListItem(Context context, AttributeSet attrs) {
         super(context, attrs, FileType.AUDIO);
@@ -52,9 +57,10 @@ public class AudioFileListItem extends MusicBrowserListItem {
     @Override
     public void setFile(File file) {
         TextView tv = (TextView) getRootView().findViewById(R.id.textViewListItemTitle);
-        tv.setText(file.getName());
+        tv.setText(FileUtil.getNameWithoutExtension(file));
         tv = (TextView) getRootView().findViewById(R.id.textViewListItemMoreInfo);
         tv.setText("loading ...");
+        super.setFile(file);
     }
 
     public void setTitle(String title) {
@@ -72,6 +78,24 @@ public class AudioFileListItem extends MusicBrowserListItem {
             tv.setText(data);
         } else {
             Log.e("AudioFile Item", "The textview for the item with the data: " + data + " could not be found!");
+        }
+    }
+
+    @Override
+    public void setOnItemOptionsClickedListener(OnOptionsClickedListener listener) {
+        mOnItemOptionsClickedListener = listener;
+        ImageView iv = (ImageView) findViewById(R.id.imageViewOptionsIcon);
+        if (listener == null) {
+            iv.setOnClickListener(null);
+        } else {
+            iv.setOnClickListener(this);
+        }
+    }
+
+    @Override
+    public void onClick(View v) {
+        if (mOnItemOptionsClickedListener != null) {
+            mOnItemOptionsClickedListener.onItemOptionsClicked(this);
         }
     }
 }

@@ -6,18 +6,24 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Environment;
 import android.preference.PreferenceManager;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import com.reallynourl.nourl.fmpfoldermusicplayer.R;
 import com.reallynourl.nourl.fmpfoldermusicplayer.ui.activities.MainActivity;
+import com.reallynourl.nourl.fmpfoldermusicplayer.ui.controls.OptionView;
+import com.reallynourl.nourl.fmpfoldermusicplayer.ui.controls.OptionsListView;
 import com.reallynourl.nourl.fmpfoldermusicplayer.ui.fragments.MainContentFragment;
 import com.reallynourl.nourl.fmpfoldermusicplayer.ui.fragments.filebrowser.listadapter.MusicBrowserAdapter;
+import com.reallynourl.nourl.fmpfoldermusicplayer.ui.fragments.filebrowser.listadapter.MusicBrowserListItem;
 import com.reallynourl.nourl.fmpfoldermusicplayer.ui.fragments.music.MusicControlFragment;
 import com.reallynourl.nourl.fmpfoldermusicplayer.utility.file.AudioFileFilter;
 import com.reallynourl.nourl.fmpfoldermusicplayer.utility.file.FileType;
@@ -42,7 +48,7 @@ import java.io.File;
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-public class FileBrowserFragment extends MainContentFragment implements AdapterView.OnItemClickListener {
+public class FileBrowserFragment extends MainContentFragment implements AdapterView.OnItemClickListener, OptionView.OnOptionsClickedListener {
     private boolean mIsCreated = false;
 
     private View mRootView;
@@ -92,13 +98,15 @@ public class FileBrowserFragment extends MainContentFragment implements AdapterV
     }
 
     private void addListeners() {
-        ListView lv = (ListView) mRootView.findViewById(R.id.listViewBrowser);
+        OptionsListView lv = getListView();
         lv.setOnItemClickListener(this);
+        lv.setOnItemOptionsClickedListener(this);
     }
 
     private void removeListeners() {
-        ListView lv = (ListView) mRootView.findViewById(R.id.listViewBrowser);
+        OptionsListView lv = (OptionsListView) mRootView.findViewById(R.id.listViewBrowser);
         lv.setOnItemClickListener(null);
+        lv.setOnItemOptionsClickedListener(null);
     }
 
     @Override
@@ -139,8 +147,9 @@ public class FileBrowserFragment extends MainContentFragment implements AdapterV
 
 
             if (getBrowserAdapter() == null) {
-                ListView lv = getListView();
-                if (lv != null) lv.setAdapter(new MusicBrowserAdapter());
+                OptionsListView lv = getListView();
+                lv.setAdapter(new MusicBrowserAdapter());
+                lv.setOnItemOptionsClickedListener(this);
             }
 
             SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
@@ -177,17 +186,18 @@ public class FileBrowserFragment extends MainContentFragment implements AdapterV
 
     }
 
-    @Nullable
-    private ListView getListView() {
-        return (ListView) mRootView.findViewById(R.id.listViewBrowser);
+    @NonNull
+    private OptionsListView getListView() {
+        return (OptionsListView) mRootView.findViewById(R.id.listViewBrowser);
     }
 
     @Nullable
     private MusicBrowserAdapter getBrowserAdapter() {
-        ListView lv = getListView();
-        if (lv != null) {
-            return (MusicBrowserAdapter) getListView().getAdapter();
-        }
-        return null;
+        return (MusicBrowserAdapter) getListView().getAdapter();
+    }
+
+    @Override
+    public void onItemOptionsClicked(View view) {
+        Toast.makeText(getActivity(), "Clicked on options for:\n" + ((MusicBrowserListItem)view).getFile().getName(), Toast.LENGTH_LONG).show();
     }
 }
