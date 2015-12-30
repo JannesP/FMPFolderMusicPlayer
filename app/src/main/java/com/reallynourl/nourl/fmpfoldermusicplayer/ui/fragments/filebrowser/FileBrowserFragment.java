@@ -198,6 +198,15 @@ public class FileBrowserFragment extends MainContentFragment implements AdapterV
 
     @Override
     public void onItemOptionsClicked(View view) {
-        Toast.makeText(getActivity(), "Clicked on options for:\n" + ((MusicBrowserListItem)view).getFile().getName(), Toast.LENGTH_LONG).show();
+        MusicBrowserListItem musicBrowserListItem = (MusicBrowserListItem) view;
+        switch (musicBrowserListItem.getType()) {
+            case AUDIO:
+                Toast.makeText(getActivity(), "Clicked on options for audio:\n" + ((MusicBrowserListItem)view).getFile().getName(), Toast.LENGTH_SHORT).show();
+                break;
+            case DIRECTORY:
+                Toast.makeText(getActivity(), "Clicked on options for directory:\n" + ((MusicBrowserListItem)view).getFile().getName(), Toast.LENGTH_SHORT).show();
+                break;
+        }
+
     }
 }

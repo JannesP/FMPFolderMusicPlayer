@@ -2,7 +2,9 @@ package com.reallynourl.nourl.fmpfoldermusicplayer.ui.fragments.filebrowser.list
 
 import android.content.Context;
 import android.util.AttributeSet;
+import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.reallynourl.nourl.fmpfoldermusicplayer.R;
@@ -26,7 +28,8 @@ import java.io.File;
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-public class DirectoryListItem extends MusicBrowserListItem {
+public class DirectoryListItem extends MusicBrowserListItem implements View.OnClickListener {
+    private OnOptionsClickedListener mOnItemOptionsClickedListener = null;
 
     public DirectoryListItem(Context context) {
         super(context, FileType.DIRECTORY);
@@ -51,5 +54,22 @@ public class DirectoryListItem extends MusicBrowserListItem {
         super.setFile(file);
     }
 
+    @Override
+    public void setOnItemOptionsClickedListener(OnOptionsClickedListener listener) {
+        mOnItemOptionsClickedListener = listener;
+        ImageView iv = (ImageView) findViewById(R.id.imageViewOptionsIcon);
+        if (listener == null) {
+            iv.setOnClickListener(null);
+        } else {
+            iv.setOnClickListener(this);
+        }
+    }
+
+    @Override
+    public void onClick(View v) {
+        if (mOnItemOptionsClickedListener != null) {
+            mOnItemOptionsClickedListener.onItemOptionsClicked(this);
+        }
+    }
 
 }

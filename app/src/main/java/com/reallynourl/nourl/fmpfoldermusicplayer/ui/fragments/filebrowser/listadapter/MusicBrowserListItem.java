@@ -77,6 +77,10 @@ public abstract class MusicBrowserListItem extends RelativeLayout implements Opt
         return item;
     }
 
+    public FileType getType() {
+        return mType;
+    }
+
     public boolean isType(File file) {
         return mType.equals(FileType.getType(file));
     }
