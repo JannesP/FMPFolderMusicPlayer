@@ -230,7 +230,7 @@ public class FileBrowserFragment extends MainContentFragment implements AdapterV
                         break;
                     default:
                         Log.e(TAG, "Action for item is missing!");
-                        Snackbar.make(null, "Action for item is missing!", Snackbar.LENGTH_LONG).show();
+                        Snackbar.make(mRootView, "Action for item is missing!", Snackbar.LENGTH_LONG).show();
                 }
                 handled = true;
                 break;
@@ -242,8 +242,9 @@ public class FileBrowserFragment extends MainContentFragment implements AdapterV
                         File[] files = FileUtil.listAudioFiles(dir, playHidden);
                         if (files != null && files.length > 0) {
                             MediaManager.getInstance().getPlaylist().appendAll(files);
+                            Snackbar.make(mRootView, "Added " + files.length + " items to the queue.", Snackbar.LENGTH_SHORT).show();
                         } else {
-                            Snackbar.make(null, "The folder doesn't contain audio files.", Snackbar.LENGTH_LONG).show();
+                            Snackbar.make(mRootView, "The folder doesn't contain audio files.", Snackbar.LENGTH_LONG).show();
                         }
                         break;
                 }

@@ -41,6 +41,8 @@ public class MusicControlFragment extends Fragment implements View.OnClickListen
     private View mRootView = null;
 
     //control references
+    private boolean mReferencesValid = false;
+
     private ImageButton mButtonPlay;
     private ImageButton mButtonStop;
     private ImageButton mButtonNext;
@@ -123,9 +125,13 @@ public class MusicControlFragment extends Fragment implements View.OnClickListen
         mTvDuration = (TextView) mRootView.findViewById(R.id.textViewDuration);
 
         mSeekBar = (SeekBar) mRootView.findViewById(R.id.seekBar);
+
+        mReferencesValid = true;
     }
 
     private void destroyReferences() {
+        mReferencesValid = false;
+
         mButtonPlay = null;
         mButtonStop = null;
         mButtonNext = null;
@@ -209,53 +215,56 @@ public class MusicControlFragment extends Fragment implements View.OnClickListen
 
     @Override
     public void run() {
-        //Play button
-        int resource;
-        if (MediaManager.getInstance().isPlaying()) {
-            resource = R.drawable.ic_pause;
-        } else {
-            resource = R.drawable.ic_play_arrow;
+        if (mReferencesValid) {
+            //Play button
+            int resource;
+            if (MediaManager.getInstance().isPlaying()) {
+                resource = R.drawable.ic_pause;
+            } else {
+                resource = R.drawable.ic_play_arrow;
+            }
+
+            mButtonPlay.setImageResource(resource);
+            mButtonPlay.setEnabled(MediaManager.getInstance().canPlay());
+
+            mButtonStop.setEnabled(!MediaManager.getInstance().isStopped());
+            mButtonNext.setEnabled(MediaManager.getInstance().hasNext());
+            mButtonPrevious.setEnabled(MediaManager.getInstance().hasPrevious());
+
+            if (MediaManager.getInstance().getPlaylist().isShuffle()) {
+                mButtonShuffle.setColorFilter(mAccentColor);
+            } else {
+                mButtonShuffle.setColorFilter(Color.WHITE);
+            }
+
+            RepeatMode repeatMode = MediaManager.getInstance().getPlaylist().getRepeatMode();
+            int color = Color.WHITE;
+            switch (repeatMode) {
+                case OFF:
+                    resource = R.drawable.ic_repeat_white;
+                    break;
+                case ALL:
+                    color = mAccentColor;
+                    resource = R.drawable.ic_repeat_white;
+                    break;
+                case SINGLE:
+                    color = mAccentColor;
+                    resource = R.drawable.ic_repeat_one_white;
+                    break;
+            }
+            mButtonRepeat.setImageResource(resource);
+            mButtonRepeat.setColorFilter(color);
+
+            //SeekBar
+            int duration = MediaManager.getInstance().getDuration();
+            int position = MediaManager.getInstance().getPosition();
+            mSeekBar.setMax(duration);
+            mSeekBar.setProgress(position);
+
+            //SeekBar labels
+            mTvDuration.setText(Util.getDurationString(duration));
+            mTvPosition.setText(Util.getDurationString(position));
         }
-        mButtonPlay.setImageResource(resource);
-        mButtonPlay.setEnabled(MediaManager.getInstance().canPlay());
-
-        mButtonStop.setEnabled(!MediaManager.getInstance().isStopped());
-        mButtonNext.setEnabled(MediaManager.getInstance().hasNext());
-        mButtonPrevious.setEnabled(MediaManager.getInstance().hasPrevious());
-
-        if (MediaManager.getInstance().getPlaylist().isShuffle()) {
-            mButtonShuffle.setColorFilter(mAccentColor);
-        } else {
-            mButtonShuffle.setColorFilter(Color.WHITE);
-        }
-
-        RepeatMode repeatMode = MediaManager.getInstance().getPlaylist().getRepeatMode();
-        int color = Color.WHITE;
-        switch (repeatMode) {
-            case OFF:
-                resource = R.drawable.ic_repeat_white;
-                break;
-            case ALL:
-                color = mAccentColor;
-                resource = R.drawable.ic_repeat_white;
-                break;
-            case SINGLE:
-                color = mAccentColor;
-                resource = R.drawable.ic_repeat_one_white;
-                break;
-        }
-        mButtonRepeat.setImageResource(resource);
-        mButtonRepeat.setColorFilter(color);
-
-        //SeekBar
-        int duration = MediaManager.getInstance().getDuration();
-        int position = MediaManager.getInstance().getPosition();
-        mSeekBar.setMax(duration);
-        mSeekBar.setProgress(position);
-
-        //SeekBar labels
-        mTvDuration.setText(Util.getDurationString(duration));
-        mTvPosition.setText(Util.getDurationString(position));
     }
 
     @Override
