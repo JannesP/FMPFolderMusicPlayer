@@ -25,7 +25,6 @@ import java.util.ArrayList;
 public final class FileUtil {
     private FileUtil() {}
 
-    private static final char HIDDEN_MARKER = '.';
     private static final String[] AUDIO_FORMATS = { "3gp", "mp4", "m4a", "aac", "ts", "3gp", "flac", "mp3", "mid", "xmf", "mxmf", "rtttl", "rtx", "ota", "ogg", "mkv", "wav" };
 
     public static boolean hasAudioExtension(File file) {
@@ -73,5 +72,9 @@ public final class FileUtil {
 
     public static String getNameWithoutExtension(File file) {
         return file.getName().replaceFirst("[.][^.]+$", "");
+    }
+
+    public static File[] listAudioFiles(File dir, boolean includeHidden) {
+        return dir.listFiles(new AudioFileFilter(includeHidden, false));
     }
 }

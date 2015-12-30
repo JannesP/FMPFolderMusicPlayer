@@ -1,23 +1,19 @@
 package com.reallynourl.nourl.fmpfoldermusicplayer.ui.fragments.filebrowser.listadapter;
 
 import android.content.Context;
-import android.media.MediaMetadataRetriever;
-import android.media.MediaPlayer;
-import android.net.Uri;
 import android.util.AttributeSet;
 import android.util.Log;
+import android.view.ContextMenu;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.reallynourl.nourl.fmpfoldermusicplayer.R;
-import com.reallynourl.nourl.fmpfoldermusicplayer.ui.controls.OptionView;
 import com.reallynourl.nourl.fmpfoldermusicplayer.utility.file.FileType;
 import com.reallynourl.nourl.fmpfoldermusicplayer.utility.file.FileUtil;
 
 import java.io.File;
-import java.util.concurrent.TimeUnit;
 
 /**
  * Copyright (C) 2015  Jannes Peters
@@ -95,7 +91,7 @@ public class AudioFileListItem extends MusicBrowserListItem implements View.OnCl
     @Override
     public void onClick(View v) {
         if (mOnItemOptionsClickedListener != null) {
-            mOnItemOptionsClickedListener.onItemOptionsClicked(this);
+            mOnItemOptionsClickedListener.onItemOptionsClicked(this, v);
         }
     }
 }

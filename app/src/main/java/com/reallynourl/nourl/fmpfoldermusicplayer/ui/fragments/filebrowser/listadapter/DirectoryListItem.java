@@ -68,7 +68,7 @@ public class DirectoryListItem extends MusicBrowserListItem implements View.OnCl
     @Override
     public void onClick(View v) {
         if (mOnItemOptionsClickedListener != null) {
-            mOnItemOptionsClickedListener.onItemOptionsClicked(this);
+            mOnItemOptionsClickedListener.onItemOptionsClicked(this, v);
         }
     }
 

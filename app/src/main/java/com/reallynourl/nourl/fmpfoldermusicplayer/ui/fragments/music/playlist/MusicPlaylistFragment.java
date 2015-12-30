@@ -7,7 +7,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.ListView;
 import android.widget.Toast;
 
 import com.reallynourl.nourl.fmpfoldermusicplayer.R;
@@ -55,7 +54,7 @@ public class MusicPlaylistFragment extends Fragment implements AdapterView.OnIte
     }
 
     @Override
-    public void onItemOptionsClicked(View view) {
+    public void onItemOptionsClicked(View view, View anchor) {
         Toast.makeText(getActivity(), "Clicked on options for:\n" + ((AudioFileListItem)view).getFile().getName(), Toast.LENGTH_SHORT).show();
     }
 }

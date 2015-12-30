@@ -94,5 +94,6 @@ public abstract class MusicBrowserListItem extends RelativeLayout implements Opt
         return item;
     }
 
+    @Override
     public void setOnItemOptionsClickedListener(OnOptionsClickedListener listener) { }
 }

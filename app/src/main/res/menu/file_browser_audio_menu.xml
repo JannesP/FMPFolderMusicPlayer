@@ -2,9 +2,21 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
 
     <item
-        android:title="Test"
-        android:id="@+id/item_test"
-        android:icon="@drawable/ic_nav_plus_one"
+        android:title="Append"
+        android:id="@+id/item_append"
+        android:icon="@drawable/ic_nav_playlist"
+        />
+
+    <item
+        android:title="Play Next"
+        android:id="@+id/item_append_next"
+        android:icon="@drawable/ic_skip_next_white"
+        />
+
+    <item
+        android:title="Append Next &amp; Play"
+        android:id="@+id/item_append_next_play"
+        android:icon="@drawable/ic_play_arrow"
         />
 
 </menu>

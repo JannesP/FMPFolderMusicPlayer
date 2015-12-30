@@ -22,6 +22,6 @@ public interface OptionView {
     void setOnItemOptionsClickedListener(OnOptionsClickedListener listener);
 
     interface OnOptionsClickedListener {
-        void onItemOptionsClicked(View view);
+        void onItemOptionsClicked(View view, View anchor);
     }
 }

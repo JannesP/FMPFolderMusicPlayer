@@ -54,7 +54,7 @@ public class MediaManager implements MediaPlayer.OnCompletionListener {
         return mPlaylist;
     }
 
-    public void addPlaylistAndPlay(File file) {
+    public void addPlaylistNextAndPlay(File file) {
         mPlaylist.appendNext(file);
         file = mPlaylist.selectNext();
         MediaService.getInstance().play(Uri.fromFile(file));

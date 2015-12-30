@@ -47,7 +47,4 @@ public class OptionsListView extends ListView implements OptionView {
             ((OptionView)adapter).setOnItemOptionsClickedListener(mOnItemOptionsClickedListener);
         }
     }
-
-
-
 }

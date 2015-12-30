@@ -1,7 +1,5 @@
 package com.reallynourl.nourl.fmpfoldermusicplayer.ui.fragments.filebrowser;
 
-import android.app.Fragment;
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Environment;
@@ -9,13 +7,13 @@ import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
+import android.support.v7.widget.PopupMenu;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.ListView;
-import android.widget.Toast;
 
 import com.reallynourl.nourl.fmpfoldermusicplayer.R;
 import com.reallynourl.nourl.fmpfoldermusicplayer.ui.activities.MainActivity;
@@ -48,10 +46,13 @@ import java.io.File;
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-public class FileBrowserFragment extends MainContentFragment implements AdapterView.OnItemClickListener, OptionView.OnOptionsClickedListener {
+public class FileBrowserFragment extends MainContentFragment implements AdapterView.OnItemClickListener, OptionView.OnOptionsClickedListener, PopupMenu.OnMenuItemClickListener {
+    private static final String TAG = "FileBrowserFragment";
+
     private boolean mIsCreated = false;
 
     private View mRootView;
+    private MusicBrowserListItem mCurrentMenuItem;
     private File mStartPath;
     private File mCurrentPath;
 
@@ -197,16 +198,58 @@ public class FileBrowserFragment extends MainContentFragment implements AdapterV
     }
 
     @Override
-    public void onItemOptionsClicked(View view) {
-        MusicBrowserListItem musicBrowserListItem = (MusicBrowserListItem) view;
-        switch (musicBrowserListItem.getType()) {
+    public void onItemOptionsClicked(View view, View anchor) {
+        mCurrentMenuItem = (MusicBrowserListItem) view;
+        PopupMenu popupMenu = new PopupMenu(getActivity(), anchor);
+        popupMenu.setOnMenuItemClickListener(this);
+        switch (mCurrentMenuItem.getType()) {
             case AUDIO:
-                Toast.makeText(getActivity(), "Clicked on options for audio:\n" + ((MusicBrowserListItem)view).getFile().getName(), Toast.LENGTH_SHORT).show();
+                popupMenu.inflate(R.menu.file_browser_audio_menu);
                 break;
             case DIRECTORY:
-                Toast.makeText(getActivity(), "Clicked on options for directory:\n" + ((MusicBrowserListItem)view).getFile().getName(), Toast.LENGTH_SHORT).show();
+                popupMenu.inflate(R.menu.file_browser_directory_menu);
                 break;
         }
+        popupMenu.show();
+    }
 
+    @Override
+    public boolean onMenuItemClick(MenuItem item) {
+        boolean handled = false;
+        switch (mCurrentMenuItem.getType()) {
+            case AUDIO:
+                switch (item.getItemId()) {
+                    case R.id.item_append:
+                        MediaManager.getInstance().getPlaylist().append(mCurrentMenuItem.getFile());
+                        break;
+                    case R.id.item_append_next:
+                        MediaManager.getInstance().getPlaylist().appendNext(mCurrentMenuItem.getFile());
+                        break;
+                    case R.id.item_append_next_play:
+                        MediaManager.getInstance().addPlaylistNextAndPlay(mCurrentMenuItem.getFile());
+                        break;
+                    default:
+                        Log.e(TAG, "Action for item is missing!");
+                        Snackbar.make(null, "Action for item is missing!", Snackbar.LENGTH_LONG).show();
+                }
+                handled = true;
+                break;
+            case DIRECTORY:
+                switch (item.getItemId()) {
+                    case R.id.item_append_all:
+                        File dir = mCurrentMenuItem.getFile();
+                        boolean playHidden = PreferenceManager.getDefaultSharedPreferences(getActivity()).getBoolean(getString(R.string.pref_file_browser_show_hidden), false);
+                        File[] files = FileUtil.listAudioFiles(dir, playHidden);
+                        if (files != null && files.length > 0) {
+                            MediaManager.getInstance().getPlaylist().appendAll(files);
+                        } else {
+                            Snackbar.make(null, "The folder doesn't contain audio files.", Snackbar.LENGTH_LONG).show();
+                        }
+                        break;
+                }
+                handled = true;
+                break;
+        }
+        return handled;
     }
 }
