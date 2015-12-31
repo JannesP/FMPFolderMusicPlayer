@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.media.MediaPlayer;
 import android.net.Uri;
+import android.support.v4.media.session.*;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -29,8 +30,8 @@ public class MediaManager implements MediaPlayer.OnCompletionListener {
     private static MediaManager sInstance;
 
     private Playlist mPlaylist;
-
     private Context mContext;
+
     private MediaManager(Context mContext) {
         this.mContext = mContext;
         this.mPlaylist = new Playlist(mContext);
@@ -38,9 +39,7 @@ public class MediaManager implements MediaPlayer.OnCompletionListener {
     }
 
     public static void create(Context context) {
-        if (sInstance == null) {
-            sInstance = new MediaManager(context);
-        }
+        sInstance = new MediaManager(context);
     }
 
     public static MediaManager getInstance() {

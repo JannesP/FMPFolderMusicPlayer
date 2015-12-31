@@ -1,19 +1,17 @@
 package com.reallynourl.nourl.fmpfoldermusicplayer.ui.activities;
 
-import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.content.res.Configuration;
 import android.os.Bundle;
-import android.provider.MediaStore;
+import android.renderscript.RSInvalidStateException;
 import android.support.annotation.IdRes;
 import android.support.annotation.NonNull;
-import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.util.Log;
-import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
@@ -31,7 +29,6 @@ import com.reallynourl.nourl.fmpfoldermusicplayer.ui.fragments.music.MusicPlayin
 import com.reallynourl.nourl.fmpfoldermusicplayer.utility.MyUncaughtExceptionHandler;
 import com.reallynourl.nourl.fmpfoldermusicplayer.utility.Util;
 import com.reallynourl.nourl.fmpfoldermusicplayer.utility.music.MediaManager;
-import com.reallynourl.nourl.fmpfoldermusicplayer.utility.music.MediaService;
 
 /**
  * Copyright (C) 2015  Jannes Peters
@@ -78,6 +75,10 @@ public class MainActivity extends AppCompatActivity
         navigationView.setNavigationItemSelectedListener(this);
 
         mCloseSnackBar = Snackbar.make(findViewById(android.R.id.content), "Press again to exit ...", Snackbar.LENGTH_SHORT);
+
+        if (MediaManager.getInstance() == null) {
+            MediaManager.create(getApplicationContext());
+        }
     }
 
     @Override
@@ -167,6 +168,14 @@ public class MainActivity extends AppCompatActivity
     }
 
     @Override
+    protected void onStart() {
+        if (MediaManager.getInstance() == null) {
+            MediaManager.create(getApplicationContext());
+        }
+        super.onStart();
+    }
+
+    @Override
     protected void onResume() {
         if (Util.hasStoragePermission(this)) {
             loadUi();
@@ -177,21 +186,17 @@ public class MainActivity extends AppCompatActivity
     }
 
     private void loadUi() {
-        MediaManager mediaManager = MediaManager.getInstance();
-        if (mediaManager == null) {
-            MediaManager.create(getApplicationContext());
-        }
         Bundle bundle = getIntent().getExtras();
         loadFragmentFromBundle(bundle);
     }
 
     @Override
-    protected void onPause() {
+    protected void onStop() {
         MediaManager mediaManager = MediaManager.getInstance();
         if (mediaManager != null) {
             mediaManager.onMainActivityClosed();
         }
-        super.onPause();
+        super.onStop();
     }
 
     @Override

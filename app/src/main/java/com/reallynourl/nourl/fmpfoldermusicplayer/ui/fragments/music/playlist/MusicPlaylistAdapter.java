@@ -2,7 +2,6 @@ package com.reallynourl.nourl.fmpfoldermusicplayer.ui.fragments.music.playlist;
 
 import android.graphics.Color;
 import android.media.MediaMetadataRetriever;
-import android.os.*;
 import android.os.Process;
 import android.util.Log;
 import android.view.View;
