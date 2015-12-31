@@ -29,6 +29,10 @@ import com.reallynourl.nourl.fmpfoldermusicplayer.utility.file.FileUtil;
 import com.reallynourl.nourl.fmpfoldermusicplayer.utility.music.MediaManager;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * Copyright (C) 2015  Jannes Peters
@@ -177,9 +181,15 @@ public class FileBrowserFragment extends MainContentFragment implements AdapterV
                 break;
             case AUDIO:
                 MediaManager.getInstance().getPlaylist().clear();
-                MediaManager.getInstance().getPlaylist().appendAll(mCurrentPath.listFiles(new AudioFileFilter(false, false)));
-                MediaManager.getInstance().playPlaylistItem(position);
-                MainActivity.selectFragment(getActivity().getApplicationContext(), MusicControlFragment.NAME);
+                File selectedFile = getBrowserAdapter().getItem(position);
+                if (selectedFile != null) {
+                    List<File> files = Arrays.asList(mCurrentPath.listFiles(new AudioFileFilter(false, false)));
+                    Collections.sort(files);
+                    position = files.indexOf(getBrowserAdapter().getItem(position));
+                    MediaManager.getInstance().getPlaylist().appendAll(files);
+                    MediaManager.getInstance().playPlaylistItem(position);
+                    MainActivity.selectFragment(getActivity().getApplicationContext(), MusicControlFragment.NAME);
+                }
                 break;
             default:
                 Snackbar.make(parent, "What did you do? You selected an non existing file!", Snackbar.LENGTH_LONG).show();
@@ -192,7 +202,6 @@ public class FileBrowserFragment extends MainContentFragment implements AdapterV
         return (OptionsListView) mRootView.findViewById(R.id.listViewBrowser);
     }
 
-    @Nullable
     private MusicBrowserAdapter getBrowserAdapter() {
         return (MusicBrowserAdapter) getListView().getAdapter();
     }
