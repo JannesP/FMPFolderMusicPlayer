@@ -78,18 +78,8 @@ public class MusicBrowserAdapter extends BaseAdapter implements OptionView {
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
-        convertView = null; //FIXME: recycling of views is not working correctly.
-        if (convertView == null) {
-            convertView = MusicBrowserListItem.create(parent, mItems[position]);
-        } else {
-            MusicBrowserListItem mbli = (MusicBrowserListItem) convertView;
-            if (mbli.isType(mItems[position])) {
-                mbli.setFile(mItems[position]);
-                convertView = mbli;
-            } else {
-                convertView = MusicBrowserListItem.create(parent, mItems[position]);
-            }
-        }
+        //FIXME: recycling of views
+        convertView = MusicBrowserListItem.create(parent, mItems[position]);
         ((OptionView)convertView).setOnItemOptionsClickedListener(mOnItemOptionsClickedListener);
         return convertView;
     }

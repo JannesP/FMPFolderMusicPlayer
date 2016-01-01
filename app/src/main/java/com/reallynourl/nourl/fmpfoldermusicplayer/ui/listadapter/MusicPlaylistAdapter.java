@@ -8,10 +8,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 
-import com.reallynourl.nourl.fmpfoldermusicplayer.ui.control.OptionView;
-import com.reallynourl.nourl.fmpfoldermusicplayer.ui.listadapter.item.AudioFileListItem;
 import com.reallynourl.nourl.fmpfoldermusicplayer.backend.MediaManager;
 import com.reallynourl.nourl.fmpfoldermusicplayer.backend.playlist.Playlist;
+import com.reallynourl.nourl.fmpfoldermusicplayer.ui.control.OptionView;
+import com.reallynourl.nourl.fmpfoldermusicplayer.ui.listadapter.item.AudioFileListItem;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -37,7 +37,7 @@ import java.util.concurrent.TimeUnit;
 public class MusicPlaylistAdapter extends BaseAdapter implements Playlist.OnItemsChangedListener, Runnable, Playlist.OnCurrentItemChangedListener, OptionView {
     private final Object mDataLock = new Object();
     private OnOptionsClickedListener mOnItemOptionsClickedListener;
-    private int mAccentColor;
+    private final int mAccentColor;
     private ArrayList<ItemData> mData;
     private View mParent = null;
 
@@ -159,7 +159,7 @@ public class MusicPlaylistAdapter extends BaseAdapter implements Playlist.OnItem
     }
 
     private class ItemData {
-        private File mFile;
+        private final File mFile;
         private String mSecondaryData;
 
         public ItemData(File mFile) {

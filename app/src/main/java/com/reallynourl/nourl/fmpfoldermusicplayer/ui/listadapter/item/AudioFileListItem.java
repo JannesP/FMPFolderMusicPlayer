@@ -54,7 +54,7 @@ public class AudioFileListItem extends MusicBrowserListItem implements View.OnCl
         TextView tv = (TextView) getRootView().findViewById(R.id.textViewListItemTitle);
         tv.setText(FileUtil.getNameWithoutExtension(file));
         tv = (TextView) getRootView().findViewById(R.id.textViewListItemMoreInfo);
-        tv.setText("loading ...");
+        tv.setText(R.string.loading_3_dots);
         super.setFile(file);
     }
 

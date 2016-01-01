@@ -22,7 +22,6 @@ import android.widget.ListView;
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 public class OptionsListView extends ListView implements OptionView {
-    private OnOptionsClickedListener mOnItemOptionsClickedListener = null;
 
     public OptionsListView(Context context) {
         super(context);
@@ -37,10 +36,9 @@ public class OptionsListView extends ListView implements OptionView {
     }
 
     public void setOnItemOptionsClickedListener(OnOptionsClickedListener listener) {
-        mOnItemOptionsClickedListener = listener;
         ListAdapter adapter = getAdapter();
         if (adapter != null && adapter instanceof OptionView) {
-            ((OptionView)adapter).setOnItemOptionsClickedListener(mOnItemOptionsClickedListener);
+            ((OptionView)adapter).setOnItemOptionsClickedListener(listener);
         }
     }
 }

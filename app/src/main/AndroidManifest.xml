@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest package="com.reallynourl.nourl.fmpfoldermusicplayer"
+<manifest xmlns:tools="http://schemas.android.com/tools"
+    package="com.reallynourl.nourl.fmpfoldermusicplayer"
           xmlns:android="http://schemas.android.com/apk/res/android">
 
     <uses-permission android:name="android.permission.MEDIA_CONTENT_CONTROL" />
@@ -27,7 +28,8 @@
         <activity android:name=".ui.activity.SettingsActivity"
                   android:label="FMP Settings"
                   android:theme="@style/AppTheme.NoActionBar"
-                  android:parentActivityName=".ui.activity.MainActivity"/>
+                  android:parentActivityName=".ui.activity.MainActivity"
+            tools:ignore="UnusedAttribute" />
 
         <service android:name=".backend.MediaService" />
 

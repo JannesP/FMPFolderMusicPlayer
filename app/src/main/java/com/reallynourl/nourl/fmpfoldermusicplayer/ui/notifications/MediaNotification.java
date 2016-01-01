@@ -13,11 +13,11 @@ import android.support.v4.media.session.PlaybackStateCompat;
 import android.support.v7.app.NotificationCompat;
 
 import com.reallynourl.nourl.fmpfoldermusicplayer.R;
+import com.reallynourl.nourl.fmpfoldermusicplayer.backend.MediaManager;
+import com.reallynourl.nourl.fmpfoldermusicplayer.backend.MusicIntentReceiver;
 import com.reallynourl.nourl.fmpfoldermusicplayer.ui.activity.MainActivity;
 import com.reallynourl.nourl.fmpfoldermusicplayer.ui.fragment.MusicPlayingFragment;
 import com.reallynourl.nourl.fmpfoldermusicplayer.utility.file.FileUtil;
-import com.reallynourl.nourl.fmpfoldermusicplayer.backend.MediaManager;
-import com.reallynourl.nourl.fmpfoldermusicplayer.backend.MusicIntentReceiver;
 
 import java.io.File;
 
@@ -39,8 +39,8 @@ import java.io.File;
  */
 public final class MediaNotification {
     private MediaNotification() {}
-    public static final int NOTIFICATION_ID = 9871579;
-    public static final int INTENT_CANCEL_ID = 3000;
+    private static final int NOTIFICATION_ID = 9871579;
+    private static final int INTENT_CANCEL_ID = 3000;
 
 
     public static void showUpdate(Service service, File track,

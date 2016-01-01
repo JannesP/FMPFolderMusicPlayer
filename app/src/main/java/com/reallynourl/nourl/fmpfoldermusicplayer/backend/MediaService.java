@@ -76,7 +76,7 @@ public class MediaService extends Service implements MediaPlayer.OnPreparedListe
         setupMediaPlayer(file);
     }
 
-    public boolean requestAudioFocus() {
+    private boolean requestAudioFocus() {
         AudioManager audioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
         int result = audioManager.requestAudioFocus(
                 this, AudioManager.STREAM_MUSIC, AudioManager.AUDIOFOCUS_GAIN);

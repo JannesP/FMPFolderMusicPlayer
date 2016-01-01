@@ -21,7 +21,7 @@ import android.app.Fragment;
 public abstract class MainContentFragment extends Fragment {
     private String mName = "";
 
-    protected MainContentFragment(String name) {
+    MainContentFragment(String name) {
         this.mName = name;
     }
 

@@ -4,6 +4,8 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 
+import com.reallynourl.nourl.fmpfoldermusicplayer.R;
+
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -27,22 +29,19 @@ import java.util.List;
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 public class Playlist {
-    public static final String PREF_REPEAT_MODE = "pref_playlist_repeat_mode";
-    public static final String PREF_SHUFFLE = "pref_playlist_shuffle";
-
-    private ArrayList<File> mFiles;
+    private final ArrayList<File> mFiles;
     private int mCurrentFile;
     private boolean mIsShuffle;
     private RepeatMode mRepeatMode;
-    private List<OnItemsChangedListener> mOnItemsChangedListeners;
-    private List<OnCurrentItemChangedListener> mOnCurrentItemChangedListeners;
-    private List<OnModeChangedListener> mOnModeChangedListeners;
-    private Context mContext;
+    private final List<OnItemsChangedListener> mOnItemsChangedListeners;
+    private final List<OnCurrentItemChangedListener> mOnCurrentItemChangedListeners;
+    private final List<OnModeChangedListener> mOnModeChangedListeners;
+    private final Context mContext;
 
 
     public Playlist(Context context) {
         mContext = context;
-        loadPreferences(context);
+        loadPreferences();
         mFiles = new ArrayList<>();
         mCurrentFile = -1;
         mOnItemsChangedListeners = new ArrayList<>(3);
@@ -50,23 +49,23 @@ public class Playlist {
         mOnModeChangedListeners = new ArrayList<>(3);
     }
 
-    private void loadPreferences(Context context) {
+    private void loadPreferences() {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(mContext);
-        mIsShuffle = prefs.getBoolean(PREF_SHUFFLE, false);
-        mRepeatMode = RepeatMode.get(prefs.getInt(PREF_REPEAT_MODE, 0));
+        mIsShuffle = prefs.getBoolean(mContext.getString(R.string.pref_playlist_shuffle), false);
+        mRepeatMode = RepeatMode.get(prefs.getInt(mContext.getString(R.string.pref_playlist_repeat_mode), 0));
     }
 
     private void saveRepeatMode() {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(mContext);
         SharedPreferences.Editor editor = prefs.edit();
-        editor.putInt(PREF_REPEAT_MODE, mRepeatMode.getValue());
+        editor.putInt(mContext.getString(R.string.pref_playlist_repeat_mode), mRepeatMode.getValue());
         editor.apply();
     }
 
     private void saveShuffle() {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(mContext);
         SharedPreferences.Editor editor = prefs.edit();
-        editor.putBoolean(PREF_SHUFFLE, mIsShuffle);
+        editor.putBoolean(mContext.getString(R.string.pref_playlist_shuffle), mIsShuffle);
         editor.apply();
     }
 
@@ -103,19 +102,19 @@ public class Playlist {
         }
     }
 
-    protected void itemsChanged() {
+    private void itemsChanged() {
         for (OnItemsChangedListener listener : mOnItemsChangedListeners) {
             listener.onPlaylistItemsChanged(this);
         }
     }
 
-    protected void currentItemChanged() {
+    private void currentItemChanged() {
         for (OnCurrentItemChangedListener listener : mOnCurrentItemChangedListeners) {
             listener.onPlaylistCurrentItemChanged(this);
         }
     }
 
-    protected void modeChanged() {
+    private void modeChanged() {
         for (OnModeChangedListener listener : mOnModeChangedListeners) {
             listener.onPlaylistModeChanged(this);
         }

@@ -13,9 +13,9 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.reallynourl.nourl.fmpfoldermusicplayer.R;
-import com.reallynourl.nourl.fmpfoldermusicplayer.utility.Util;
 import com.reallynourl.nourl.fmpfoldermusicplayer.backend.MediaManager;
 import com.reallynourl.nourl.fmpfoldermusicplayer.backend.playlist.RepeatMode;
+import com.reallynourl.nourl.fmpfoldermusicplayer.utility.Util;
 
 /**
  * Copyright (C) 2015  Jannes Peters
@@ -34,8 +34,6 @@ import com.reallynourl.nourl.fmpfoldermusicplayer.backend.playlist.RepeatMode;
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 public class MusicControlFragment extends Fragment implements View.OnClickListener, Runnable, SeekBar.OnSeekBarChangeListener{
-    public final static String NAME = "controls";
-
     private boolean mIsCreated = false;
     private View mRootView = null;
 

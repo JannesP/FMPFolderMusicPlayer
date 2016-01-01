@@ -83,13 +83,9 @@ public abstract class MusicBrowserListItem extends RelativeLayout implements Opt
         return mType.equals(FileType.getType(file));
     }
 
-    public boolean isType(FileType type) {
-        return mType.equals(type);
-    }
-
     protected static MusicBrowserListItem inflate(ViewGroup parent, @LayoutRes int layout) {
-        MusicBrowserListItem item = (MusicBrowserListItem) LayoutInflater.from(parent.getContext()).inflate(layout, parent, false);
-        return item;
+        return (MusicBrowserListItem) LayoutInflater
+                .from(parent.getContext()).inflate(layout, parent, false);
     }
 
     @Override

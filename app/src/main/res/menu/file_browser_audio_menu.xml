@@ -2,19 +2,19 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
 
     <item
-        android:title="Append"
+        android:title="@string/append"
         android:id="@+id/item_append"
         android:icon="@drawable/ic_nav_playlist"
         />
 
     <item
-        android:title="Play Next"
+        android:title="@string/play_next"
         android:id="@+id/item_append_next"
         android:icon="@drawable/ic_skip_next_white"
         />
 
     <item
-        android:title="Append Next &amp; Play"
+        android:title="@string/append_next_play"
         android:id="@+id/item_append_next_play"
         android:icon="@drawable/ic_play_arrow"
         />

@@ -20,8 +20,8 @@ import java.io.FileFilter;
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 public class AudioFileFilter implements FileFilter {
-    private boolean mAllowHidden;
-    private boolean mAllowNonAudio;
+    private final boolean mAllowHidden;
+    private final boolean mAllowNonAudio;
 
     public AudioFileFilter(boolean allowHidden, boolean allowNonAudio) {
         this.mAllowHidden = allowHidden;
@@ -30,8 +30,6 @@ public class AudioFileFilter implements FileFilter {
 
     @Override
     public boolean accept(File file) {
-        if (!mAllowHidden && file.isHidden()) return false;
-        if (!mAllowNonAudio && (FileType.getType(file) == FileType.FILE)) return false;
-        return true;
+        return !(!mAllowHidden && file.isHidden()) && !(!mAllowNonAudio && (FileType.getType(file) == FileType.FILE));
     }
 }

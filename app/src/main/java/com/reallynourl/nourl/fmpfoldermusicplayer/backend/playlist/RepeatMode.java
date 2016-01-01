@@ -19,7 +19,7 @@ package com.reallynourl.nourl.fmpfoldermusicplayer.backend.playlist;
 public enum RepeatMode {
     OFF(0), ALL(1), SINGLE(2);
 
-    private int mId;
+    private final int mId;
     RepeatMode(int val) {
         mId = val;
     }

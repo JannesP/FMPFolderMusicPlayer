@@ -3,8 +3,6 @@ package com.reallynourl.nourl.fmpfoldermusicplayer.utility.file;
 import android.os.Environment;
 
 import java.io.File;
-import java.io.FileFilter;
-import java.util.ArrayList;
 
 /**
  * Copyright (C) 2015  Jannes Peters
@@ -43,31 +41,14 @@ public final class FileUtil {
     /* Checks if external storage is available for read and write */
     public static boolean isExternalStorageWritable() {
         String state = Environment.getExternalStorageState();
-        if (Environment.MEDIA_MOUNTED.equals(state)) {
-            return true;
-        }
-        return false;
+        return Environment.MEDIA_MOUNTED.equals(state);
     }
 
     /* Checks if external storage is available to at least read */
     public static boolean isExternalStorageReadable() {
         String state = Environment.getExternalStorageState();
-        if (Environment.MEDIA_MOUNTED.equals(state) ||
-                Environment.MEDIA_MOUNTED_READ_ONLY.equals(state)) {
-            return true;
-        }
-        return false;
-    }
-
-    public static File[] removeHiddenFiles(File[] files) {
-        ArrayList<File> filtered = new ArrayList<>(files.length);
-        for (File file : files) {
-            if (!file.isHidden()) {
-                filtered.add(file);
-            }
-        }
-        files = filtered.toArray(new File[filtered.size()]);
-        return files;
+        return Environment.MEDIA_MOUNTED.equals(state) ||
+                Environment.MEDIA_MOUNTED_READ_ONLY.equals(state);
     }
 
     public static String getNameWithoutExtension(File file) {

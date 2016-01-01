@@ -3,8 +3,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
-                android:padding="10dp"
-              android:background="#262626">
+                android:padding="10dp">
 
     <RelativeLayout
         android:layout_width="match_parent"
@@ -16,14 +15,14 @@
             android:layout_height="wrap_content"
             android:layout_alignParentLeft="true"
             android:textAppearance="?android:attr/textAppearanceSmall"
-            android:text="00:00"
+            android:text="@string/time_placeholder"
             android:id="@+id/textViewTimeCurrent"/>
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentRight="true"
             android:textAppearance="?android:attr/textAppearanceSmall"
-            android:text="00:00"
+            android:text="@string/time_placeholder"
             android:id="@+id/textViewDuration"/>
         <SeekBar
             android:layout_width="match_parent"
@@ -48,7 +47,7 @@
                 android:layout_height="match_parent"
                 android:adjustViewBounds="true"
                 android:scaleType="fitXY"
-                android:contentDescription="Repeat"
+                android:contentDescription="@string/repeat"
                 android:src="@drawable/ic_shuffle_white"
                 android:id="@+id/imageButtonShuffle"
                 android:background="#00000000"/>
@@ -65,7 +64,7 @@
                 android:layout_height="match_parent"
                 android:adjustViewBounds="true"
                 android:scaleType="fitXY"
-                android:contentDescription="Previous"
+                android:contentDescription="@string/previous"
                 android:src="@drawable/ic_skip_previous_white"
                 android:id="@+id/imageButtonSkipPrevious"
                 android:background="#00000000"/>
@@ -74,7 +73,7 @@
                 android:layout_height="match_parent"
                 android:adjustViewBounds="true"
                 android:scaleType="fitXY"
-                android:contentDescription="Stop"
+                android:contentDescription="@string/stop"
                 android:src="@drawable/ic_stop_white"
                 android:id="@+id/imageButtonStop"
                 android:background="#00000000"/>
@@ -83,7 +82,7 @@
                 android:layout_height="match_parent"
                 android:adjustViewBounds="true"
                 android:scaleType="fitXY"
-                android:contentDescription="PlayPause"
+                android:contentDescription="@string/play_pause"
                 android:src="@drawable/ic_play_arrow"
                 android:id="@+id/imageButtonPlayPause"
                 android:background="#00000000"/>
@@ -93,7 +92,7 @@
                 android:layout_height="match_parent"
                 android:adjustViewBounds="true"
                 android:scaleType="fitXY"
-                android:contentDescription="Next"
+                android:contentDescription="@string/next"
                 android:src="@drawable/ic_skip_next_white"
                 android:id="@+id/imageButtonSkipNext"
                 android:background="#00000000"/>
@@ -109,7 +108,7 @@
                 android:layout_height="match_parent"
                 android:adjustViewBounds="true"
                 android:scaleType="fitXY"
-                android:contentDescription="Repeat"
+                android:contentDescription="@string/repeat"
                 android:src="@drawable/ic_repeat_white"
                 android:id="@+id/imageButtonRepeat"
                 android:background="#00000000"/>

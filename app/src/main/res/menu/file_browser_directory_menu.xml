@@ -2,7 +2,7 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
 
     <item
-        android:title="Append All"
+        android:title="@string/append_all"
         android:id="@+id/item_append_all"
         android:icon="@drawable/ic_nav_playlist"
         />

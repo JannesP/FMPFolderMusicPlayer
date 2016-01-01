@@ -5,35 +5,35 @@
         <item
             android:id="@+id/nav_currently_playing"
             android:icon="@drawable/ic_play_arrow"
-            android:title="Currently Playing"/>
+            android:title="@string/currently_playing"/>
         <item
             android:id="@+id/nav_file_browser"
             android:icon="@drawable/ic_nav_folder"
-            android:title="File Browser"/>
+            android:title="@string/file_browser"/>
         <item
             android:id="@+id/nav_libraries"
             android:icon="@drawable/ic_nav_library_music"
-            android:title="Libraries"/>
+            android:title="@string/libraries"/>
         <item
             android:id="@+id/nav_playlists"
             android:icon="@drawable/ic_nav_playlist"
-            android:title="Playlists"/>
+            android:title="@string/playlists"/>
     </group>
 
-    <item android:title="Other">
+    <item android:title="@string/other">
         <menu>
             <item
                 android:id="@+id/nav_settings"
                 android:icon="@drawable/ic_nav_settings"
-                android:title="Settings"/>
+                android:title="@string/settings"/>
             <item
                 android:id="@+id/nav_recommend"
                 android:icon="@drawable/ic_nav_share"
-                android:title="Recommend This App"/>
+                android:title="@string/recommend_this_app"/>
             <item
                 android:id="@+id/nav_rate"
                 android:icon="@drawable/ic_nav_plus_one"
-                android:title="Rate This App in Google Play"/>
+                android:title="@string/rate_this_app_in_google_play"/>
         </menu>
     </item>
 

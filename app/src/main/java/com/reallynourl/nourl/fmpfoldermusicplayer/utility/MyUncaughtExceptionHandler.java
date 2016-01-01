@@ -21,7 +21,7 @@ import com.reallynourl.nourl.fmpfoldermusicplayer.backend.MediaService;
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 public class MyUncaughtExceptionHandler implements Thread.UncaughtExceptionHandler {
-    private Thread.UncaughtExceptionHandler mUncaughtExceptionHandler;
+    private final Thread.UncaughtExceptionHandler mUncaughtExceptionHandler;
     public MyUncaughtExceptionHandler(Thread.UncaughtExceptionHandler uncaughtExceptionHandler) {
         mUncaughtExceptionHandler = uncaughtExceptionHandler;
     }

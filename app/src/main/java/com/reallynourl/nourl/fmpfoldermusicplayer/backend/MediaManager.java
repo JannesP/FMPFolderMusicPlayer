@@ -58,40 +58,68 @@ public class MediaManager implements MediaPlayer.OnCompletionListener, Playlist.
     public void addPlaylistNextAndPlay(File file) {
         mPlaylist.appendNext(file);
         file = mPlaylist.selectNext();
-        MediaService.getInstance().play(file);
+        MediaService mediaService = MediaService.getInstance();
+        if (mediaService != null) {
+            mediaService.play(file);
+        }
     }
 
     public void playPlaylistItem(int index) {
         File file = mPlaylist.getList().get(index);
         if (file != null) {
             mPlaylist.setCurrent(index);
-            MediaService.getInstance().play(file);
+            MediaService mediaService = MediaService.getInstance();
+            if (mediaService != null) {
+                mediaService.play(file);
+            }
         }
     }
 
     public void play() {
-        MediaService.getInstance().play();
+        MediaService mediaService = MediaService.getInstance();
+        if (mediaService != null) {
+            mediaService.play();
+        }
     }
 
     public void pause() {
-        MediaService.getInstance().pause();
+        MediaService mediaService = MediaService.getInstance();
+        if (mediaService != null) {
+            mediaService.pause();
+        }
     }
 
     public void stop() {
-        MediaService.getInstance().stop();
+        MediaService mediaService = MediaService.getInstance();
+        if (mediaService != null) {
+            mediaService.stop();
+        }
         mPlaylist.clearCurrent();
     }
 
     public void seekTo(int msec) {
-        MediaService.getInstance().seekTo(msec);
+        MediaService mediaService = MediaService.getInstance();
+        if (mediaService != null) {
+            mediaService.seekTo(msec);
+        }
     }
 
     public int getDuration() {
-        return MediaService.getInstance().getDuration();
+        int result = 0;
+        MediaService mediaService = MediaService.getInstance();
+        if (mediaService != null) {
+            result = mediaService.getDuration();
+        }
+        return result;
     }
 
     public int getPosition() {
-        return MediaService.getInstance().getPosition();
+        int result = 0;
+        MediaService mediaService = MediaService.getInstance();
+        if (mediaService != null) {
+            result = mediaService.getPosition();
+        }
+        return result;
     }
 
     public boolean isPlaying() {
@@ -112,20 +140,31 @@ public class MediaManager implements MediaPlayer.OnCompletionListener, Playlist.
     }
 
     public boolean isStopped() {
-        return !MediaService.getInstance().isInitialized();
+        boolean result = true;
+        MediaService mediaService = MediaService.getInstance();
+        if (mediaService != null) {
+            result = !mediaService.isInitialized();
+        }
+        return result;
     }
 
     public void next() {
         File file = mPlaylist.selectNext();
         if (file != null) {
-            MediaService.getInstance().play(file);
+            MediaService mediaService = MediaService.getInstance();
+            if (mediaService != null) {
+                mediaService.play(file);
+            }
         }
     }
 
     public void previous() {
         File file = mPlaylist.selectPrevious();
         if (file != null) {
-            MediaService.getInstance().play(file);
+            MediaService mediaService = MediaService.getInstance();
+            if (mediaService != null) {
+                mediaService.play(file);
+            }
         }
     }
 
@@ -143,7 +182,12 @@ public class MediaManager implements MediaPlayer.OnCompletionListener, Playlist.
     }
 
     public File getCurrentFile() {
-        return MediaService.getInstance().getCurrentFile();
+        File result = null;
+        MediaService mediaService = MediaService.getInstance();
+        if (mediaService != null) {
+            result = mediaService.getCurrentFile();
+        }
+        return result;
     }
 
     public void onMainActivityClosed() {

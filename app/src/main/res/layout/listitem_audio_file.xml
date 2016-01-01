@@ -13,7 +13,7 @@
         android:scaleType="center"
         android:id="@+id/imageViewOptionsIcon"
         android:src="@drawable/ic_more_vert"
-        android:contentDescription="Options"/>
+        android:contentDescription="@string/options"/>
 
     <RelativeLayout
         android:layout_width="wrap_content"
@@ -27,7 +27,7 @@
             android:layout_margin="5dp"
             android:id="@+id/imageViewListItemIcon"
             android:src="@drawable/ic_music_file"
-            android:contentDescription="File Icon"/>
+            android:contentDescription="@string/file_icons"/>
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -45,7 +45,7 @@
                 android:layout_weight="0.9"
                 android:gravity="center_vertical"
                 android:id="@+id/textViewListItemTitle"
-                android:text="Example i make this very loing tosdadatr eatsaegv 45eastseaFSD SDA"/>
+                android:text="@string/long_example_text"/>
 
             <TextView
                 android:layout_width="match_parent"
@@ -53,7 +53,7 @@
                 android:layout_weight="0.1"
                 android:gravity="center_vertical"
                 android:id="@+id/textViewListItemMoreInfo"
-                android:text="More Info Example"/>
+                android:text="@string/more_info_example"/>
         </LinearLayout>
 
     </RelativeLayout>
