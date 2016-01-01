@@ -51,6 +51,7 @@ import java.util.List;
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 public class FileBrowserFragment extends MainContentFragment implements AdapterView.OnItemClickListener, OptionView.OnOptionsClickedListener, PopupMenu.OnMenuItemClickListener {
+    public static final String NAME = "file_browser";
     private static final String TAG = "FileBrowserFragment";
 
     private boolean mIsCreated = false;
@@ -60,7 +61,9 @@ public class FileBrowserFragment extends MainContentFragment implements AdapterV
     private File mStartPath;
     private File mCurrentPath;
 
-    public FileBrowserFragment() {}
+    public FileBrowserFragment() {
+        super(NAME);
+    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {

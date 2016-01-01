@@ -49,8 +49,8 @@ import com.reallynourl.nourl.fmpfoldermusicplayer.utility.music.MediaManager;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
-    public final static int REQUEST_PERMISSION_STORAGE = 123;
-    public final static String FRAGMENT_EXTRA = "fragment";
+    public static final int REQUEST_PERMISSION_STORAGE = 123;
+    public static final String FRAGMENT_EXTRA = "fragment";
     private static MainActivity sInstance;
     private Snackbar mCloseSnackBar = null;
     private MainContentFragment mActiveFragment;
@@ -134,7 +134,14 @@ public class MainActivity extends AppCompatActivity
             }
             if (mActiveFragment != null) {
                 if (!mActiveFragment.onBackPressed()) {
-                    mCloseSnackBar.show();
+                    switch (mActiveFragment.getName()) {
+                        case MusicPlayingFragment.NAME:
+                            setNavigationItem(R.id.nav_file_browser);
+                            break;
+                        default:
+                            mCloseSnackBar.show();
+                            break;
+                    }
                 }
             }
         }

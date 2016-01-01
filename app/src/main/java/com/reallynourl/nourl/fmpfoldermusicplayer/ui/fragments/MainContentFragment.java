@@ -18,7 +18,16 @@ import android.app.Fragment;
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-public class MainContentFragment extends Fragment {
+public abstract class MainContentFragment extends Fragment {
+    private String mName = "";
+
+    protected MainContentFragment(String name) {
+        this.mName = name;
+    }
+
+    public String getName() {
+        return mName;
+    }
 
     /**
      * Called when the back button is pressed and the Fragment is loaded as main content.

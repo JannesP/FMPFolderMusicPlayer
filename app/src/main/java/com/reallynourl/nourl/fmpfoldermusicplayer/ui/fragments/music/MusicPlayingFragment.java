@@ -30,6 +30,12 @@ import com.reallynourl.nourl.fmpfoldermusicplayer.utility.Util;
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 public class MusicPlayingFragment extends MainContentFragment {
+    public static final String NAME = "music_playing";
+
+    public MusicPlayingFragment() {
+        super(NAME);
+    }
+
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
