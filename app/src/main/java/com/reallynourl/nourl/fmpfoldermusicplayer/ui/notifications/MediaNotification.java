@@ -106,34 +106,31 @@ public final class MediaNotification {
 
     private static NotificationCompat.Action createPlayAction(Context context) {
         return createGenericButtonAction(context, R.drawable.ic_play_arrow, "Play",
-                MusicIntentReceiver.EXTRA_VALUE_PLAY);
+                MusicIntentReceiver.ACTION_PLAY, MusicIntentReceiver.INTENT_ID_PLAY);
     }
 
     private static NotificationCompat.Action createPauseAction(Context context) {
         return createGenericButtonAction(context, R.drawable.ic_pause, "Pause",
-                MusicIntentReceiver.EXTRA_VALUE_PAUSE);
+                MusicIntentReceiver.ACTION_PAUSE, MusicIntentReceiver.INTENT_ID_PAUSE);
     }
 
     private static NotificationCompat.Action createNextAction(Context context) {
         return createGenericButtonAction(context, R.drawable.ic_skip_next_white, "Next",
-                MusicIntentReceiver.EXTRA_VALUE_NEXT);
+                MusicIntentReceiver.ACTION_NEXT, MusicIntentReceiver.INTENT_ID_NEXT);
     }
 
     private static NotificationCompat.Action createPreviousAction(Context context) {
         return createGenericButtonAction(context, R.drawable.ic_skip_previous_white, "Previous",
-                MusicIntentReceiver.EXTRA_VALUE_PREVIOUS);
+                MusicIntentReceiver.ACTION_PREVIOUS, MusicIntentReceiver.INTENT_ID_PREVIOUS);
     }
 
     private static NotificationCompat.Action createGenericButtonAction(
-            Context context, @DrawableRes int icon, String name, int command) {
+            Context context, @DrawableRes int icon, String name, String action, int requestCode) {
         NotificationCompat.Action res = new NotificationCompat.Action.Builder(
                 icon,
                 name,
-                PendingIntent.getBroadcast(context, command,
-                        new Intent(context, MusicIntentReceiver.class)
-                                .setAction(MusicIntentReceiver.ACTION_MUSIC_CONTROL)
-                                .putExtra(MusicIntentReceiver.EXTRA_MUSIC_CONTROL_KEY
-                                        , command),
+                PendingIntent.getBroadcast(context, requestCode,
+                        new Intent(context, MusicIntentReceiver.class).setAction(action),
                         PendingIntent.FLAG_UPDATE_CURRENT)
         ).build();
         return res;

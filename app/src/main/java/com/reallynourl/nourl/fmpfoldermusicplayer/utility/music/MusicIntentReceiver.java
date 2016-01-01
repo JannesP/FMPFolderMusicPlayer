@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.media.AudioManager;
 import android.provider.MediaStore;
 import android.support.design.widget.Snackbar;
+import android.view.KeyEvent;
 import android.widget.Toast;
 
 /**
@@ -25,14 +26,16 @@ import android.widget.Toast;
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 public class MusicIntentReceiver extends BroadcastReceiver{
-    public static final String ACTION_MUSIC_CONTROL = "music_control";
-    public static final String ACTION_CLOSE = "close";
+    public static final String ACTION_PLAY = "com.reallynourl.nourl.fmpfoldermusicplayer.PLAY";
+    public static final String ACTION_PAUSE = "com.reallynourl.nourl.fmpfoldermusicplayer.PAUSE";
+    public static final String ACTION_NEXT = "com.reallynourl.nourl.fmpfoldermusicplayer.NEXT";
+    public static final String ACTION_PREVIOUS = "com.reallynourl.nourl.fmpfoldermusicplayer.PREVIOUS";
+    public static final String ACTION_CLOSE = "com.reallynourl.nourl.fmpfoldermusicplayer.CLOSE";
 
-    public static final String EXTRA_MUSIC_CONTROL_KEY = "command";
-    public static final int EXTRA_VALUE_PLAY = 2000;
-    public static final int EXTRA_VALUE_NEXT = 2001;
-    public static final int EXTRA_VALUE_PREVIOUS = 2002;
-    public static final int EXTRA_VALUE_PAUSE = 2003;
+    public static final int INTENT_ID_PLAY = 2000;
+    public static final int INTENT_ID_NEXT = 2001;
+    public static final int INTENT_ID_PREVIOUS = 2002;
+    public static final int INTENT_ID_PAUSE = 2003;
 
     @Override
     public void onReceive(Context context, Intent intent) {
@@ -40,33 +43,54 @@ public class MusicIntentReceiver extends BroadcastReceiver{
             case AudioManager.ACTION_AUDIO_BECOMING_NOISY:
                 MediaManager.getInstance().pause();
                 break;
-            case ACTION_MUSIC_CONTROL:
-                int command = intent.getIntExtra(EXTRA_MUSIC_CONTROL_KEY, -1);
-                switch (command) {
-                    case EXTRA_VALUE_PLAY:
+            case ACTION_PLAY:
+                MediaManager.getInstance().play();
+                break;
+            case ACTION_NEXT:
+                MediaManager.getInstance().next();
+                break;
+            case ACTION_PREVIOUS:
+                MediaManager.getInstance().previous();
+                break;
+            case ACTION_PAUSE:
+                MediaManager.getInstance().pause();
+                break;
+            case ACTION_CLOSE:
+                MediaManager.getInstance().stop();
+                MediaManager.getInstance().onMainActivityClosed();
+                break;
+            case Intent.ACTION_MEDIA_BUTTON:
+                KeyEvent keyEvent = (KeyEvent) intent.getExtras().get(
+                        Intent.EXTRA_KEY_EVENT);
+                if (keyEvent == null || keyEvent.getAction() != KeyEvent.ACTION_DOWN)
+                    return;
+
+                switch (keyEvent.getKeyCode()) {
+                    case KeyEvent.KEYCODE_HEADSETHOOK:
+                    case KeyEvent.KEYCODE_MEDIA_PLAY_PAUSE:
+                        if (MediaManager.getInstance().isPlaying()) {
+                            MediaManager.getInstance().pause();
+                        } else {
+                            MediaManager.getInstance().play();
+                        }
+                        break;
+                    case KeyEvent.KEYCODE_MEDIA_PLAY:
                         MediaManager.getInstance().play();
                         break;
-                    case EXTRA_VALUE_NEXT:
+                    case KeyEvent.KEYCODE_MEDIA_PAUSE:
+                        MediaManager.getInstance().pause();
+                        break;
+                    case KeyEvent.KEYCODE_MEDIA_NEXT:
                         MediaManager.getInstance().next();
                         break;
-                    case EXTRA_VALUE_PREVIOUS:
+                    case KeyEvent.KEYCODE_MEDIA_PREVIOUS:
                         MediaManager.getInstance().previous();
-                        break;
-                    case EXTRA_VALUE_PAUSE:
-                        MediaManager.getInstance().pause();
                         break;
                     default:
                         Toast.makeText(context,
-                                "FMP: Got invalid control intent: " + command,
+                                "Got not implemented Media Key: " + keyEvent.getKeyCode(),
                                 Toast.LENGTH_SHORT).show();
                 }
-                break;
-            case ACTION_CLOSE:
-                Toast.makeText(context,
-                        "This is not implemented at this point.", Toast.LENGTH_SHORT).show();
-                break;
-            case Intent.ACTION_MEDIA_BUTTON:
-                Toast.makeText(context, "Received ACTION_MEDIA_BUTTON", Toast.LENGTH_SHORT).show();
                 break;
         }
     }

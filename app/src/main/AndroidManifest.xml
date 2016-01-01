@@ -35,6 +35,10 @@
             <intent-filter>
                 <action android:name="android.media.AUDIO_BECOMING_NOISY" />
                 <action android:name="android.intent.action.MEDIA_BUTTON" />
+                <action android:name="com.reallynourl.nourl.fmpfoldermusicplayer.PLAY" />
+                <action android:name="com.reallynourl.nourl.fmpfoldermusicplayer.PAUSE" />
+                <action android:name="com.reallynourl.nourl.fmpfoldermusicplayer.NEXT" />
+                <action android:name="com.reallynourl.nourl.fmpfoldermusicplayer.PREVIOUS" />
             </intent-filter>
         </receiver>
     </application>

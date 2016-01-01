@@ -134,6 +134,7 @@ public class MediaManager implements MediaPlayer.OnCompletionListener, Playlist.
     }
 
     public void release() {
+        mContext.stopService(new Intent(mContext, MediaService.class));
         sInstance = null;
         mPlaylist = null;
         mContext = null;
