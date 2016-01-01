@@ -243,6 +243,7 @@ public class MediaService extends Service implements MediaPlayer.OnPreparedListe
             if (mMediaPlayer.isPlaying()) {
                 stop();
             }
+            mMediaSession.setActive(false);
             mMediaPlayer.release();
             mMediaPlayer = null;
         }
