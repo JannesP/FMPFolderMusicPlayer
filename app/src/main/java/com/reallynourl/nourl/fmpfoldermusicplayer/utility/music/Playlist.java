@@ -34,8 +34,9 @@ public class Playlist {
     private int mCurrentFile;
     private boolean mIsShuffle;
     private RepeatMode mRepeatMode;
-    private List<OnPlaylistItemsChangedListener> mPlaylistChangedListeners;
-    private List<OnPlaylistCurrentItemChangedListener> mPlaylistCurrentItemChangedListeners;
+    private List<OnItemsChangedListener> mOnItemsChangedListeners;
+    private List<OnCurrentItemChangedListener> mOnCurrentItemChangedListeners;
+    private List<OnModeChangedListener> mOnModeChangedListeners;
     private Context mContext;
 
 
@@ -44,8 +45,9 @@ public class Playlist {
         loadPreferences(context);
         mFiles = new ArrayList<>();
         mCurrentFile = -1;
-        mPlaylistChangedListeners = new ArrayList<>(1);
-        mPlaylistCurrentItemChangedListeners = new ArrayList<>(1);
+        mOnItemsChangedListeners = new ArrayList<>(3);
+        mOnCurrentItemChangedListeners = new ArrayList<>(3);
+        mOnModeChangedListeners = new ArrayList<>(3);
     }
 
     private void loadPreferences(Context context) {
@@ -68,37 +70,54 @@ public class Playlist {
         editor.apply();
     }
 
-    public void addOnPlayListChangedListener(OnPlaylistItemsChangedListener listener) {
-        mPlaylistChangedListeners.remove(listener);
-        mPlaylistChangedListeners.add(listener);
+    public void addOnItemsChangedListener(OnItemsChangedListener l) {
+        mOnItemsChangedListeners.remove(l);
+        mOnItemsChangedListeners.add(l);
     }
 
-    public void addOnPlaylistCurrentItemChangedListener(OnPlaylistCurrentItemChangedListener listener) {
-        mPlaylistCurrentItemChangedListeners.remove(listener);
-        mPlaylistCurrentItemChangedListeners.add(listener);
+    public void addOnModeChangedListener(OnModeChangedListener l) {
+        mOnModeChangedListeners.remove(l);
+        mOnModeChangedListeners.add(l);
     }
 
-    public void removeOnPlaylistChangedListener(OnPlaylistItemsChangedListener listener) {
+    public void addOnCurrentItemChangedListener(OnCurrentItemChangedListener l) {
+        mOnCurrentItemChangedListeners.remove(l);
+        mOnCurrentItemChangedListeners.add(l);
+    }
+
+    public void removeOnPlaylistChangedListener(OnModeChangedListener listener) {
         while (true) {  //could be done without while(true) but looks cleaner this way
-            if (!(mPlaylistChangedListeners.remove(listener))) break;
+            if (!(mOnModeChangedListeners.remove(listener))) break;
         }
     }
 
-    public void removeOnPlaylistCurrentItemChangedListener(OnPlaylistCurrentItemChangedListener listener) {
+    public void removeOnModeChangedListener(OnItemsChangedListener listener) {
         while (true) {  //could be done without while(true) but looks cleaner this way
-            if (!(mPlaylistCurrentItemChangedListeners.remove(listener))) break;
+            if (!(mOnItemsChangedListeners.remove(listener))) break;
         }
     }
 
-    protected void playlistChanged() {
-        for (OnPlaylistItemsChangedListener listener : mPlaylistChangedListeners) {
+    public void removeOnPlaylistCurrentItemChangedListener(OnCurrentItemChangedListener listener) {
+        while (true) {  //could be done without while(true) but looks cleaner this way
+            if (!(mOnCurrentItemChangedListeners.remove(listener))) break;
+        }
+    }
+
+    protected void itemsChanged() {
+        for (OnItemsChangedListener listener : mOnItemsChangedListeners) {
             listener.onPlaylistItemsChanged(this);
         }
     }
 
     protected void currentItemChanged() {
-        for (OnPlaylistCurrentItemChangedListener listener : mPlaylistCurrentItemChangedListeners) {
+        for (OnCurrentItemChangedListener listener : mOnCurrentItemChangedListeners) {
             listener.onPlaylistCurrentItemChanged(this);
+        }
+    }
+
+    protected void modeChanged() {
+        for (OnModeChangedListener listener : mOnModeChangedListeners) {
+            listener.onPlaylistModeChanged(this);
         }
     }
 
@@ -107,35 +126,38 @@ public class Playlist {
     }
 
     public void setShuffle(boolean isShuffle) {
-        this.mIsShuffle = isShuffle;
-        saveShuffle();
+        if (isShuffle != mIsShuffle) {
+            this.mIsShuffle = isShuffle;
+            saveShuffle();
+            modeChanged();
+        }
     }
 
     public int append(File file) {
         mFiles.add(file);
-        playlistChanged();
+        itemsChanged();
         return mFiles.size() - 1;
     }
 
     public void appendAll(File[] files) {
         Collections.addAll(mFiles, files);
-        playlistChanged();
+        itemsChanged();
     }
 
     public void appendAll(Collection<? extends File> files) {
         mFiles.addAll(files);
-        playlistChanged();
+        itemsChanged();
     }
 
     public void clear() {
         mFiles.clear();
-        playlistChanged();
+        itemsChanged();
     }
 
     public void remove(int index) {
         if (index >= 0 && mFiles.size() < index) {
             if (mFiles.remove(index) != null) {
-                playlistChanged();
+                itemsChanged();
             }
         }
     }
@@ -143,10 +165,10 @@ public class Playlist {
     public int appendNext(File file) {
         if (mFiles.size() >= (mCurrentFile + 1)) {
             mFiles.add(mCurrentFile + 1, file);
-            playlistChanged();
+            itemsChanged();
         } else if (mFiles.isEmpty()) {
             mFiles.add(file);
-            playlistChanged();
+            itemsChanged();
         }
         return mCurrentFile + 1;
     }
@@ -214,8 +236,12 @@ public class Playlist {
     }
 
     public void setRepeatMode(RepeatMode repeatMode) {
-        this.mRepeatMode = repeatMode;
-        saveRepeatMode();
+        if (mRepeatMode != repeatMode) {
+            this.mRepeatMode = repeatMode;
+            saveRepeatMode();
+            modeChanged();
+        }
+
     }
 
     private boolean selectNextInternal() {
@@ -297,11 +323,19 @@ public class Playlist {
         setCurrent(-1);
     }
 
-    public interface OnPlaylistItemsChangedListener {
+    public int size() {
+        return mFiles.size();
+    }
+
+    public interface OnItemsChangedListener {
         void onPlaylistItemsChanged(Playlist playlist);
     }
 
-    public interface OnPlaylistCurrentItemChangedListener {
+    public interface OnCurrentItemChangedListener {
         void onPlaylistCurrentItemChanged(Playlist playlist);
+    }
+
+    public interface OnModeChangedListener {
+        void onPlaylistModeChanged(Playlist playlist);
     }
 }

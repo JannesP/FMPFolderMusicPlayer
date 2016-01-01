@@ -6,6 +6,7 @@ import android.media.session.MediaSession;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.ResultReceiver;
+import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.v4.media.session.MediaSessionCompat;
 import android.util.Log;
@@ -37,22 +38,22 @@ public class MediaEventReceiver extends MediaSessionCompat.Callback {
 
     @Override
     public void onPlay() {
-        Log.i(TAG, "onPlay");
+        MediaManager.getInstance().play();
     }
 
     @Override
     public void onPause() {
-        Log.i(TAG, "onPause");
+        MediaManager.getInstance().pause();
     }
 
     @Override
     public void onSkipToNext() {
-        Log.i(TAG, "onSkipToNext");
+        MediaManager.getInstance().next();
     }
 
     @Override
     public void onSkipToPrevious() {
-        Log.i(TAG, "onSkipToPrevious");
+        MediaManager.getInstance().previous();
     }
 
     @Override
@@ -67,11 +68,11 @@ public class MediaEventReceiver extends MediaSessionCompat.Callback {
 
     @Override
     public void onStop() {
-        Log.i(TAG, "onStop");
+        MediaManager.getInstance().stop();
     }
 
     @Override
     public void onSeekTo(long pos) {
-        Log.i(TAG, "onSeekTo");
+        MediaManager.getInstance().seekTo((int)pos);
     }
 }

@@ -34,7 +34,7 @@ import java.util.concurrent.TimeUnit;
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-public class MusicPlaylistAdapter extends BaseAdapter implements Playlist.OnPlaylistItemsChangedListener, Runnable, Playlist.OnPlaylistCurrentItemChangedListener, OptionView {
+public class MusicPlaylistAdapter extends BaseAdapter implements Playlist.OnItemsChangedListener, Runnable, Playlist.OnCurrentItemChangedListener, OptionView {
     private final Object mDataLock = new Object();
     private OnOptionsClickedListener mOnItemOptionsClickedListener;
     private int mAccentColor;
@@ -45,8 +45,8 @@ public class MusicPlaylistAdapter extends BaseAdapter implements Playlist.OnPlay
     public MusicPlaylistAdapter(int accentColor) {
         this.mAccentColor = accentColor;
         reloadData();
-        MediaManager.getInstance().getPlaylist().addOnPlayListChangedListener(this);
-        MediaManager.getInstance().getPlaylist().addOnPlaylistCurrentItemChangedListener(this);
+        MediaManager.getInstance().getPlaylist().addOnItemsChangedListener(this);
+        MediaManager.getInstance().getPlaylist().addOnCurrentItemChangedListener(this);
     }
 
     @Override

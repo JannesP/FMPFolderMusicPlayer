@@ -1,6 +1,5 @@
 package com.reallynourl.nourl.fmpfoldermusicplayer.utility.music;
 
-import android.annotation.SuppressLint;
 import android.app.Notification;
 import android.app.PendingIntent;
 import android.app.Service;
@@ -8,18 +7,17 @@ import android.content.Context;
 import android.content.Intent;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
-import android.media.session.MediaSession;
 import android.net.Uri;
-import android.os.Build;
 import android.os.IBinder;
 import android.os.PowerManager;
 import android.support.annotation.Nullable;
 import android.support.v4.media.session.MediaSessionCompat;
-import android.support.v7.app.NotificationCompat;
+import android.support.v4.media.session.PlaybackStateCompat;
 import android.util.Log;
 import android.widget.Toast;
 
-import com.reallynourl.nourl.fmpfoldermusicplayer.ui.notifications.MusicNotification;
+import com.reallynourl.nourl.fmpfoldermusicplayer.ui.activities.MainActivity;
+import com.reallynourl.nourl.fmpfoldermusicplayer.ui.notifications.MediaNotification;
 
 import java.io.File;
 import java.io.IOException;
@@ -43,15 +41,19 @@ import java.io.IOException;
 public class MediaService extends Service implements MediaPlayer.OnPreparedListener, MediaPlayer.OnErrorListener, AudioManager.OnAudioFocusChangeListener, MediaPlayer.OnCompletionListener, MediaPlayer.OnInfoListener {
     private final static int MEDIA_ERROR_SYSTEM = -2147483648;
     private final static String MEDIA_SESSION_NAME = "fmp_folder_music_player_playback";
+    private static final int INTENT_MEDIA_KEYS = 1000;
+    private static final int INTENT_SESSION_ACTIVITY = 1001;
 
     private static MediaService sInstance = null;
     private MediaPlayer mMediaPlayer;
     private MediaSessionCompat mMediaSession;
     private MediaEventReceiver mMediaEventReceiver;
     private boolean mIsPreparedToPlay = false;
+    private File mCurrentFile;
 
-    private void setupMediaPlayer(Uri file) {
+    private void setupMediaPlayer(File file) {
         mIsPreparedToPlay = false;
+        mCurrentFile = file;
         if (mMediaPlayer == null) {
             mMediaPlayer = new MediaPlayer();
             mMediaPlayer.setWakeMode(getApplicationContext(), PowerManager.PARTIAL_WAKE_LOCK);
@@ -63,40 +65,28 @@ public class MediaService extends Service implements MediaPlayer.OnPreparedListe
             mMediaPlayer.reset();
         }
         try {
-            mMediaPlayer.setDataSource(getApplicationContext(), file);
+            mMediaPlayer.setDataSource(getApplicationContext(), Uri.fromFile(file));
         } catch (IOException e) {
-            Toast.makeText(getApplicationContext(), "Failed to load the file.", Toast.LENGTH_LONG).show();
+            Toast.makeText(getApplicationContext(),
+                    "Failed to load the file.", Toast.LENGTH_LONG).show();
             return;
         }
         mMediaPlayer.prepareAsync();
-
-        mMediaSession = new MediaSessionCompat(getApplicationContext(), MEDIA_SESSION_NAME);
-        mMediaSession.setCallback(mMediaEventReceiver);
-        mMediaSession.setMediaButtonReceiver(
-                PendingIntent.getBroadcast(
-                        getApplicationContext(), 123,
-                        new Intent(getApplicationContext(), MusicIntentReceiver.class),
-                        PendingIntent.FLAG_UPDATE_CURRENT)
-        );
-        mMediaSession.setActive(true);
-        mMediaSession.setFlags(MediaSessionCompat.FLAG_HANDLES_TRANSPORT_CONTROLS | MediaSessionCompat.FLAG_HANDLES_MEDIA_BUTTONS);
-        Notification notification = MusicNotification.create(getApplicationContext(),
-                new File(file.getPath()), mMediaSession.getSessionToken());
-
-        startForeground(MusicNotification.NOTIFICATION_ID, notification);
     }
 
-    public void play(Uri file) {
+    public void play(File file) {
         setupMediaPlayer(file);
     }
 
     public boolean requestAudioFocus() {
         AudioManager audioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
-        int result = audioManager.requestAudioFocus(this, AudioManager.STREAM_MUSIC, AudioManager.AUDIOFOCUS_GAIN);
+        int result = audioManager.requestAudioFocus(
+                this, AudioManager.STREAM_MUSIC, AudioManager.AUDIOFOCUS_GAIN);
 
         if (result != AudioManager.AUDIOFOCUS_REQUEST_GRANTED) {
             mIsPreparedToPlay = false;
-            Toast.makeText(getApplicationContext(), "Failed to get audio focus. Not starting playback.", Toast.LENGTH_LONG).show();
+            Toast.makeText(getApplicationContext(),
+                    "Failed to get audio focus. Not starting playback.", Toast.LENGTH_LONG).show();
             if (mMediaPlayer != null) {
                 mMediaPlayer.stop();
             }
@@ -113,8 +103,31 @@ public class MediaService extends Service implements MediaPlayer.OnPreparedListe
             sInstance = null;
         }
         mMediaEventReceiver = new MediaEventReceiver();
+        setupMediaSession();
         sInstance = this;
         Log.d("Media Service", "Media Service created!");
+    }
+
+    private void setupMediaSession() {
+        mMediaSession = new MediaSessionCompat(getApplicationContext(), MEDIA_SESSION_NAME);
+        mMediaSession.setCallback(mMediaEventReceiver);
+        mMediaSession.setMediaButtonReceiver(
+                PendingIntent.getBroadcast(
+                        getApplicationContext(),
+                        INTENT_MEDIA_KEYS,
+                        new Intent(getApplicationContext(), MusicIntentReceiver.class),
+                        PendingIntent.FLAG_UPDATE_CURRENT
+                )
+        );
+        mMediaSession.setQueueTitle("Now Playing");
+        mMediaSession.setSessionActivity(
+                PendingIntent.getActivity(
+                        getApplicationContext(),
+                        INTENT_SESSION_ACTIVITY,
+                        new Intent(getApplicationContext(), MainActivity.class),
+                        PendingIntent.FLAG_UPDATE_CURRENT
+                )
+        );
     }
 
     @Nullable
@@ -127,6 +140,8 @@ public class MediaService extends Service implements MediaPlayer.OnPreparedListe
     public void onDestroy() {
         releasePlayer();
         sInstance = null;
+        mMediaSession.release();
+        mMediaSession = null;
         MediaManager mediaManager = MediaManager.getInstance();
         if (mediaManager != null) mediaManager.release();
         stopForeground(true);
@@ -145,7 +160,9 @@ public class MediaService extends Service implements MediaPlayer.OnPreparedListe
         if (requestAudioFocus()) {
             mp.start();
             mp.setOnCompletionListener(this);
+            mMediaSession.setActive(true);
             mIsPreparedToPlay = true;
+            MediaNotification.showUpdate(this, mCurrentFile, mMediaSession);
         }
     }
 
@@ -158,6 +175,7 @@ public class MediaService extends Service implements MediaPlayer.OnPreparedListe
             stopSelf();
         } else {
             MediaManager.getInstance().onCompletion(mp);
+            MediaNotification.showUpdate(this, mCurrentFile, mMediaSession);
         }
     }
 
@@ -199,7 +217,7 @@ public class MediaService extends Service implements MediaPlayer.OnPreparedListe
         switch (focusChange) {
             case AudioManager.AUDIOFOCUS_GAIN:
                 if (mMediaPlayer != null) {
-                    mMediaPlayer.start();
+                    play();
                     mMediaPlayer.setVolume(1.0f, 1.0f);
                 }
                 break;
@@ -209,9 +227,7 @@ public class MediaService extends Service implements MediaPlayer.OnPreparedListe
                 }
                 break;
             case AudioManager.AUDIOFOCUS_LOSS_TRANSIENT:
-                if (mMediaPlayer != null && mMediaPlayer.isPlaying()) {
-                    mMediaPlayer.pause();
-                }
+                pause();
                 break;
             case AudioManager.AUDIOFOCUS_LOSS_TRANSIENT_CAN_DUCK:
                 if (mMediaPlayer != null && mMediaPlayer.isPlaying()) {
@@ -225,10 +241,8 @@ public class MediaService extends Service implements MediaPlayer.OnPreparedListe
         mIsPreparedToPlay = false;
         if (mMediaPlayer != null) {
             if (mMediaPlayer.isPlaying()) {
-                mMediaPlayer.stop();
+                stop();
             }
-            mMediaSession.release();
-            mMediaSession = null;
             mMediaPlayer.release();
             mMediaPlayer = null;
         }
@@ -237,18 +251,21 @@ public class MediaService extends Service implements MediaPlayer.OnPreparedListe
     public void pause() {
         if (mMediaPlayer != null && mIsPreparedToPlay && mMediaPlayer.isPlaying()) {
             mMediaPlayer.pause();
+            MediaNotification.showUpdate(this, mCurrentFile, mMediaSession);
         }
     }
 
     public void play() {
         if (mMediaPlayer != null && mIsPreparedToPlay && !mMediaPlayer.isPlaying()) {
             mMediaPlayer.start();
+            MediaNotification.showUpdate(this, mCurrentFile, mMediaSession);
         }
     }
 
     public void seekTo(int msec) {
         if (mMediaPlayer != null && mIsPreparedToPlay && mMediaPlayer.getDuration() > msec) {
             mMediaPlayer.seekTo(msec);
+            MediaNotification.showUpdate(this, mCurrentFile, mMediaSession);
         }
     }
 
@@ -275,6 +292,7 @@ public class MediaService extends Service implements MediaPlayer.OnPreparedListe
             mIsPreparedToPlay = false;
             if (mMediaPlayer.isPlaying()) mMediaPlayer.stop();
             releasePlayer();
+            stopForeground(true);
         }
     }
 
@@ -284,7 +302,16 @@ public class MediaService extends Service implements MediaPlayer.OnPreparedListe
 
     @Override
     public boolean onInfo(MediaPlayer mp, int what, int extra) {
-        Toast.makeText(this, "An info event was fired by the mediaplayer.", Toast.LENGTH_SHORT).show();
+        Toast.makeText(this,
+                "An info event was fired by the MediaPlayer.", Toast.LENGTH_SHORT).show();
         return true;
+    }
+
+    public File getCurrentFile() {
+        return mCurrentFile;
+    }
+
+    public MediaSessionCompat getMediaSession() {
+        return mMediaSession;
     }
 }

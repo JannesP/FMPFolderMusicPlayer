@@ -29,11 +29,10 @@ public class MusicIntentReceiver extends BroadcastReceiver{
     public static final String ACTION_CLOSE = "close";
 
     public static final String EXTRA_MUSIC_CONTROL_KEY = "command";
-    public static final int EXTRA_VALUE_PLAY = 0;
-    public static final int EXTRA_VALUE_NEXT = 1;
-    public static final int EXTRA_VALUE_PREVIOUS = 2;
-
-
+    public static final int EXTRA_VALUE_PLAY = 2000;
+    public static final int EXTRA_VALUE_NEXT = 2001;
+    public static final int EXTRA_VALUE_PREVIOUS = 2002;
+    public static final int EXTRA_VALUE_PAUSE = 2003;
 
     @Override
     public void onReceive(Context context, Intent intent) {
@@ -45,11 +44,7 @@ public class MusicIntentReceiver extends BroadcastReceiver{
                 int command = intent.getIntExtra(EXTRA_MUSIC_CONTROL_KEY, -1);
                 switch (command) {
                     case EXTRA_VALUE_PLAY:
-                        if (MediaManager.getInstance().isPlaying()) {
-                            MediaManager.getInstance().pause();
-                        } else {
-                            MediaManager.getInstance().play();
-                        }
+                        MediaManager.getInstance().play();
                         break;
                     case EXTRA_VALUE_NEXT:
                         MediaManager.getInstance().next();
@@ -57,15 +52,21 @@ public class MusicIntentReceiver extends BroadcastReceiver{
                     case EXTRA_VALUE_PREVIOUS:
                         MediaManager.getInstance().previous();
                         break;
+                    case EXTRA_VALUE_PAUSE:
+                        MediaManager.getInstance().pause();
+                        break;
                     default:
-                        Toast.makeText(context, "FMP: Got invalid control intent: " + command, Toast.LENGTH_SHORT).show();
+                        Toast.makeText(context,
+                                "FMP: Got invalid control intent: " + command,
+                                Toast.LENGTH_SHORT).show();
                 }
                 break;
             case ACTION_CLOSE:
-                Toast.makeText(context, "This is not omplemented at this point.", Toast.LENGTH_SHORT).show();
+                Toast.makeText(context,
+                        "This is not implemented at this point.", Toast.LENGTH_SHORT).show();
                 break;
             case Intent.ACTION_MEDIA_BUTTON:
-                String key = intent.getStringExtra(Intent.EXTRA_KEY_EVENT);
+                Toast.makeText(context, "Received ACTION_MEDIA_BUTTON", Toast.LENGTH_SHORT).show();
                 break;
         }
     }

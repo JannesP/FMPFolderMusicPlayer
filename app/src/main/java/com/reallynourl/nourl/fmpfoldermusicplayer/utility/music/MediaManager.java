@@ -3,10 +3,9 @@ package com.reallynourl.nourl.fmpfoldermusicplayer.utility.music;
 import android.content.Context;
 import android.content.Intent;
 import android.media.MediaPlayer;
-import android.net.Uri;
-import android.support.v4.media.session.*;
 import android.util.Log;
-import android.widget.Toast;
+
+import com.reallynourl.nourl.fmpfoldermusicplayer.ui.notifications.MediaNotification;
 
 import java.io.File;
 
@@ -26,7 +25,7 @@ import java.io.File;
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-public class MediaManager implements MediaPlayer.OnCompletionListener {
+public class MediaManager implements MediaPlayer.OnCompletionListener, Playlist.OnItemsChangedListener, Playlist.OnModeChangedListener {
     private static MediaManager sInstance;
 
     private Playlist mPlaylist;
@@ -35,6 +34,8 @@ public class MediaManager implements MediaPlayer.OnCompletionListener {
     private MediaManager(Context mContext) {
         this.mContext = mContext;
         this.mPlaylist = new Playlist(mContext);
+        this.mPlaylist.addOnItemsChangedListener(this);
+        this.mPlaylist.addOnModeChangedListener(this);
         mContext.startService(new Intent(mContext, MediaService.class));
     }
 
@@ -56,14 +57,14 @@ public class MediaManager implements MediaPlayer.OnCompletionListener {
     public void addPlaylistNextAndPlay(File file) {
         mPlaylist.appendNext(file);
         file = mPlaylist.selectNext();
-        MediaService.getInstance().play(Uri.fromFile(file));
+        MediaService.getInstance().play(file);
     }
 
     public void playPlaylistItem(int index) {
         File file = mPlaylist.getList().get(index);
         if (file != null) {
             mPlaylist.setCurrent(index);
-            MediaService.getInstance().play(Uri.fromFile(file));
+            MediaService.getInstance().play(file);
         }
     }
 
@@ -116,14 +117,14 @@ public class MediaManager implements MediaPlayer.OnCompletionListener {
     public void next() {
         File file = mPlaylist.selectNext();
         if (file != null) {
-            MediaService.getInstance().play(Uri.fromFile(file));
+            MediaService.getInstance().play(file);
         }
     }
 
     public void previous() {
         File file = mPlaylist.selectPrevious();
         if (file != null) {
-            MediaService.getInstance().play(Uri.fromFile(file));
+            MediaService.getInstance().play(file);
         }
     }
 
@@ -139,11 +140,37 @@ public class MediaManager implements MediaPlayer.OnCompletionListener {
         Log.v("MediaManager", "MediaManager released!");
     }
 
+    public File getCurrentFile() {
+        return MediaService.getInstance().getCurrentFile();
+    }
+
     public void onMainActivityClosed() {
         MediaService mediaService = MediaService.getInstance();
         if (mediaService != null && !isPlaying()) {
             release();
             mediaService.stopSelf();
+        }
+    }
+
+    @Override
+    public void onPlaylistItemsChanged(Playlist playlist) {
+        MediaService service = MediaService.getInstance();
+        if (service != null) {
+            File file = getCurrentFile();
+            if (file != null) {
+                MediaNotification.showUpdate(service, getCurrentFile(), service.getMediaSession());
+            }
+        }
+    }
+
+    @Override
+    public void onPlaylistModeChanged(Playlist playlist) {
+        MediaService service = MediaService.getInstance();
+        if (service != null) {
+            File file = getCurrentFile();
+            if (file != null) {
+                MediaNotification.showUpdate(service, getCurrentFile(), service.getMediaSession());
+            }
         }
     }
 }
