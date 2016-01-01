@@ -1,6 +1,12 @@
-package com.reallynourl.nourl.fmpfoldermusicplayer.ui.fragments;
+package com.reallynourl.nourl.fmpfoldermusicplayer.ui.fragment;
 
-import android.app.Fragment;
+import android.os.Bundle;
+import android.support.annotation.Nullable;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+
+import com.reallynourl.nourl.fmpfoldermusicplayer.R;
 
 /**
  * Copyright (C) 2015  Jannes Peters
@@ -18,23 +24,17 @@ import android.app.Fragment;
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-public abstract class MainContentFragment extends Fragment {
-    private String mName = "";
+public class MusicPlayingFragment extends MainContentFragment {
+    public static final String NAME = "music_playing";
 
-    protected MainContentFragment(String name) {
-        this.mName = name;
+    public MusicPlayingFragment() {
+        super(NAME);
     }
 
-    public String getName() {
-        return mName;
+    @Nullable
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        //inflate layout for fragment
+        return inflater.inflate(R.layout.fragment_music_playback, container, false);
     }
-
-    /**
-     * Called when the back button is pressed and the Fragment is loaded as main content.
-     * @return if the back press was handled by the fragment.
-     */
-    public boolean onBackPressed() {
-        return false;
-    }
-
 }

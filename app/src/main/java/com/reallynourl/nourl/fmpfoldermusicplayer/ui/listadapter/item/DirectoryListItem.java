@@ -1,4 +1,4 @@
-package com.reallynourl.nourl.fmpfoldermusicplayer.ui.fragments.filebrowser.listadapter;
+package com.reallynourl.nourl.fmpfoldermusicplayer.ui.listadapter.item;
 
 import android.content.Context;
 import android.util.AttributeSet;

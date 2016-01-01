@@ -1,4 +1,4 @@
-package com.reallynourl.nourl.fmpfoldermusicplayer.ui.fragments.music.playlist;
+package com.reallynourl.nourl.fmpfoldermusicplayer.ui.fragment;
 
 import android.app.Fragment;
 import android.os.Bundle;
@@ -10,11 +10,12 @@ import android.widget.AdapterView;
 import android.widget.Toast;
 
 import com.reallynourl.nourl.fmpfoldermusicplayer.R;
-import com.reallynourl.nourl.fmpfoldermusicplayer.ui.controls.OptionView;
-import com.reallynourl.nourl.fmpfoldermusicplayer.ui.controls.OptionsListView;
-import com.reallynourl.nourl.fmpfoldermusicplayer.ui.fragments.filebrowser.listadapter.AudioFileListItem;
+import com.reallynourl.nourl.fmpfoldermusicplayer.ui.control.OptionView;
+import com.reallynourl.nourl.fmpfoldermusicplayer.ui.control.OptionsListView;
+import com.reallynourl.nourl.fmpfoldermusicplayer.ui.listadapter.item.AudioFileListItem;
+import com.reallynourl.nourl.fmpfoldermusicplayer.ui.listadapter.MusicPlaylistAdapter;
 import com.reallynourl.nourl.fmpfoldermusicplayer.utility.Util;
-import com.reallynourl.nourl.fmpfoldermusicplayer.utility.music.MediaManager;
+import com.reallynourl.nourl.fmpfoldermusicplayer.backend.MediaManager;
 
 /**
  * Copyright (C) 2015  Jannes Peters

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<com.reallynourl.nourl.fmpfoldermusicplayer.ui.fragments.filebrowser.listadapter.AudioFileListItem xmlns:android="http://schemas.android.com/apk/res/android"
+<com.reallynourl.nourl.fmpfoldermusicplayer.ui.listadapter.item.AudioFileListItem xmlns:android="http://schemas.android.com/apk/res/android"
               android:layout_width="match_parent"
               android:layout_height="?android:attr/listPreferredItemHeight"
               android:layout_margin="5dp">
@@ -57,4 +57,4 @@
         </LinearLayout>
 
     </RelativeLayout>
-</com.reallynourl.nourl.fmpfoldermusicplayer.ui.fragments.filebrowser.listadapter.AudioFileListItem>
+</com.reallynourl.nourl.fmpfoldermusicplayer.ui.listadapter.item.AudioFileListItem>

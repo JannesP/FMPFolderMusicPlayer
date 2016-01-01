@@ -1,4 +1,4 @@
-package com.reallynourl.nourl.fmpfoldermusicplayer.ui.fragments.music.playlist;
+package com.reallynourl.nourl.fmpfoldermusicplayer.ui.listadapter;
 
 import android.graphics.Color;
 import android.media.MediaMetadataRetriever;
@@ -8,10 +8,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 
-import com.reallynourl.nourl.fmpfoldermusicplayer.ui.controls.OptionView;
-import com.reallynourl.nourl.fmpfoldermusicplayer.ui.fragments.filebrowser.listadapter.AudioFileListItem;
-import com.reallynourl.nourl.fmpfoldermusicplayer.utility.music.MediaManager;
-import com.reallynourl.nourl.fmpfoldermusicplayer.utility.music.Playlist;
+import com.reallynourl.nourl.fmpfoldermusicplayer.ui.control.OptionView;
+import com.reallynourl.nourl.fmpfoldermusicplayer.ui.listadapter.item.AudioFileListItem;
+import com.reallynourl.nourl.fmpfoldermusicplayer.backend.MediaManager;
+import com.reallynourl.nourl.fmpfoldermusicplayer.backend.playlist.Playlist;
 
 import java.io.File;
 import java.util.ArrayList;

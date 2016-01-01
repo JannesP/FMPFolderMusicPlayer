@@ -1,4 +1,4 @@
-package com.reallynourl.nourl.fmpfoldermusicplayer.ui.activities;
+package com.reallynourl.nourl.fmpfoldermusicplayer.ui.activity;
 
 import android.os.Bundle;
 import android.preference.PreferenceActivity;

@@ -1,8 +1,5 @@
 package com.reallynourl.nourl.fmpfoldermusicplayer.ui.notifications;
 
-import android.annotation.SuppressLint;
-import android.annotation.TargetApi;
-import android.app.Notification;
 import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Context;
@@ -16,12 +13,11 @@ import android.support.v4.media.session.PlaybackStateCompat;
 import android.support.v7.app.NotificationCompat;
 
 import com.reallynourl.nourl.fmpfoldermusicplayer.R;
-import com.reallynourl.nourl.fmpfoldermusicplayer.ui.activities.MainActivity;
-import com.reallynourl.nourl.fmpfoldermusicplayer.ui.fragments.music.MusicControlFragment;
-import com.reallynourl.nourl.fmpfoldermusicplayer.ui.fragments.music.MusicPlayingFragment;
+import com.reallynourl.nourl.fmpfoldermusicplayer.ui.activity.MainActivity;
+import com.reallynourl.nourl.fmpfoldermusicplayer.ui.fragment.MusicPlayingFragment;
 import com.reallynourl.nourl.fmpfoldermusicplayer.utility.file.FileUtil;
-import com.reallynourl.nourl.fmpfoldermusicplayer.utility.music.MediaManager;
-import com.reallynourl.nourl.fmpfoldermusicplayer.utility.music.MusicIntentReceiver;
+import com.reallynourl.nourl.fmpfoldermusicplayer.backend.MediaManager;
+import com.reallynourl.nourl.fmpfoldermusicplayer.backend.MusicIntentReceiver;
 
 import java.io.File;
 

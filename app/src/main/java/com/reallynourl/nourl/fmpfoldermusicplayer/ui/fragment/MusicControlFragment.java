@@ -1,4 +1,4 @@
-package com.reallynourl.nourl.fmpfoldermusicplayer.ui.fragments.music;
+package com.reallynourl.nourl.fmpfoldermusicplayer.ui.fragment;
 
 import android.app.Fragment;
 import android.graphics.Color;
@@ -14,8 +14,8 @@ import android.widget.Toast;
 
 import com.reallynourl.nourl.fmpfoldermusicplayer.R;
 import com.reallynourl.nourl.fmpfoldermusicplayer.utility.Util;
-import com.reallynourl.nourl.fmpfoldermusicplayer.utility.music.MediaManager;
-import com.reallynourl.nourl.fmpfoldermusicplayer.utility.music.RepeatMode;
+import com.reallynourl.nourl.fmpfoldermusicplayer.backend.MediaManager;
+import com.reallynourl.nourl.fmpfoldermusicplayer.backend.playlist.RepeatMode;
 
 /**
  * Copyright (C) 2015  Jannes Peters

@@ -8,7 +8,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
-        android:name="com.reallynourl.nourl.fmpfoldermusicplayer.ui.fragments.music.MusicControlFragment"
+        android:name="com.reallynourl.nourl.fmpfoldermusicplayer.ui.fragment.MusicControlFragment"
         android:id="@+id/fragmentMusicControls"
         tools:layout="@layout/fragment_music_controls"/>
 
@@ -17,7 +17,7 @@
         android:layout_height="match_parent"
         android:layout_alignParentTop="true"
         android:layout_above="@id/fragmentMusicControls"
-        android:name="com.reallynourl.nourl.fmpfoldermusicplayer.ui.fragments.music.playlist.MusicPlaylistFragment"
+        android:name="com.reallynourl.nourl.fmpfoldermusicplayer.ui.fragment.MusicPlaylistFragment"
         android:id="@+id/fragmentPlaylist"
         tools:layout="@layout/fragment_music_playlist"/>
 

@@ -1,11 +1,9 @@
-package com.reallynourl.nourl.fmpfoldermusicplayer.utility.music;
+package com.reallynourl.nourl.fmpfoldermusicplayer.backend;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.media.AudioManager;
-import android.provider.MediaStore;
-import android.support.design.widget.Snackbar;
 import android.view.KeyEvent;
 import android.widget.Toast;
 

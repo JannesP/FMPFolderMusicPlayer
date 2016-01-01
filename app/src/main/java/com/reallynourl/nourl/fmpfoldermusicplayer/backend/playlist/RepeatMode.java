@@ -1,6 +1,4 @@
-package com.reallynourl.nourl.fmpfoldermusicplayer.ui.controls;
-
-import android.view.View;
+package com.reallynourl.nourl.fmpfoldermusicplayer.backend.playlist;
 
 /**
  * Copyright (C) 2015  Jannes Peters
@@ -18,10 +16,26 @@ import android.view.View;
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-public interface OptionView {
-    void setOnItemOptionsClickedListener(OnOptionsClickedListener listener);
+public enum RepeatMode {
+    OFF(0), ALL(1), SINGLE(2);
 
-    interface OnOptionsClickedListener {
-        void onItemOptionsClicked(View view, View anchor);
+    private int mId;
+    RepeatMode(int val) {
+        mId = val;
+    }
+
+    public static RepeatMode get(int id) {
+        RepeatMode result = null;
+        for (RepeatMode type : values()) {
+            if (type.getValue() == id) {
+                result = type;
+                break;
+            }
+        }
+        return result;
+    }
+
+    public int getValue() {
+        return mId;
     }
 }

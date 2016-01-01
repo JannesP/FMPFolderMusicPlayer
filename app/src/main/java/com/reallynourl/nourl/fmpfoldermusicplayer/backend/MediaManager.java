@@ -1,10 +1,11 @@
-package com.reallynourl.nourl.fmpfoldermusicplayer.utility.music;
+package com.reallynourl.nourl.fmpfoldermusicplayer.backend;
 
 import android.content.Context;
 import android.content.Intent;
 import android.media.MediaPlayer;
 import android.util.Log;
 
+import com.reallynourl.nourl.fmpfoldermusicplayer.backend.playlist.Playlist;
 import com.reallynourl.nourl.fmpfoldermusicplayer.ui.notifications.MediaNotification;
 
 import java.io.File;

@@ -1,4 +1,4 @@
-package com.reallynourl.nourl.fmpfoldermusicplayer.ui.fragments.filebrowser;
+package com.reallynourl.nourl.fmpfoldermusicplayer.ui.fragment;
 
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -17,21 +17,17 @@ import android.widget.AdapterView;
 import android.widget.Toast;
 
 import com.reallynourl.nourl.fmpfoldermusicplayer.R;
-import com.reallynourl.nourl.fmpfoldermusicplayer.ui.activities.MainActivity;
-import com.reallynourl.nourl.fmpfoldermusicplayer.ui.controls.OptionView;
-import com.reallynourl.nourl.fmpfoldermusicplayer.ui.controls.OptionsListView;
-import com.reallynourl.nourl.fmpfoldermusicplayer.ui.fragments.MainContentFragment;
-import com.reallynourl.nourl.fmpfoldermusicplayer.ui.fragments.filebrowser.listadapter.MusicBrowserAdapter;
-import com.reallynourl.nourl.fmpfoldermusicplayer.ui.fragments.filebrowser.listadapter.MusicBrowserListItem;
-import com.reallynourl.nourl.fmpfoldermusicplayer.ui.fragments.music.MusicControlFragment;
-import com.reallynourl.nourl.fmpfoldermusicplayer.ui.fragments.music.MusicPlayingFragment;
+import com.reallynourl.nourl.fmpfoldermusicplayer.ui.activity.MainActivity;
+import com.reallynourl.nourl.fmpfoldermusicplayer.ui.control.OptionView;
+import com.reallynourl.nourl.fmpfoldermusicplayer.ui.control.OptionsListView;
+import com.reallynourl.nourl.fmpfoldermusicplayer.ui.listadapter.MusicBrowserAdapter;
+import com.reallynourl.nourl.fmpfoldermusicplayer.ui.listadapter.item.MusicBrowserListItem;
 import com.reallynourl.nourl.fmpfoldermusicplayer.utility.file.AudioFileFilter;
 import com.reallynourl.nourl.fmpfoldermusicplayer.utility.file.FileType;
 import com.reallynourl.nourl.fmpfoldermusicplayer.utility.file.FileUtil;
-import com.reallynourl.nourl.fmpfoldermusicplayer.utility.music.MediaManager;
+import com.reallynourl.nourl.fmpfoldermusicplayer.backend.MediaManager;
 
 import java.io.File;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;

@@ -1,9 +1,8 @@
 package com.reallynourl.nourl.fmpfoldermusicplayer.utility;
 
-import android.provider.MediaStore;
 import android.util.Log;
 
-import com.reallynourl.nourl.fmpfoldermusicplayer.utility.music.MediaService;
+import com.reallynourl.nourl.fmpfoldermusicplayer.backend.MediaService;
 
 /**
  * Copyright (C) 2015  Jannes Peters

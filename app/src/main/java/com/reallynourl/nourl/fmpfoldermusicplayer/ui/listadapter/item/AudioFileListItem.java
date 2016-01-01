@@ -1,9 +1,8 @@
-package com.reallynourl.nourl.fmpfoldermusicplayer.ui.fragments.filebrowser.listadapter;
+package com.reallynourl.nourl.fmpfoldermusicplayer.ui.listadapter.item;
 
 import android.content.Context;
 import android.util.AttributeSet;
 import android.util.Log;
-import android.view.ContextMenu;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;

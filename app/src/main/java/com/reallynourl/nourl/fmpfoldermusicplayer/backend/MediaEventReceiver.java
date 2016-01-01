@@ -1,12 +1,9 @@
-package com.reallynourl.nourl.fmpfoldermusicplayer.utility.music;
+package com.reallynourl.nourl.fmpfoldermusicplayer.backend;
 
 import android.annotation.TargetApi;
-import android.content.Intent;
-import android.media.session.MediaSession;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.ResultReceiver;
-import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.v4.media.session.MediaSessionCompat;
 import android.util.Log;

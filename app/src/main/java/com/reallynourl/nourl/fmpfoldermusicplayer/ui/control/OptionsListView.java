@@ -1,10 +1,9 @@
-package com.reallynourl.nourl.fmpfoldermusicplayer.ui.controls;
+package com.reallynourl.nourl.fmpfoldermusicplayer.ui.control;
 
 import android.content.Context;
-import android.graphics.Color;
-import android.graphics.PorterDuff;
 import android.util.AttributeSet;
-import android.widget.ImageButton;
+import android.widget.ListAdapter;
+import android.widget.ListView;
 
 /**
  * Copyright (C) 2015  Jannes Peters
@@ -22,28 +21,26 @@ import android.widget.ImageButton;
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-public class ExtendedImageButton extends ImageButton {
-    private final int disabledFilter = Color.GRAY;
+public class OptionsListView extends ListView implements OptionView {
+    private OnOptionsClickedListener mOnItemOptionsClickedListener = null;
 
-    public ExtendedImageButton(Context context) {
+    public OptionsListView(Context context) {
         super(context);
     }
 
-    public ExtendedImageButton(Context context, AttributeSet attrs) {
+    public OptionsListView(Context context, AttributeSet attrs) {
         super(context, attrs);
     }
 
-    public ExtendedImageButton(Context context, AttributeSet attrs, int defStyleAttr) {
+    public OptionsListView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
     }
 
-    @Override
-    public void setEnabled(boolean enabled) {
-        if (!enabled) {
-            setColorFilter(disabledFilter, PorterDuff.Mode.SRC_IN);
-        } else {
-            setColorFilter(Color.TRANSPARENT);
+    public void setOnItemOptionsClickedListener(OnOptionsClickedListener listener) {
+        mOnItemOptionsClickedListener = listener;
+        ListAdapter adapter = getAdapter();
+        if (adapter != null && adapter instanceof OptionView) {
+            ((OptionView)adapter).setOnItemOptionsClickedListener(mOnItemOptionsClickedListener);
         }
-        super.setEnabled(enabled);
     }
 }

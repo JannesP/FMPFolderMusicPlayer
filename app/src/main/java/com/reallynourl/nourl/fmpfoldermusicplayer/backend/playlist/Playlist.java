@@ -1,4 +1,4 @@
-package com.reallynourl.nourl.fmpfoldermusicplayer.utility.music;
+package com.reallynourl.nourl.fmpfoldermusicplayer.backend.playlist;
 
 import android.content.Context;
 import android.content.SharedPreferences;
