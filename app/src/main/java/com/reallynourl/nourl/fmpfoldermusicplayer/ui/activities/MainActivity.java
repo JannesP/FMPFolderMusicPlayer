@@ -4,9 +4,11 @@ import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.renderscript.RSInvalidStateException;
 import android.support.annotation.IdRes;
 import android.support.annotation.NonNull;
@@ -88,20 +90,20 @@ public class MainActivity extends AppCompatActivity
         Log.d("MainActivity", "onNewIntent called!");
     }
 
-    private void loadFragmentFromBundle(Bundle bundle) {
+    private boolean loadFragmentFromBundle(Bundle bundle) {
+        boolean loaded = true;
         String res = "";
         if (bundle != null) {
             res = bundle.getString(FRAGMENT_EXTRA, "none");
         }
-        if (res.equals(MusicControlFragment.NAME)) {
-            setNavigationItem(R.id.nav_libraries);
-        } else {
-            if (MediaManager.getInstance().isPlaying()) {
+        switch (res) {
+            case MusicPlayingFragment.NAME:
                 setNavigationItem(R.id.nav_currently_playing);
-            } else {
-                setNavigationItem(R.id.nav_file_browser);
-            }
+                break;
+            default:
+                loaded = false;
         }
+        return loaded;
     }
 
     public static void selectFragment(Context context, @NonNull String fragment) {
@@ -112,7 +114,7 @@ public class MainActivity extends AppCompatActivity
             intent.putExtras(b);
             context.startActivity(intent);
         } else {
-            if (fragment.equals(MusicControlFragment.NAME)) {
+            if (fragment.equals(MusicPlayingFragment.NAME)) {
                 sInstance.setNavigationItem(R.id.nav_currently_playing);
             } else {
                 Log.i("MainActivity", "Something tried to load the unknown fragment: " + fragment);
@@ -194,7 +196,21 @@ public class MainActivity extends AppCompatActivity
 
     private void loadUi() {
         Bundle bundle = getIntent().getExtras();
-        loadFragmentFromBundle(bundle);
+
+        if (!loadFragmentFromBundle(bundle)) {
+            String lastFragment = PreferenceManager.getDefaultSharedPreferences(this)
+                    .getString(getString(R.string.pref_last_main_content_fragment), "");
+            switch (lastFragment) {
+                case MusicPlayingFragment.NAME:
+                    if (MediaManager.getInstance().getPlaylist().size() != 0) {
+                        setNavigationItem(R.id.nav_currently_playing);
+                        break;
+                    }
+                case FileBrowserFragment.NAME:
+                default:
+                    setNavigationItem(R.id.nav_file_browser);
+            }
+        }
     }
 
     @Override
@@ -217,6 +233,9 @@ public class MainActivity extends AppCompatActivity
         FragmentTransaction ft = fm.beginTransaction();
         ft.replace(R.id.content_panel, fragment);
         ft.commit();
+        SharedPreferences.Editor edit = PreferenceManager.getDefaultSharedPreferences(this).edit();
+        edit.putString(getString(R.string.pref_last_main_content_fragment), fragment.getName());
+        edit.apply();
         mActiveFragment = fragment;
     }
 

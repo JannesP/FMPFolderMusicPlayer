@@ -14,6 +14,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.Toast;
 
 import com.reallynourl.nourl.fmpfoldermusicplayer.R;
 import com.reallynourl.nourl.fmpfoldermusicplayer.ui.activities.MainActivity;
@@ -23,6 +24,7 @@ import com.reallynourl.nourl.fmpfoldermusicplayer.ui.fragments.MainContentFragme
 import com.reallynourl.nourl.fmpfoldermusicplayer.ui.fragments.filebrowser.listadapter.MusicBrowserAdapter;
 import com.reallynourl.nourl.fmpfoldermusicplayer.ui.fragments.filebrowser.listadapter.MusicBrowserListItem;
 import com.reallynourl.nourl.fmpfoldermusicplayer.ui.fragments.music.MusicControlFragment;
+import com.reallynourl.nourl.fmpfoldermusicplayer.ui.fragments.music.MusicPlayingFragment;
 import com.reallynourl.nourl.fmpfoldermusicplayer.utility.file.AudioFileFilter;
 import com.reallynourl.nourl.fmpfoldermusicplayer.utility.file.FileType;
 import com.reallynourl.nourl.fmpfoldermusicplayer.utility.file.FileUtil;
@@ -50,7 +52,9 @@ import java.util.List;
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-public class FileBrowserFragment extends MainContentFragment implements AdapterView.OnItemClickListener, OptionView.OnOptionsClickedListener, PopupMenu.OnMenuItemClickListener {
+public class FileBrowserFragment extends MainContentFragment implements
+        AdapterView.OnItemClickListener,
+        OptionView.OnOptionsClickedListener, PopupMenu.OnMenuItemClickListener {
     public static final String NAME = "file_browser";
     private static final String TAG = "FileBrowserFragment";
 
@@ -58,7 +62,6 @@ public class FileBrowserFragment extends MainContentFragment implements AdapterV
 
     private View mRootView;
     private MusicBrowserListItem mCurrentMenuItem;
-    private File mStartPath;
     private File mCurrentPath;
 
     public FileBrowserFragment() {
@@ -68,17 +71,34 @@ public class FileBrowserFragment extends MainContentFragment implements AdapterV
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        File startPath = null;
         if (FileUtil.isExternalStorageWritable() || FileUtil.isExternalStorageReadable()) {
-            mStartPath = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MUSIC);//getExternalStorageDirectory() for root
+            String storedPath = PreferenceManager.getDefaultSharedPreferences(
+                    getActivity()).getString(getString(R.string.pref_last_file_browser_path), "");
+            if (!storedPath.equals("")) {
+                startPath = new File(storedPath);
+                if (!startPath.exists() || !startPath.isDirectory()) {
+                    startPath = null;
+                }
+            }
+            if (startPath == null) {
+                //getExternalStorageDirectory() for root
+                startPath = Environment
+                        .getExternalStoragePublicDirectory(Environment.DIRECTORY_MUSIC);
+            }
+        } else {
+            Toast.makeText(getActivity(),
+                    "Please allow this app storage access before using.", Toast.LENGTH_LONG).show();
         }
-        mCurrentPath = mStartPath;
+        mCurrentPath = startPath;
     }
 
     @Nullable
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
         //inflate layout for fragment
-        if (!mIsCreated) {
+        if (!mIsCreated && mCurrentPath != null) {
             mIsCreated = true;
             mRootView = inflater.inflate(R.layout.fragment_file_browser, container, false);
         }
@@ -95,6 +115,11 @@ public class FileBrowserFragment extends MainContentFragment implements AdapterV
     @Override
     public void onPause() {
         removeListeners();
+        SharedPreferences.Editor edit =
+                PreferenceManager.getDefaultSharedPreferences(getActivity()).edit();
+        edit.putString(getString(R.string.pref_last_file_browser_path),
+                mCurrentPath.getAbsolutePath());
+        edit.apply();
         super.onPause();
     }
 
@@ -180,22 +205,26 @@ public class FileBrowserFragment extends MainContentFragment implements AdapterV
                 changeDirectory(file);
                 break;
             case FILE:
-                Snackbar.make(parent, "You clicked on " + file.getName(), Snackbar.LENGTH_LONG).show();
+                Snackbar.make(parent,
+                        "You clicked on " + file.getName(), Snackbar.LENGTH_LONG).show();
                 break;
             case AUDIO:
                 MediaManager.getInstance().getPlaylist().clear();
                 File selectedFile = getBrowserAdapter().getItem(position);
                 if (selectedFile != null) {
-                    List<File> files = Arrays.asList(mCurrentPath.listFiles(new AudioFileFilter(false, false)));
+                    List<File> files = Arrays.asList(
+                            mCurrentPath.listFiles(new AudioFileFilter(false, false)));
                     Collections.sort(files);
                     position = files.indexOf(getBrowserAdapter().getItem(position));
                     MediaManager.getInstance().getPlaylist().appendAll(files);
                     MediaManager.getInstance().playPlaylistItem(position);
-                    MainActivity.selectFragment(getActivity().getApplicationContext(), MusicControlFragment.NAME);
+                    MainActivity.selectFragment(getActivity().getApplicationContext(),
+                            MusicPlayingFragment.NAME);
                 }
                 break;
             default:
-                Snackbar.make(parent, "What did you do? You selected an non existing file!", Snackbar.LENGTH_LONG).show();
+                Snackbar.make(parent, "What did you do? You selected an non existing file!",
+                        Snackbar.LENGTH_LONG).show();
         }
 
     }

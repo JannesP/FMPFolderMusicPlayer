@@ -18,6 +18,7 @@ import android.support.v7.app.NotificationCompat;
 import com.reallynourl.nourl.fmpfoldermusicplayer.R;
 import com.reallynourl.nourl.fmpfoldermusicplayer.ui.activities.MainActivity;
 import com.reallynourl.nourl.fmpfoldermusicplayer.ui.fragments.music.MusicControlFragment;
+import com.reallynourl.nourl.fmpfoldermusicplayer.ui.fragments.music.MusicPlayingFragment;
 import com.reallynourl.nourl.fmpfoldermusicplayer.utility.file.FileUtil;
 import com.reallynourl.nourl.fmpfoldermusicplayer.utility.music.MediaManager;
 import com.reallynourl.nourl.fmpfoldermusicplayer.utility.music.MusicIntentReceiver;
@@ -49,7 +50,7 @@ public final class MediaNotification {
     public static void showUpdate(Service service, File track,
                                     MediaSessionCompat mediaSession) {
         Bundle b = new Bundle(1);
-        b.putString(MainActivity.FRAGMENT_EXTRA, MusicControlFragment.NAME);
+        b.putString(MainActivity.FRAGMENT_EXTRA, MusicPlayingFragment.NAME);
         PendingIntent pi = PendingIntent.getActivity(service, 0,
                 new Intent(service, MainActivity.class).putExtras(b),
                 PendingIntent.FLAG_UPDATE_CURRENT);

@@ -10,4 +10,6 @@
     <string name="pref_general_use_light_theme">pref_general_use_light_theme</string>
     <string name="pref_file_browser_show_hidden">pref_file_browser_show_hidden</string>
     <string name="pref_file_browser_show_non_audio">pref_file_browser_show_non_audio</string>
+    <string name="pref_last_main_content_fragment">pref_last_main_content_fragment</string>
+    <string name="pref_last_file_browser_path">pref_last_file_browser_path</string>
 </resources>
