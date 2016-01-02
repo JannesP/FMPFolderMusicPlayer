@@ -1,9 +1,7 @@
 package com.reallynourl.nourl.fmpfoldermusicplayer.ui.listadapter;
 
 import android.graphics.Color;
-import android.media.MediaMetadataRetriever;
 import android.os.Process;
-import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
@@ -12,6 +10,8 @@ import com.reallynourl.nourl.fmpfoldermusicplayer.backend.MediaManager;
 import com.reallynourl.nourl.fmpfoldermusicplayer.backend.playlist.Playlist;
 import com.reallynourl.nourl.fmpfoldermusicplayer.ui.control.OptionView;
 import com.reallynourl.nourl.fmpfoldermusicplayer.ui.listadapter.item.AudioFileListItem;
+import com.reallynourl.nourl.fmpfoldermusicplayer.ui.listadapter.item.ItemData;
+import com.reallynourl.nourl.fmpfoldermusicplayer.utility.file.AudioFileUtil;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -36,10 +36,12 @@ import java.util.concurrent.TimeUnit;
  */
 public class MusicPlaylistAdapter extends BaseAdapter implements Playlist.OnItemsChangedListener, Runnable, Playlist.OnCurrentItemChangedListener, OptionView {
     private final Object mDataLock = new Object();
+    private final Object mDataLoaderLock = new Object();
     private OnOptionsClickedListener mOnItemOptionsClickedListener;
     private final int mAccentColor;
     private ArrayList<ItemData> mData;
     private View mParent = null;
+    private Thread mDataLoader;
 
 
     public MusicPlaylistAdapter(int accentColor) {
@@ -72,8 +74,9 @@ public class MusicPlaylistAdapter extends BaseAdapter implements Playlist.OnItem
                         MediaManager.getInstance().getPlaylist().getList().get(position));
 
         synchronized (mDataLock) {
-            audioFileListItem.setTitle(mData.get(position).getFile().getName());
-            audioFileListItem.setSecondaryData(mData.get(position).getSecondaryData());
+            ItemData itemData = mData.get(position);
+            audioFileListItem.setTitle(itemData.getFile().getName());
+            audioFileListItem.setSecondaryData(itemData.getSecondaryData());
         }
         if (MediaManager.getInstance().getPlaylist().getCurrentIndex() == position) {
             audioFileListItem.setBackgroundColor(mAccentColor);
@@ -91,6 +94,11 @@ public class MusicPlaylistAdapter extends BaseAdapter implements Playlist.OnItem
     }
 
     private void reloadData() {
+        synchronized (mDataLoaderLock) {
+            if (mDataLoader != null) {
+                mDataLoader.interrupt();
+            }
+        }
         List<File> files = MediaManager.getInstance().getPlaylist().getList();
         mData = new ArrayList<>(files.size());
         for (int i = 0; i < files.size(); i++) {
@@ -98,8 +106,10 @@ public class MusicPlaylistAdapter extends BaseAdapter implements Playlist.OnItem
         }
         notifyDataSetChanged();
 
-        Thread thread = new Thread(this);
-        thread.start();
+        synchronized (mDataLoaderLock) {
+            mDataLoader = new Thread(this);
+            mDataLoader.start();
+        }
     }
 
     @Override
@@ -112,37 +122,40 @@ public class MusicPlaylistAdapter extends BaseAdapter implements Playlist.OnItem
         }
 
         for (int i = 0; i < length; i++) {
-            MediaMetadataRetriever mmr = new MediaMetadataRetriever();
-            String path;
+            synchronized (mDataLoaderLock) {
+                if (mDataLoader.isInterrupted()) {
+                    return;
+                }
+            }
+            int duration;
             synchronized (mDataLock) {
-                path = mData.get(i).getFile().getAbsolutePath();
+                File file = mData.get(i).getFile();
+                duration = AudioFileUtil.getDuration(file);
             }
-            boolean error = false;
-            try {
-                mmr.setDataSource(mData.get(i).getFile().getAbsolutePath());
-            } catch (IllegalArgumentException e) {
-                Log.i("PlayList Adapter", "Failed to load data for: " + path);
-                error = true;
-            }
-            if (!error) {
-                String durationString = mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION);
-                int duration = durationString == null ? 0 : Integer.parseInt(durationString);
-                String time = String.format("%d:%02d",
+
+            String time = "Error reading length.";
+            if (duration != 0) {
+                time = String.format("%d:%02d",
                         TimeUnit.MILLISECONDS.toMinutes(duration),
                         TimeUnit.MILLISECONDS.toSeconds(duration) -
                                 TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(duration))
                 );
-                synchronized (mDataLock) {
+            }
+            synchronized (mDataLock) {
+                if (mData != null && mData.size() > i) {
                     mData.get(i).setSecondaryData(time);
+                } else {
+                    return;
                 }
-                if (mParent != null) {
-                    mParent.post(new Runnable() {
-                        @Override
-                        public void run() {
-                            notifyDataSetChanged();
-                        }
-                    });
-                }
+            }
+            if (mParent != null) {
+                mParent.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        notifyDataSetChanged();
+                    }
+                });
+
             }
         }
     }
@@ -156,27 +169,5 @@ public class MusicPlaylistAdapter extends BaseAdapter implements Playlist.OnItem
     public void setOnItemOptionsClickedListener(OnOptionsClickedListener listener) {
         mOnItemOptionsClickedListener = listener;
         notifyDataSetChanged();
-    }
-
-    private class ItemData {
-        private final File mFile;
-        private String mSecondaryData;
-
-        public ItemData(File mFile) {
-            this.mFile = mFile;
-            this.mSecondaryData = "";
-        }
-
-        public File getFile() {
-            return mFile;
-        }
-
-        public void setSecondaryData(String secondaryData) {
-            this.mSecondaryData = secondaryData;
-        }
-
-        public String getSecondaryData() {
-            return mSecondaryData;
-        }
     }
 }

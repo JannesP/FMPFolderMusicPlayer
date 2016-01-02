@@ -56,6 +56,6 @@ public final class FileUtil {
     }
 
     public static File[] listAudioFiles(File dir, boolean includeHidden) {
-        return dir.listFiles(new AudioFileFilter(includeHidden, false));
+        return dir.listFiles(new AudioFileFilter(includeHidden, false, false));
     }
 }

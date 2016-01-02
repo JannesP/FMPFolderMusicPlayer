@@ -7,7 +7,9 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
 
+import com.reallynourl.nourl.fmpfoldermusicplayer.R;
 import com.reallynourl.nourl.fmpfoldermusicplayer.ui.control.OptionView;
 import com.reallynourl.nourl.fmpfoldermusicplayer.utility.file.FileType;
 
@@ -86,6 +88,24 @@ public abstract class MusicBrowserListItem extends RelativeLayout implements Opt
     protected static MusicBrowserListItem inflate(ViewGroup parent, @LayoutRes int layout) {
         return (MusicBrowserListItem) LayoutInflater
                 .from(parent.getContext()).inflate(layout, parent, false);
+    }
+
+    public void setTitle(String title) {
+        TextView tv = (TextView) getRootView().findViewById(R.id.textViewListItemTitle);
+        if (tv != null) {
+            tv.setText(title);
+        } else {
+            Log.e("MusicBrowserListItem", "The textview for the item with the title: " + title + " could not be found!");
+        }
+    }
+
+    public void setSecondaryData(String data) {
+        TextView tv = (TextView) getRootView().findViewById(R.id.textViewListItemMoreInfo);
+        if (tv != null) {
+            tv.setText(data);
+        } else {
+            Log.e("MusicBrowserListItem", "The textview for the item with the data: " + data + " could not be found!");
+        }
     }
 
     @Override

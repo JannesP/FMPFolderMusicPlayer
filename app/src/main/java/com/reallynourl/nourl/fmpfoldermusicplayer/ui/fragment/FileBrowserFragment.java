@@ -17,6 +17,7 @@ import android.widget.AdapterView;
 import android.widget.Toast;
 
 import com.reallynourl.nourl.fmpfoldermusicplayer.R;
+import com.reallynourl.nourl.fmpfoldermusicplayer.backend.MediaManager;
 import com.reallynourl.nourl.fmpfoldermusicplayer.ui.activity.MainActivity;
 import com.reallynourl.nourl.fmpfoldermusicplayer.ui.control.OptionView;
 import com.reallynourl.nourl.fmpfoldermusicplayer.ui.control.OptionsListView;
@@ -25,7 +26,6 @@ import com.reallynourl.nourl.fmpfoldermusicplayer.ui.listadapter.item.MusicBrows
 import com.reallynourl.nourl.fmpfoldermusicplayer.utility.file.AudioFileFilter;
 import com.reallynourl.nourl.fmpfoldermusicplayer.utility.file.FileType;
 import com.reallynourl.nourl.fmpfoldermusicplayer.utility.file.FileUtil;
-import com.reallynourl.nourl.fmpfoldermusicplayer.backend.MediaManager;
 
 import java.io.File;
 import java.util.Arrays;
@@ -185,7 +185,7 @@ public class FileBrowserFragment extends MainContentFragment implements
             boolean allowHidden = prefs.getBoolean(getString(R.string.pref_file_browser_show_hidden), false);
             boolean allowNonAudio = prefs.getBoolean(getString(R.string.pref_file_browser_show_non_audio), false);
 
-            File[] files = mCurrentPath.listFiles(new AudioFileFilter(allowHidden, allowNonAudio));
+            File[] files = mCurrentPath.listFiles(new AudioFileFilter(allowHidden, allowNonAudio, true));
             getBrowserAdapter().setData(files);
         }
     }
@@ -209,7 +209,7 @@ public class FileBrowserFragment extends MainContentFragment implements
                 File selectedFile = getBrowserAdapter().getItem(position);
                 if (selectedFile != null) {
                     List<File> files = Arrays.asList(
-                            mCurrentPath.listFiles(new AudioFileFilter(false, false)));
+                            mCurrentPath.listFiles(new AudioFileFilter(false, false, false)));
                     Collections.sort(files);
                     position = files.indexOf(getBrowserAdapter().getItem(position));
                     MediaManager.getInstance().getPlaylist().appendAll(files);

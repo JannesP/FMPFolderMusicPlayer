@@ -22,14 +22,26 @@ import java.io.FileFilter;
 public class AudioFileFilter implements FileFilter {
     private final boolean mAllowHidden;
     private final boolean mAllowNonAudio;
+    private final boolean mAllowDirectory;
 
-    public AudioFileFilter(boolean allowHidden, boolean allowNonAudio) {
+    public AudioFileFilter(boolean allowHidden, boolean allowNonAudio, boolean allowDirectory) {
         this.mAllowHidden = allowHidden;
         this.mAllowNonAudio = allowNonAudio;
+        this.mAllowDirectory = allowDirectory;
     }
 
     @Override
     public boolean accept(File file) {
-        return !(!mAllowHidden && file.isHidden()) && !(!mAllowNonAudio && (FileType.getType(file) == FileType.FILE));
+        if (!mAllowHidden && file.isHidden()) {
+            return false;
+        }
+        FileType ft = FileType.getType(file);
+        if (!mAllowNonAudio && ft == FileType.FILE) {
+            return false;
+        }
+        if (!mAllowDirectory && ft == FileType.DIRECTORY) {
+            return false;
+        }
+        return true;
     }
 }

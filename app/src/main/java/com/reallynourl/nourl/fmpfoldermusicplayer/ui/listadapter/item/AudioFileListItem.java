@@ -2,7 +2,6 @@ package com.reallynourl.nourl.fmpfoldermusicplayer.ui.listadapter.item;
 
 import android.content.Context;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -58,23 +57,7 @@ public class AudioFileListItem extends MusicBrowserListItem implements View.OnCl
         super.setFile(file);
     }
 
-    public void setTitle(String title) {
-        TextView tv = (TextView) getRootView().findViewById(R.id.textViewListItemTitle);
-        if (tv != null) {
-            tv.setText(title);
-        } else {
-            Log.e("AudioFile Item", "The textview for the item with the title: " + title + " could not be found!");
-        }
-    }
 
-    public void setSecondaryData(String data) {
-        TextView tv = (TextView) getRootView().findViewById(R.id.textViewListItemMoreInfo);
-        if (tv != null) {
-            tv.setText(data);
-        } else {
-            Log.e("AudioFile Item", "The textview for the item with the data: " + data + " could not be found!");
-        }
-    }
 
     @Override
     public void setOnItemOptionsClickedListener(OnOptionsClickedListener listener) {
