@@ -53,6 +53,7 @@ public class MainActivity extends AppCompatActivity
     private static MainActivity sInstance;
     private Snackbar mCloseSnackBar = null;
     private MainContentFragment mActiveFragment;
+    private static boolean sIsStarted = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -119,6 +120,12 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
+    public static void close() {
+        if (sInstance != null) {
+            sInstance.finish();
+        }
+    }
+
     @Override
     public void onBackPressed() {
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -178,6 +185,7 @@ public class MainActivity extends AppCompatActivity
         if (MediaManager.getInstance() == null) {
             MediaManager.create(getApplicationContext());
         }
+        sIsStarted = true;
         super.onStart();
     }
 
@@ -212,6 +220,7 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     protected void onStop() {
+        sIsStarted = false;
         MediaManager mediaManager = MediaManager.getInstance();
         if (mediaManager != null) {
             mediaManager.onMainActivityClosed();
@@ -258,5 +267,9 @@ public class MainActivity extends AppCompatActivity
 
                 break;
         }
+    }
+
+    public static boolean isAlive() {
+        return sIsStarted;
     }
 }

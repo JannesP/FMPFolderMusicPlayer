@@ -7,16 +7,18 @@ import android.content.Intent;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.support.annotation.DrawableRes;
+import android.support.v4.app.NotificationManagerCompat;
 import android.support.v4.media.MediaMetadataCompat;
 import android.support.v4.media.session.MediaSessionCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
 import android.support.v7.app.NotificationCompat;
 
 import com.reallynourl.nourl.fmpfoldermusicplayer.R;
+import com.reallynourl.nourl.fmpfoldermusicplayer.backend.MediaIntentReceiver;
 import com.reallynourl.nourl.fmpfoldermusicplayer.backend.MediaManager;
-import com.reallynourl.nourl.fmpfoldermusicplayer.backend.MusicIntentReceiver;
 import com.reallynourl.nourl.fmpfoldermusicplayer.ui.activity.MainActivity;
 import com.reallynourl.nourl.fmpfoldermusicplayer.ui.fragment.MusicPlayingFragment;
+import com.reallynourl.nourl.fmpfoldermusicplayer.utility.Util;
 import com.reallynourl.nourl.fmpfoldermusicplayer.utility.file.FileUtil;
 
 import java.io.File;
@@ -77,13 +79,11 @@ public final class MediaNotification {
             addedActions++;
         }
 
+        PendingIntent cancelIntent = createCancelIntent(service);
         NotificationCompat.MediaStyle style = new NotificationCompat.MediaStyle()
                 .setMediaSession(mediaSession.getSessionToken())
                 .setShowCancelButton(true)
-                .setCancelButtonIntent(PendingIntent.getBroadcast(service, INTENT_CANCEL_ID,
-                        new Intent(service, MusicIntentReceiver.class)
-                                .setAction(MusicIntentReceiver.ACTION_CLOSE),
-                        PendingIntent.FLAG_UPDATE_CURRENT));
+                .setCancelButtonIntent(cancelIntent);
         switch (addedActions) {
             case 1:
                 style.setShowActionsInCompactView(0);
@@ -97,28 +97,40 @@ public final class MediaNotification {
         }
         notificationBuilder.setStyle(style);
 
-        service.startForeground(NOTIFICATION_ID, notificationBuilder.build());
+        if (!isPlaying && !Util.isActivityAlive()) {
+            service.stopForeground(false);
+            notificationBuilder.setOngoing(false);
+            notificationBuilder.setDeleteIntent(cancelIntent);
+            NotificationManagerCompat.from(service).notify(NOTIFICATION_ID, notificationBuilder.build());
+        } else {
+            service.startForeground(NOTIFICATION_ID, notificationBuilder.build());
+        }
         updateMediaSession(mediaSession);
+    }
+
+    public static void remove(Service service) {
+        service.stopForeground(true);
+        NotificationManagerCompat.from(service).cancel(NOTIFICATION_ID);
     }
 
     private static NotificationCompat.Action createPlayAction(Context context) {
         return createGenericButtonAction(context, R.drawable.ic_play_arrow, "Play",
-                MusicIntentReceiver.ACTION_PLAY, MusicIntentReceiver.INTENT_ID_PLAY);
+                MediaIntentReceiver.ACTION_PLAY, MediaIntentReceiver.INTENT_ID_PLAY);
     }
 
     private static NotificationCompat.Action createPauseAction(Context context) {
         return createGenericButtonAction(context, R.drawable.ic_pause, "Pause",
-                MusicIntentReceiver.ACTION_PAUSE, MusicIntentReceiver.INTENT_ID_PAUSE);
+                MediaIntentReceiver.ACTION_PAUSE, MediaIntentReceiver.INTENT_ID_PAUSE);
     }
 
     private static NotificationCompat.Action createNextAction(Context context) {
         return createGenericButtonAction(context, R.drawable.ic_skip_next_white, "Next",
-                MusicIntentReceiver.ACTION_NEXT, MusicIntentReceiver.INTENT_ID_NEXT);
+                MediaIntentReceiver.ACTION_NEXT, MediaIntentReceiver.INTENT_ID_NEXT);
     }
 
     private static NotificationCompat.Action createPreviousAction(Context context) {
         return createGenericButtonAction(context, R.drawable.ic_skip_previous_white, "Previous",
-                MusicIntentReceiver.ACTION_PREVIOUS, MusicIntentReceiver.INTENT_ID_PREVIOUS);
+                MediaIntentReceiver.ACTION_PREVIOUS, MediaIntentReceiver.INTENT_ID_PREVIOUS);
     }
 
     private static NotificationCompat.Action createGenericButtonAction(
@@ -127,10 +139,17 @@ public final class MediaNotification {
                 icon,
                 name,
                 PendingIntent.getBroadcast(context, requestCode,
-                        new Intent(context, MusicIntentReceiver.class).setAction(action),
+                        new Intent(context, MediaIntentReceiver.class).setAction(action),
                         PendingIntent.FLAG_UPDATE_CURRENT)
         ).build();
         return res;
+    }
+
+    private static PendingIntent createCancelIntent(Context context) {
+        return PendingIntent.getBroadcast(context, INTENT_CANCEL_ID,
+                new Intent(context, MediaIntentReceiver.class)
+                        .setAction(MediaIntentReceiver.ACTION_CLOSE),
+                PendingIntent.FLAG_UPDATE_CURRENT);
     }
 
     private static void updateMediaSession(MediaSessionCompat mediaSession) {

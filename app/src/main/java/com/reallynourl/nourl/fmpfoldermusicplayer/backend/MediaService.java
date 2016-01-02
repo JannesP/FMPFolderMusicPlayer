@@ -113,7 +113,7 @@ public class MediaService extends Service implements MediaPlayer.OnPreparedListe
                 PendingIntent.getBroadcast(
                         getApplicationContext(),
                         INTENT_MEDIA_KEYS,
-                        new Intent(getApplicationContext(), MusicIntentReceiver.class),
+                        new Intent(getApplicationContext(), MediaIntentReceiver.class),
                         PendingIntent.FLAG_UPDATE_CURRENT
                 )
         );
@@ -142,7 +142,7 @@ public class MediaService extends Service implements MediaPlayer.OnPreparedListe
         mMediaSession = null;
         MediaManager mediaManager = MediaManager.getInstance();
         if (mediaManager != null) mediaManager.release();
-        stopForeground(true);
+        MediaNotification.remove(this);
         mMediaEventReceiver = null;
         Log.d("Media Service", "Media Service stopped!");
         super.onDestroy();
@@ -291,7 +291,7 @@ public class MediaService extends Service implements MediaPlayer.OnPreparedListe
             mIsPreparedToPlay = false;
             if (mMediaPlayer.isPlaying()) mMediaPlayer.stop();
             releasePlayer();
-            stopForeground(true);
+            MediaNotification.remove(this);
         }
     }
 

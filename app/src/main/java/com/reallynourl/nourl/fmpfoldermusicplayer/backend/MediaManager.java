@@ -6,6 +6,7 @@ import android.media.MediaPlayer;
 import android.util.Log;
 
 import com.reallynourl.nourl.fmpfoldermusicplayer.backend.playlist.Playlist;
+import com.reallynourl.nourl.fmpfoldermusicplayer.ui.activity.MainActivity;
 import com.reallynourl.nourl.fmpfoldermusicplayer.ui.notifications.MediaNotification;
 
 import java.io.File;
@@ -175,6 +176,7 @@ public class MediaManager implements MediaPlayer.OnCompletionListener, Playlist.
 
     public void release() {
         mContext.stopService(new Intent(mContext, MediaService.class));
+        MainActivity.close();
         sInstance = null;
         mPlaylist = null;
         mContext = null;

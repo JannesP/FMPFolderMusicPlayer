@@ -4,12 +4,12 @@ import android.Manifest;
 import android.app.Activity;
 import android.content.Context;
 import android.content.pm.PackageManager;
-import android.os.Environment;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.util.TypedValue;
 
-import java.io.File;
+import com.reallynourl.nourl.fmpfoldermusicplayer.ui.activity.MainActivity;
+
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -55,4 +55,7 @@ public final class Util {
         ActivityCompat.requestPermissions(activity, new String[] { Manifest.permission.WRITE_EXTERNAL_STORAGE }, requestCode);
     }
 
+    public static boolean isActivityAlive() {
+        return MainActivity.isAlive();
+    }
 }

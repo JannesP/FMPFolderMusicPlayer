@@ -23,7 +23,7 @@ import android.widget.Toast;
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-public class MusicIntentReceiver extends BroadcastReceiver{
+public class MediaIntentReceiver extends BroadcastReceiver{
     public static final String ACTION_PLAY = "com.reallynourl.nourl.fmpfoldermusicplayer.PLAY";
     public static final String ACTION_PAUSE = "com.reallynourl.nourl.fmpfoldermusicplayer.PAUSE";
     public static final String ACTION_NEXT = "com.reallynourl.nourl.fmpfoldermusicplayer.NEXT";
@@ -54,8 +54,7 @@ public class MusicIntentReceiver extends BroadcastReceiver{
                 MediaManager.getInstance().pause();
                 break;
             case ACTION_CLOSE:
-                MediaManager.getInstance().stop();
-                MediaManager.getInstance().onMainActivityClosed();
+                MediaManager.getInstance().release();
                 break;
             case Intent.ACTION_MEDIA_BUTTON:
                 KeyEvent keyEvent = (KeyEvent) intent.getExtras().get(
