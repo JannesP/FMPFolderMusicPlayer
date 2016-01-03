@@ -59,7 +59,6 @@ public class MainActivity extends AppCompatActivity
     protected void onCreate(Bundle savedInstanceState) {
         Thread.currentThread().setName("main");
         Thread.setDefaultUncaughtExceptionHandler(new MyUncaughtExceptionHandler(Thread.getDefaultUncaughtExceptionHandler()));
-        sInstance = this;
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -185,6 +184,7 @@ public class MainActivity extends AppCompatActivity
         if (MediaManager.getInstance() == null) {
             MediaManager.create(getApplicationContext());
         }
+        sInstance = this;
         sIsStarted = true;
         super.onStart();
     }
