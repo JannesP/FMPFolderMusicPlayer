@@ -2,7 +2,14 @@ package com.reallynourl.nourl.fmpfoldermusicplayer.utility.file;
 
 import android.os.Environment;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.RandomAccessFile;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Copyright (C) 2015  Jannes Peters
@@ -26,16 +33,24 @@ public final class FileUtil {
     private static final String[] AUDIO_FORMATS = { "3gp", "mp4", "m4a", "aac", "ts", "3gp", "flac", "mp3", "mid", "xmf", "mxmf", "rtttl", "rtx", "ota", "ogg", "mkv", "wav" };
 
     public static boolean hasAudioExtension(File file) {
-        String[] parts = file.getAbsolutePath().split("\\.");
-        if (parts.length == 0) {
-            return false;
-        }
-        for (String format : AUDIO_FORMATS) {
-            if (format.equals(parts[parts.length - 1])) {
-                return true;
+        String extension = getExtension(file);
+        if (!extension.equals("")) {
+            for (String format : AUDIO_FORMATS) {
+                if (format.equals(extension)) {
+                    return true;
+                }
             }
         }
         return false;
+    }
+
+    public static String getExtension(File file) {
+        String result = "";
+        String[] parts = file.getAbsolutePath().split("\\.");
+        if (parts.length > 1) {
+            result = parts[parts.length - 1];
+        }
+        return result;
     }
 
     /* Checks if external storage is available for read and write */
@@ -57,5 +72,34 @@ public final class FileUtil {
 
     public static File[] listAudioFiles(File dir, boolean includeHidden) {
         return dir.listFiles(new AudioFileFilter(includeHidden, false, false));
+    }
+
+    public static List<String> readAllLines(File file) throws IOException {
+        List<String> lines = new ArrayList<>();
+        BufferedReader br = null;
+        try {
+            br = new BufferedReader(new FileReader(file));
+
+            String line = br.readLine();
+            while (line != null) {
+                lines.add(line);
+                line = br.readLine();
+            }
+            br.close();
+        } catch (Exception e) {
+            if (br != null) {
+                try {
+                    br.close();
+                } catch (Exception ignored) {}
+            }
+            throw e;
+        }
+        return lines;
+    }
+
+    public static void clearFile(File file) throws IOException {
+        RandomAccessFile randomAccessFile = new RandomAccessFile(file, "rw");
+        randomAccessFile.setLength(0);
+        randomAccessFile.close();
     }
 }
