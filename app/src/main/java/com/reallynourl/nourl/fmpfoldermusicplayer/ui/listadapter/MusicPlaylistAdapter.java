@@ -7,7 +7,7 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 
 import com.reallynourl.nourl.fmpfoldermusicplayer.backend.MediaManager;
-import com.reallynourl.nourl.fmpfoldermusicplayer.backend.playlist.Playlist;
+import com.reallynourl.nourl.fmpfoldermusicplayer.backend.playlist.CurrentPlaylist;
 import com.reallynourl.nourl.fmpfoldermusicplayer.ui.control.OptionView;
 import com.reallynourl.nourl.fmpfoldermusicplayer.ui.listadapter.item.AudioFileListItem;
 import com.reallynourl.nourl.fmpfoldermusicplayer.ui.listadapter.item.ItemData;
@@ -34,7 +34,7 @@ import java.util.concurrent.TimeUnit;
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-public class MusicPlaylistAdapter extends BaseAdapter implements Playlist.OnItemsChangedListener, Runnable, Playlist.OnCurrentItemChangedListener, OptionView {
+public class MusicPlaylistAdapter extends BaseAdapter implements CurrentPlaylist.OnItemsChangedListener, Runnable, CurrentPlaylist.OnCurrentItemChangedListener, OptionView {
     private final Object mDataLock = new Object();
     private final Object mDataLoaderLock = new Object();
     private OnOptionsClickedListener mOnItemOptionsClickedListener;
@@ -89,7 +89,7 @@ public class MusicPlaylistAdapter extends BaseAdapter implements Playlist.OnItem
     }
 
     @Override
-    public void onPlaylistItemsChanged(Playlist playlist) {
+    public void onPlaylistItemsChanged(CurrentPlaylist currentPlaylist) {
         reloadData();
     }
 
@@ -161,7 +161,7 @@ public class MusicPlaylistAdapter extends BaseAdapter implements Playlist.OnItem
     }
 
     @Override
-    public void onPlaylistCurrentItemChanged(Playlist playlist) {
+    public void onPlaylistCurrentItemChanged(CurrentPlaylist currentPlaylist) {
         notifyDataSetChanged();
     }
 
