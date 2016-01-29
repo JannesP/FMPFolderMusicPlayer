@@ -1,5 +1,7 @@
 package com.reallynourl.nourl.fmpfoldermusicplayer.backend.playlist;
 
+import com.reallynourl.nourl.fmpfoldermusicplayer.utility.file.ExtendedFile;
+
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -23,62 +25,66 @@ import java.util.List;
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 public class Playlist {
-    protected final ArrayList<File> mFiles;
+    protected final ArrayList<PlaylistItem> mItems;
 
     public Playlist() {
-        this.mFiles = new ArrayList<>();
+        this.mItems = new ArrayList<>();
     }
 
-    public int append(File file) {
-        mFiles.add(file);
-        return mFiles.size() - 1;
+    public int append(PlaylistItem item) {
+        mItems.add(item);
+        return mItems.size() - 1;
     }
 
-    public void appendAll(File[] files) {
-        Collections.addAll(mFiles, files);
+    public void appendAll(ExtendedFile[] files) {
+        for (ExtendedFile file : files) {
+            mItems.add(new PlaylistItem(file));
+        }
     }
 
-    public void appendAll(Collection<? extends File> files) {
-        mFiles.addAll(files);
+    public void appendAll(Collection<? extends ExtendedFile> files) {
+        for (ExtendedFile file : files) {
+            mItems.add(new PlaylistItem(file));
+        }
     }
 
     public void clear() {
-        mFiles.clear();
+        mItems.clear();
     }
 
     public boolean remove(int index) {
         boolean result = false;
-        if (index >= 0 && mFiles.size() < index) {
-            if (mFiles.remove(index) != null) {
+        if (index >= 0 && mItems.size() < index) {
+            if (mItems.remove(index) != null) {
                 result = true;
             }
         }
         return result;
     }
 
-    public int addAt(int position, File file) {
-        if (mFiles.size() >= (position + 1)) {
-            mFiles.add(position, file);
-        } else if (mFiles.isEmpty()) {
-            mFiles.add(file);
+    public int addAt(int position, PlaylistItem item) {
+        if (mItems.size() >= (position + 1)) {
+            mItems.add(position, item);
+        } else if (mItems.isEmpty()) {
+            mItems.add(item);
         }
         return position;
     }
 
-    public File getItemAt(int index) {
-        File result = null;
-        if (index >= 0 && index < mFiles.size()) {
-            result = mFiles.get(index);
+    public PlaylistItem getItemAt(int index) {
+        PlaylistItem result = null;
+        if (index >= 0 && index < mItems.size()) {
+            result = mItems.get(index);
         }
         return result;
     }
 
-    public List<File> getList() {
-        return Collections.unmodifiableList(mFiles);
+    public List<PlaylistItem> getList() {
+        return Collections.unmodifiableList(mItems);
     }
 
     public int size() {
-        return mFiles.size();
+        return mItems.size();
     }
 
 }

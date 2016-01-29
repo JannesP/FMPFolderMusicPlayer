@@ -24,6 +24,7 @@ import com.reallynourl.nourl.fmpfoldermusicplayer.ui.control.OptionsListView;
 import com.reallynourl.nourl.fmpfoldermusicplayer.ui.listadapter.MusicBrowserAdapter;
 import com.reallynourl.nourl.fmpfoldermusicplayer.ui.listadapter.item.MusicBrowserListItem;
 import com.reallynourl.nourl.fmpfoldermusicplayer.utility.file.AudioFileFilter;
+import com.reallynourl.nourl.fmpfoldermusicplayer.utility.file.ExtendedFile;
 import com.reallynourl.nourl.fmpfoldermusicplayer.utility.file.FileType;
 import com.reallynourl.nourl.fmpfoldermusicplayer.utility.file.FileUtil;
 
@@ -58,7 +59,7 @@ public class FileBrowserFragment extends MainContentFragment implements
 
     private View mRootView;
     private MusicBrowserListItem mCurrentMenuItem;
-    private File mCurrentPath;
+    private ExtendedFile mCurrentPath;
 
     public FileBrowserFragment() {
         super(NAME);
@@ -67,20 +68,21 @@ public class FileBrowserFragment extends MainContentFragment implements
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        File startPath = null;
+        ExtendedFile startPath = null;
         if (FileUtil.isExternalStorageWritable() || FileUtil.isExternalStorageReadable()) {
             String storedPath = PreferenceManager.getDefaultSharedPreferences(
                     getActivity()).getString(getString(R.string.pref_last_file_browser_path), "");
             if (!storedPath.equals("")) {
-                startPath = new File(storedPath);
+                startPath = new ExtendedFile(storedPath);
                 if (!startPath.exists() || !startPath.isDirectory()) {
                     startPath = null;
                 }
             }
             if (startPath == null) {
                 //getExternalStorageDirectory() for root
-                startPath = Environment
-                        .getExternalStoragePublicDirectory(Environment.DIRECTORY_MUSIC);
+                startPath = new ExtendedFile(Environment
+                        .getExternalStoragePublicDirectory(Environment.DIRECTORY_MUSIC)
+                        .getAbsolutePath());
             }
         } else {
             Toast.makeText(getActivity(),
@@ -140,7 +142,7 @@ public class FileBrowserFragment extends MainContentFragment implements
 
     @Override
     public boolean onBackPressed() {
-        File parent = getValidParent();
+        ExtendedFile parent = getValidParent();
         if (parent != null) {
             changeDirectory(parent);
             return true;
@@ -148,16 +150,16 @@ public class FileBrowserFragment extends MainContentFragment implements
         return false;
     }
 
-    private void changeDirectory(File directory) {
+    private void changeDirectory(ExtendedFile directory) {
         mCurrentPath = directory;
         populateFileBrowser();
     }
 
-    private File getValidParent() {
+    private ExtendedFile getValidParent() {
         File parent = mCurrentPath.getParentFile();
         if (parent != null) {
             if (parent.canRead() && parent.canWrite() == mCurrentPath.canWrite()) {
-                return parent;
+                return new ExtendedFile(parent.getAbsolutePath());
             }
         }
         return null;
@@ -185,7 +187,8 @@ public class FileBrowserFragment extends MainContentFragment implements
             boolean allowHidden = prefs.getBoolean(getString(R.string.pref_file_browser_show_hidden), false);
             boolean allowNonAudio = prefs.getBoolean(getString(R.string.pref_file_browser_show_non_audio), false);
 
-            File[] files = mCurrentPath.listFiles(new AudioFileFilter(allowHidden, allowNonAudio, true));
+            List<ExtendedFile> files = mCurrentPath.listExtendedFiles(
+                    new AudioFileFilter(allowHidden, allowNonAudio, true));
             getBrowserAdapter().setData(files);
         }
     }
@@ -194,7 +197,7 @@ public class FileBrowserFragment extends MainContentFragment implements
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
         MusicBrowserAdapter adapter = (MusicBrowserAdapter) parent.getAdapter();
 
-        File file = adapter.getItem(position);
+        ExtendedFile file = adapter.getItem(position);
         FileType ft = FileType.getType(file);
         switch (ft) {
             case DIRECTORY:
@@ -208,8 +211,9 @@ public class FileBrowserFragment extends MainContentFragment implements
                 MediaManager.getInstance().getPlaylist().clear();
                 File selectedFile = getBrowserAdapter().getItem(position);
                 if (selectedFile != null) {
-                    List<File> files = Arrays.asList(
-                            mCurrentPath.listFiles(new AudioFileFilter(false, false, false)));
+                    List<ExtendedFile> files =
+                            mCurrentPath.listExtendedFiles(
+                                    new AudioFileFilter(false, false, false));
                     Collections.sort(files);
                     position = files.indexOf(getBrowserAdapter().getItem(position));
                     MediaManager.getInstance().getPlaylist().appendAll(files);
@@ -274,12 +278,12 @@ public class FileBrowserFragment extends MainContentFragment implements
             case DIRECTORY:
                 switch (item.getItemId()) {
                     case R.id.item_append_all:
-                        File dir = mCurrentMenuItem.getFile();
+                        ExtendedFile dir = mCurrentMenuItem.getFile();
                         boolean playHidden = PreferenceManager.getDefaultSharedPreferences(getActivity()).getBoolean(getString(R.string.pref_file_browser_show_hidden), false);
-                        File[] files = FileUtil.listAudioFiles(dir, playHidden);
-                        if (files != null && files.length > 0) {
+                        List<ExtendedFile> files = dir.listAudioFiles(playHidden);
+                        if (files != null && files.size() > 0) {
                             MediaManager.getInstance().getPlaylist().appendAll(files);
-                            Snackbar.make(mRootView, "Added " + files.length + " items to the queue.", Snackbar.LENGTH_SHORT).show();
+                            Snackbar.make(mRootView, "Added " + files.size() + " items to the queue.", Snackbar.LENGTH_SHORT).show();
                         } else {
                             Snackbar.make(mRootView, "The folder doesn't contain audio files.", Snackbar.LENGTH_LONG).show();
                         }

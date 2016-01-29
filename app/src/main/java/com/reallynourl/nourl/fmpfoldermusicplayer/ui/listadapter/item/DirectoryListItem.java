@@ -8,6 +8,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.reallynourl.nourl.fmpfoldermusicplayer.R;
+import com.reallynourl.nourl.fmpfoldermusicplayer.utility.file.ExtendedFile;
 import com.reallynourl.nourl.fmpfoldermusicplayer.utility.file.FileType;
 
 import java.io.File;
@@ -48,7 +49,7 @@ public class DirectoryListItem extends MusicBrowserListItem implements View.OnCl
     }
 
     @Override
-    public void setFile(File file) {
+    public void setFile(ExtendedFile file) {
         TextView tv = (TextView) getRootView().findViewById(R.id.textViewListItemTitle);
         tv.setText(file.getName());
         super.setFile(file);

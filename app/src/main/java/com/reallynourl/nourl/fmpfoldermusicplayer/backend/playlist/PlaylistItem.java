@@ -1,8 +1,9 @@
-package com.reallynourl.nourl.fmpfoldermusicplayer.ui.listadapter.item;
+package com.reallynourl.nourl.fmpfoldermusicplayer.backend.playlist;
 
 import com.reallynourl.nourl.fmpfoldermusicplayer.utility.file.ExtendedFile;
 
 import java.io.File;
+import java.net.URI;
 
 /**
  * Copyright (C) 2016  Jannes Peters
@@ -20,24 +21,34 @@ import java.io.File;
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-public class ItemData {
-    private final ExtendedFile mFile;
-    private String mSecondaryData;
+public class PlaylistItem extends ExtendedFile {
+    private boolean mIsPlayed = false;
 
-    public ItemData(ExtendedFile mFile) {
-        this.mFile = mFile;
-        this.mSecondaryData = "";
+    public PlaylistItem(File dir, String name) {
+        super(dir, name);
     }
 
-    public ExtendedFile getFile() {
-        return mFile;
+    public PlaylistItem(String path) {
+        super(path);
     }
 
-    public void setSecondaryData(String secondaryData) {
-        this.mSecondaryData = secondaryData;
+    public PlaylistItem(String dirPath, String name) {
+        super(dirPath, name);
     }
 
-    public String getSecondaryData() {
-        return mSecondaryData;
+    public PlaylistItem(URI uri) {
+        super(uri);
+    }
+
+    public PlaylistItem(File file) {
+        super(file.getAbsolutePath());
+    }
+
+    public boolean isPlayed() {
+        return mIsPlayed;
+    }
+
+    public void setPlayed(boolean played) {
+        mIsPlayed = played;
     }
 }

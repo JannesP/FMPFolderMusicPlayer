@@ -6,8 +6,10 @@ import android.media.MediaPlayer;
 import android.util.Log;
 
 import com.reallynourl.nourl.fmpfoldermusicplayer.backend.playlist.CurrentPlaylist;
+import com.reallynourl.nourl.fmpfoldermusicplayer.backend.playlist.PlaylistItem;
 import com.reallynourl.nourl.fmpfoldermusicplayer.ui.activity.MainActivity;
 import com.reallynourl.nourl.fmpfoldermusicplayer.ui.notifications.MediaNotification;
+import com.reallynourl.nourl.fmpfoldermusicplayer.utility.file.ExtendedFile;
 
 import java.io.File;
 
@@ -56,22 +58,24 @@ public class MediaManager implements MediaPlayer.OnCompletionListener, CurrentPl
         return mCurrentPlaylist;
     }
 
-    public void addPlaylistNextAndPlay(File file) {
+    public void addPlaylistNextAndPlay(ExtendedFile file) {
         mCurrentPlaylist.appendNext(file);
-        file = mCurrentPlaylist.selectNext();
+        PlaylistItem playlistItem = mCurrentPlaylist.selectNext();
         MediaService mediaService = MediaService.getInstance();
         if (mediaService != null) {
-            mediaService.play(file);
+            mediaService.play(playlistItem);
+            playlistItem.setPlayed(true);
         }
     }
 
     public void playPlaylistItem(int index) {
-        File file = mCurrentPlaylist.getList().get(index);
+        PlaylistItem file = mCurrentPlaylist.getList().get(index);
         if (file != null) {
             mCurrentPlaylist.setCurrent(index);
             MediaService mediaService = MediaService.getInstance();
             if (mediaService != null) {
                 mediaService.play(file);
+                file.setPlayed(true);
             }
         }
     }
@@ -150,21 +154,23 @@ public class MediaManager implements MediaPlayer.OnCompletionListener, CurrentPl
     }
 
     public void next() {
-        File file = mCurrentPlaylist.selectNext();
+        PlaylistItem file = mCurrentPlaylist.selectNext();
         if (file != null) {
             MediaService mediaService = MediaService.getInstance();
             if (mediaService != null) {
                 mediaService.play(file);
+                file.setPlayed(true);
             }
         }
     }
 
     public void previous() {
-        File file = mCurrentPlaylist.selectPrevious();
+        PlaylistItem file = mCurrentPlaylist.selectPrevious();
         if (file != null) {
             MediaService mediaService = MediaService.getInstance();
             if (mediaService != null) {
                 mediaService.play(file);
+                file.setPlayed(true);
             }
         }
     }
@@ -183,8 +189,8 @@ public class MediaManager implements MediaPlayer.OnCompletionListener, CurrentPl
         Log.v("MediaManager", "MediaManager released!");
     }
 
-    public File getCurrentFile() {
-        File result = null;
+    public ExtendedFile getCurrentFile() {
+        ExtendedFile result = null;
         MediaService mediaService = MediaService.getInstance();
         if (mediaService != null) {
             result = mediaService.getCurrentFile();

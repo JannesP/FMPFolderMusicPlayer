@@ -11,6 +11,7 @@ import android.widget.TextView;
 
 import com.reallynourl.nourl.fmpfoldermusicplayer.R;
 import com.reallynourl.nourl.fmpfoldermusicplayer.ui.control.OptionView;
+import com.reallynourl.nourl.fmpfoldermusicplayer.utility.file.ExtendedFile;
 import com.reallynourl.nourl.fmpfoldermusicplayer.utility.file.FileType;
 
 import java.io.File;
@@ -32,7 +33,7 @@ import java.io.File;
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 public abstract class MusicBrowserListItem extends RelativeLayout implements OptionView {
-    private File mFile = null;
+    private ExtendedFile mFile = null;
     private final FileType mType;
 
     public MusicBrowserListItem(Context context, FileType type) {
@@ -50,15 +51,15 @@ public abstract class MusicBrowserListItem extends RelativeLayout implements Opt
         mType = type;
     }
 
-    public File getFile() {
+    public ExtendedFile getFile() {
         return mFile;
     }
 
-    public void setFile(File file) {
+    public void setFile(ExtendedFile file) {
         mFile = file;
     }
 
-    public static MusicBrowserListItem create(ViewGroup parent, File validFile) {
+    public static MusicBrowserListItem create(ViewGroup parent, ExtendedFile validFile) {
         MusicBrowserListItem item = null;
         switch (FileType.getType(validFile)) {
             case DIRECTORY:

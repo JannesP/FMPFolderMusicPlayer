@@ -19,6 +19,7 @@ import com.reallynourl.nourl.fmpfoldermusicplayer.backend.MediaManager;
 import com.reallynourl.nourl.fmpfoldermusicplayer.ui.activity.MainActivity;
 import com.reallynourl.nourl.fmpfoldermusicplayer.ui.fragment.MusicPlayingFragment;
 import com.reallynourl.nourl.fmpfoldermusicplayer.utility.Util;
+import com.reallynourl.nourl.fmpfoldermusicplayer.utility.file.ExtendedFile;
 import com.reallynourl.nourl.fmpfoldermusicplayer.utility.file.FileUtil;
 
 import java.io.File;
@@ -45,7 +46,7 @@ public final class MediaNotification {
     private static final int INTENT_CANCEL_ID = 3000;
 
 
-    public static void showUpdate(Service service, File track,
+    public static void showUpdate(Service service, ExtendedFile track,
                                     MediaSessionCompat mediaSession) {
         Bundle b = new Bundle(1);
         b.putString(MainActivity.FRAGMENT_EXTRA, MusicPlayingFragment.NAME);
@@ -62,7 +63,7 @@ public final class MediaNotification {
         android.support.v4.app.NotificationCompat.Builder notificationBuilder =
                 new NotificationCompat.Builder(service)
                 .setSmallIcon(R.drawable.ic_play_arrow)
-                .setContentTitle(FileUtil.getNameWithoutExtension(track))
+                .setContentTitle(track.getNameWithoutExtension())
                 .setContentText(track.getParentFile().getName())
                 .setContentIntent(pi)
                 .setLargeIcon(
@@ -153,7 +154,7 @@ public final class MediaNotification {
     }
 
     private static void updateMediaSession(MediaSessionCompat mediaSession) {
-        File currentFile = MediaManager.getInstance().getCurrentFile();
+        ExtendedFile currentFile = MediaManager.getInstance().getCurrentFile();
         if (currentFile != null) {
             long validActions = PlaybackStateCompat.ACTION_STOP;
             if (MediaManager.getInstance().canPlay()) {
@@ -172,7 +173,7 @@ public final class MediaNotification {
                     .putString(MediaMetadataCompat.METADATA_KEY_ALBUM,
                             currentFile.getParentFile().getName())
                     .putString(MediaMetadataCompat.METADATA_KEY_TITLE,
-                            FileUtil.getNameWithoutExtension(currentFile))
+                            currentFile.getNameWithoutExtension())
                     .putLong(MediaMetadataCompat.METADATA_KEY_DURATION,
                             MediaManager.getInstance().getDuration())
                     .putLong(MediaMetadataCompat.METADATA_KEY_TRACK_NUMBER,

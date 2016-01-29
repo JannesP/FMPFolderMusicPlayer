@@ -8,10 +8,11 @@ import android.widget.BaseAdapter;
 
 import com.reallynourl.nourl.fmpfoldermusicplayer.backend.MediaManager;
 import com.reallynourl.nourl.fmpfoldermusicplayer.backend.playlist.CurrentPlaylist;
+import com.reallynourl.nourl.fmpfoldermusicplayer.backend.playlist.PlaylistItem;
 import com.reallynourl.nourl.fmpfoldermusicplayer.ui.control.OptionView;
 import com.reallynourl.nourl.fmpfoldermusicplayer.ui.listadapter.item.AudioFileListItem;
 import com.reallynourl.nourl.fmpfoldermusicplayer.ui.listadapter.item.ItemData;
-import com.reallynourl.nourl.fmpfoldermusicplayer.utility.file.AudioFileUtil;
+import com.reallynourl.nourl.fmpfoldermusicplayer.utility.file.ExtendedFile;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -99,7 +100,7 @@ public class MusicPlaylistAdapter extends BaseAdapter implements CurrentPlaylist
                 mDataLoader.interrupt();
             }
         }
-        List<File> files = MediaManager.getInstance().getPlaylist().getList();
+        List<PlaylistItem> files = MediaManager.getInstance().getPlaylist().getList();
         mData = new ArrayList<>(files.size());
         for (int i = 0; i < files.size(); i++) {
             mData.add(i, new ItemData(files.get(i)));
@@ -129,8 +130,8 @@ public class MusicPlaylistAdapter extends BaseAdapter implements CurrentPlaylist
             }
             int duration;
             synchronized (mDataLock) {
-                File file = mData.get(i).getFile();
-                duration = AudioFileUtil.getDuration(file);
+                ExtendedFile file = mData.get(i).getFile();
+                duration = file.getDuration();
             }
 
             String time = "Error reading length.";

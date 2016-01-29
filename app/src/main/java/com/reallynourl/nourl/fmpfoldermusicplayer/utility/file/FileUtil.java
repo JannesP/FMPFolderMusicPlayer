@@ -30,29 +30,6 @@ import java.util.List;
 public final class FileUtil {
     private FileUtil() {}
 
-    private static final String[] AUDIO_FORMATS = { "3gp", "mp4", "m4a", "aac", "ts", "3gp", "flac", "mp3", "mid", "xmf", "mxmf", "rtttl", "rtx", "ota", "ogg", "mkv", "wav" };
-
-    public static boolean hasAudioExtension(File file) {
-        String extension = getExtension(file);
-        if (!extension.equals("")) {
-            for (String format : AUDIO_FORMATS) {
-                if (format.equals(extension)) {
-                    return true;
-                }
-            }
-        }
-        return false;
-    }
-
-    public static String getExtension(File file) {
-        String result = "";
-        String[] parts = file.getAbsolutePath().split("\\.");
-        if (parts.length > 1) {
-            result = parts[parts.length - 1];
-        }
-        return result;
-    }
-
     /* Checks if external storage is available for read and write */
     public static boolean isExternalStorageWritable() {
         String state = Environment.getExternalStorageState();
@@ -64,14 +41,6 @@ public final class FileUtil {
         String state = Environment.getExternalStorageState();
         return Environment.MEDIA_MOUNTED.equals(state) ||
                 Environment.MEDIA_MOUNTED_READ_ONLY.equals(state);
-    }
-
-    public static String getNameWithoutExtension(File file) {
-        return file.getName().replaceFirst("[.][^.]+$", "");
-    }
-
-    public static File[] listAudioFiles(File dir, boolean includeHidden) {
-        return dir.listFiles(new AudioFileFilter(includeHidden, false, false));
     }
 
     public static List<String> readAllLines(File file) throws IOException {

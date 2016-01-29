@@ -2,15 +2,17 @@ package com.reallynourl.nourl.fmpfoldermusicplayer.backend.playlist;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.os.SystemClock;
 import android.preference.PreferenceManager;
+import android.util.Log;
 
 import com.reallynourl.nourl.fmpfoldermusicplayer.R;
+import com.reallynourl.nourl.fmpfoldermusicplayer.utility.file.ExtendedFile;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
+import java.util.Random;
 
 /**
  * Copyright (C) 2015  Jannes Peters
@@ -131,24 +133,24 @@ public class CurrentPlaylist extends Playlist {
         }
     }
 
-    public int append(File file) {
-        super.append(file);
+    public int append(ExtendedFile file) {
+        super.append(new PlaylistItem(file));
         itemsChanged();
-        return mFiles.size() - 1;
+        return mItems.size() - 1;
     }
 
-    public void appendAll(File[] files) {
+    public void appendAll(ExtendedFile[] files) {
         super.appendAll(files);
         itemsChanged();
     }
 
-    public void appendAll(Collection<? extends File> files) {
+    public void appendAll(Collection<? extends ExtendedFile> files) {
         super.appendAll(files);
         itemsChanged();
     }
 
     public void clear() {
-        if (!mFiles.isEmpty()) {
+        if (!mItems.isEmpty()) {
             super.clear();
             itemsChanged();
         }
@@ -160,13 +162,13 @@ public class CurrentPlaylist extends Playlist {
         return removed;
     }
 
-    public int appendNext(File file) {
-        return super.addAt(mCurrentFile + 1, file);
+    public int appendNext(ExtendedFile file) {
+        return super.addAt(mCurrentFile + 1, new PlaylistItem(file));
     }
 
     public boolean hasNext() {
         boolean result = false;
-        if (mFiles.size() <= 0 || mCurrentFile == -1) {
+        if (mItems.size() <= 0 || mCurrentFile == -1) {
           result = false;
         } else if (isShuffle()) {
             result = true;
@@ -180,7 +182,7 @@ public class CurrentPlaylist extends Playlist {
 
     public boolean hasPrevious() {
         boolean result = false;
-        if (isShuffle() || mFiles.size() <= 0 || mCurrentFile == -1) {
+        if (isShuffle() || mItems.size() <= 0 || mCurrentFile == -1) {
             result = false;
         } else if (mRepeatMode != RepeatMode.OFF) {
             result = true;
@@ -190,20 +192,20 @@ public class CurrentPlaylist extends Playlist {
         return result;
     }
 
-    public File getCurrent() {
+    public PlaylistItem getCurrent() {
         return getItemAt(mCurrentFile);
     }
 
-    public File selectNext() {
-        File result = null;
+    public PlaylistItem selectNext() {
+        PlaylistItem result = null;
         if (selectNextInternal()) {
             result = getItemAt(mCurrentFile);
         }
         return result;
     }
 
-    public File selectPrevious() {
-        File result = null;
+    public PlaylistItem selectPrevious() {
+        PlaylistItem result = null;
         if (selectPreviousInternal()) {
             result = getItemAt(mCurrentFile);
         }
@@ -225,20 +227,23 @@ public class CurrentPlaylist extends Playlist {
 
     private boolean selectNextInternal() {
         boolean selectedNext = false;
-        if (mFiles.size() > 0) {
+        if (mItems.size() > 0) {
             if (mIsShuffle) {
-                setCurrent(shufflePlay());
-                selectedNext = true;
+                int next = shufflePlay();
+                if (next != -1) {
+                    setCurrent(next);
+                    selectedNext = true;
+                }
             } else {
                 switch (mRepeatMode) {
                     case OFF:
-                        if (mFiles.size() - 1 > mCurrentFile) {
+                        if (mItems.size() - 1 > mCurrentFile) {
                             setCurrent(mCurrentFile + 1);
                             selectedNext = true;
                         }
                         break;
                     case ALL:
-                        setCurrent(++mCurrentFile % mFiles.size());
+                        setCurrent(++mCurrentFile % mItems.size());
                         selectedNext = true;
                         break;
                     case SINGLE:
@@ -252,18 +257,54 @@ public class CurrentPlaylist extends Playlist {
         return selectedNext;
     }
 
-    //TODO: Implement good shuffle. Since I'm currently not tracking the last played songs this has to wait.
     private int shufflePlay() {
+        int unplayed = countRemainingUnplayed();
+        Log.d("CURRENT_PLAYLIST", unplayed + " items left to play.");
         int result = mCurrentFile;
-        if (getRepeatMode() != RepeatMode.SINGLE) {
-            result = (int)(Math.random() * (double)mFiles.size());
+        switch (mRepeatMode) {
+            case OFF:
+                if (unplayed == 0) {
+                    result = -1;
+                }
+                break;
+            case ALL:
+                if (unplayed == 0) {
+                    Log.d("CURRENT_PLAYLIST", "No items left to play, resetting cause repeat mode all.");
+                    for (PlaylistItem playlistItem : mItems) {
+                        playlistItem.setPlayed(false);
+                    }
+                    unplayed = mItems.size();
+                }
+                break;
+        }
+        if (result != -1 && mRepeatMode != RepeatMode.SINGLE) {
+            Random random = new Random(SystemClock.uptimeMillis());
+            int nextUnplayed = random.nextInt(unplayed);
+            for (int i = 0; i < mItems.size(); i++) {
+                if (!mItems.get(i).isPlayed()) {
+                    if (nextUnplayed-- == 0) {
+                        result = i;
+                        break;
+                    }
+                }
+            }
         }
         return result;
     }
 
+    private int countRemainingUnplayed() {
+        int unplayed = 0;
+        for (PlaylistItem item : mItems) {
+            if (!item.isPlayed()) {
+                unplayed++;
+            }
+        }
+        return unplayed;
+    }
+
     private boolean selectPreviousInternal() {
         boolean selectedPrevious = false;
-        if (mFiles.size() > 0) {
+        if (mItems.size() > 0) {
             switch (mRepeatMode) {
                 case OFF:
                     if (mCurrentFile > 0) {
@@ -273,7 +314,7 @@ public class CurrentPlaylist extends Playlist {
                     break;
                 case ALL:
                     if (mCurrentFile == 0) {
-                        setCurrent(mFiles.size() - 1);
+                        setCurrent(mItems.size() - 1);
                     } else {
                         setCurrent(mCurrentFile - 1);
                     }

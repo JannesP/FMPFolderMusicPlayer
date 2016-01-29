@@ -3,6 +3,7 @@ package com.reallynourl.nourl.fmpfoldermusicplayer.backend.playlist.io;
 import android.util.Log;
 
 import com.reallynourl.nourl.fmpfoldermusicplayer.backend.playlist.Playlist;
+import com.reallynourl.nourl.fmpfoldermusicplayer.utility.file.ExtendedFile;
 import com.reallynourl.nourl.fmpfoldermusicplayer.utility.file.FileUtil;
 
 import java.io.BufferedWriter;
@@ -29,7 +30,7 @@ import java.util.List;
  */
 public abstract class PlaylistParser {
     public static void saveToFile(Playlist playlist, PlaylistFileType type,
-                                  File destination) throws IOException {
+                                  ExtendedFile destination) throws IOException {
         PlaylistParser parser;
         switch (type) {
             case M3U:
@@ -45,7 +46,7 @@ public abstract class PlaylistParser {
         if (!destination.createNewFile()) {
             FileUtil.clearFile(destination);
         }
-        if (!FileUtil.getExtension(destination).equals(type.getExtension())) {
+        if (!destination.getExtension().equals(type.getExtension())) {
             if (!destination.renameTo(
                     new File(destination.getAbsolutePath() + "." + type.getExtension()))) {
                 Log.i("PLAYLIST_PARSER", "There was an error renaming the playlist file \""
@@ -68,12 +69,12 @@ public abstract class PlaylistParser {
 
     }
 
-    public static Playlist readFromFile(File destination) throws
+    public static Playlist readFromFile(ExtendedFile destination) throws
             PlaylistFileFormatNotSupportedException,
             PlaylistFileFormatCorruptedException, IOException {
         Playlist result;
 
-        String extension = FileUtil.getExtension(destination);
+        String extension = destination.getExtension();
         PlaylistFileType type;
         try {
             type = PlaylistFileType.fromExtension(extension);

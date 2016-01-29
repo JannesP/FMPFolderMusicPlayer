@@ -25,7 +25,7 @@ public enum FileType {
         if (file.isDirectory()) {
             return FileType.DIRECTORY;
         } else if (file.isFile()) {
-            if (FileUtil.hasAudioExtension(file)) {
+            if (ExtendedFile.hasAudioExtension(file)) {
                 return FileType.AUDIO;
             } else {
                 return FileType.FILE;

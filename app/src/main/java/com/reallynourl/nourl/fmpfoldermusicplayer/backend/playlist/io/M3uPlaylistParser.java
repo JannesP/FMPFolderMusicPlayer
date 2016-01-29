@@ -4,6 +4,8 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 import com.reallynourl.nourl.fmpfoldermusicplayer.backend.playlist.Playlist;
+import com.reallynourl.nourl.fmpfoldermusicplayer.backend.playlist.PlaylistItem;
+import com.reallynourl.nourl.fmpfoldermusicplayer.utility.file.ExtendedFile;
 import com.reallynourl.nourl.fmpfoldermusicplayer.utility.file.FileUtil;
 
 import java.io.File;
@@ -36,7 +38,7 @@ public class M3uPlaylistParser extends PlaylistParser {
 
         if (playlist.size() == 0) {
             lines = new ArrayList<>(playlist.size());
-            List<File> files = playlist.getList();
+            List<PlaylistItem> files = playlist.getList();
             for (File file : files) {
                 lines.add(file.getAbsolutePath());
             }
@@ -54,9 +56,9 @@ public class M3uPlaylistParser extends PlaylistParser {
         for (String line : fileLines) {
             if (line != null && line.length() > 0) {
                 if (line.charAt(0) != EXTENDED_MARKER) {
-                    File testFile = new File(line);
-                    if (testFile.exists() && FileUtil.hasAudioExtension(testFile)) {
-                        result.append(testFile);
+                    ExtendedFile testFile = new ExtendedFile(line);
+                    if (testFile.exists() && testFile.hasAudioExtension()) {
+                        result.append(new PlaylistItem(testFile));
                     }
                 }
             }

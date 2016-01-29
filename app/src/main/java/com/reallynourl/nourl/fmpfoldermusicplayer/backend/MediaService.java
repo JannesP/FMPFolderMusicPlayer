@@ -16,6 +16,7 @@ import android.widget.Toast;
 
 import com.reallynourl.nourl.fmpfoldermusicplayer.ui.activity.MainActivity;
 import com.reallynourl.nourl.fmpfoldermusicplayer.ui.notifications.MediaNotification;
+import com.reallynourl.nourl.fmpfoldermusicplayer.utility.file.ExtendedFile;
 
 import java.io.File;
 import java.io.IOException;
@@ -47,9 +48,9 @@ public class MediaService extends Service implements MediaPlayer.OnPreparedListe
     private MediaSessionCompat mMediaSession;
     private MediaEventReceiver mMediaEventReceiver;
     private boolean mIsPreparedToPlay = false;
-    private File mCurrentFile;
+    private ExtendedFile mCurrentFile;
 
-    private void setupMediaPlayer(File file) {
+    private void setupMediaPlayer(ExtendedFile file) {
         mIsPreparedToPlay = false;
         mCurrentFile = file;
         if (mMediaPlayer == null) {
@@ -72,7 +73,7 @@ public class MediaService extends Service implements MediaPlayer.OnPreparedListe
         mMediaPlayer.prepareAsync();
     }
 
-    public void play(File file) {
+    public void play(ExtendedFile file) {
         setupMediaPlayer(file);
     }
 
@@ -306,7 +307,7 @@ public class MediaService extends Service implements MediaPlayer.OnPreparedListe
         return true;
     }
 
-    public File getCurrentFile() {
+    public ExtendedFile getCurrentFile() {
         return mCurrentFile;
     }
 

@@ -7,14 +7,13 @@ import android.widget.BaseAdapter;
 import com.reallynourl.nourl.fmpfoldermusicplayer.ui.control.OptionView;
 import com.reallynourl.nourl.fmpfoldermusicplayer.ui.listadapter.item.ItemData;
 import com.reallynourl.nourl.fmpfoldermusicplayer.ui.listadapter.item.MusicBrowserListItem;
-import com.reallynourl.nourl.fmpfoldermusicplayer.utility.file.AudioFileUtil;
+import com.reallynourl.nourl.fmpfoldermusicplayer.utility.file.ExtendedFile;
 import com.reallynourl.nourl.fmpfoldermusicplayer.utility.file.FileType;
-import com.reallynourl.nourl.fmpfoldermusicplayer.utility.file.FileUtil;
 
-import java.io.File;
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.Comparator;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -37,28 +36,28 @@ public class MusicBrowserAdapter extends BaseAdapter implements OptionView, Runn
     private final Object mDataLock = new Object();
     private final Object mDataLoaderLock = new Object();
     private OnOptionsClickedListener mOnItemOptionsClickedListener;
-    private File[] mItems;
+    private List<ExtendedFile> mItems;
     private ArrayList<ItemData> mData;
     private View mParent = null;
     private Thread mDataLoader;
 
 
     public MusicBrowserAdapter() {
-        mItems = new File[0];
+        mItems = new ArrayList<>(0);
     }
 
-    public void setData(File[] files) {
+    public void setData(List<ExtendedFile> files) {
         synchronized (mDataLoaderLock) {
             if (mDataLoader != null) {
                 mDataLoader.interrupt();
             }
         }
-        if (files == null) files = new File[0];
-        Arrays.sort(files, new Comparator<File>() {
+        if (files == null) files = new ArrayList<>(0);
+        Collections.sort(files, new Comparator<ExtendedFile>() {
             @Override
-            public int compare(File lhs, File rhs) {
-                FileType lhsType = FileType.getType(lhs);
-                FileType rhsType = FileType.getType(rhs);
+            public int compare(ExtendedFile lhs, ExtendedFile rhs) {
+                FileType lhsType = lhs.getType();
+                FileType rhsType = rhs.getType();
 
                 if (lhsType == rhsType) {
                     return lhs.getName().compareToIgnoreCase(rhs.getName());
@@ -73,9 +72,9 @@ public class MusicBrowserAdapter extends BaseAdapter implements OptionView, Runn
                 }
             }
         });
-        mData = new ArrayList<>(files.length);
-        for (int i = 0; i < files.length; i++) {
-            mData.add(i, new ItemData(files[i]));
+        mData = new ArrayList<>(files.size());
+        for (int i = 0; i < files.size(); i++) {
+            mData.add(i, new ItemData(files.get(i)));
         }
         mItems = files;
         notifyDataSetChanged();
@@ -88,12 +87,12 @@ public class MusicBrowserAdapter extends BaseAdapter implements OptionView, Runn
 
     @Override
     public int getCount() {
-        return mItems.length;
+        return mItems.size();
     }
 
     @Override
-    public File getItem(int position) {
-        return mItems[position];
+    public ExtendedFile getItem(int position) {
+        return mItems.get(position);
     }
 
     @Override
@@ -105,7 +104,7 @@ public class MusicBrowserAdapter extends BaseAdapter implements OptionView, Runn
     public View getView(int position, View convertView, ViewGroup parent) {
         //FIXME: recycling of views
         mParent = parent;
-        MusicBrowserListItem musicBrowserListItem = MusicBrowserListItem.create(parent, mItems[position]);
+        MusicBrowserListItem musicBrowserListItem = MusicBrowserListItem.create(parent, mItems.get(position));
         synchronized (mDataLock) {
             ItemData itemData = mData.get(position);
             musicBrowserListItem.setTitle(itemData.getFile().getName());
@@ -139,15 +138,20 @@ public class MusicBrowserAdapter extends BaseAdapter implements OptionView, Runn
             }
             boolean dataChanged = false;
             String secData = "";
-            File threadSafeFile;
+            ExtendedFile threadSafeFile;
+            int duration = 0;
             synchronized (mDataLock) {
-                File file = mData.get(i).getFile();
-                threadSafeFile = new File(file.getAbsolutePath());
+                ExtendedFile file = mData.get(i).getFile();
+                threadSafeFile = new ExtendedFile(file.getAbsolutePath());
+                if (file.hasDurationCached()) {
+                    duration = file.getDuration();
+                }
             }
             switch (FileType.getType(threadSafeFile)) {
                 case AUDIO:
-                    int duration;
-                    duration = AudioFileUtil.getDuration(threadSafeFile);
+                    if (duration == 0) {
+                        duration = threadSafeFile.getDuration();
+                    }
                     if (duration != 0) {
                         secData = String.format("%d:%02d",
                                 TimeUnit.MILLISECONDS.toMinutes(duration),
@@ -160,8 +164,8 @@ public class MusicBrowserAdapter extends BaseAdapter implements OptionView, Runn
                     dataChanged = true;
                     break;
                 case DIRECTORY:
-                    File[] files = FileUtil.listAudioFiles(threadSafeFile, false);
-                    secData = files.length + " audio files found.";
+                    List<ExtendedFile> files = threadSafeFile.listAudioFiles(false);
+                    secData = files.size() + " audio files found.";
                     dataChanged = true;
                     break;
             }
