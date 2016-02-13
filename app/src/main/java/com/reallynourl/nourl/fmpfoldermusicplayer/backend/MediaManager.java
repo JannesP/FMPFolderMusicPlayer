@@ -182,7 +182,6 @@ public class MediaManager implements MediaPlayer.OnCompletionListener, CurrentPl
 
     public void release() {
         mContext.stopService(new Intent(mContext, MediaService.class));
-        MainActivity.close();
         sInstance = null;
         mCurrentPlaylist = null;
         mContext = null;
@@ -212,7 +211,7 @@ public class MediaManager implements MediaPlayer.OnCompletionListener, CurrentPl
         if (service != null) {
             File file = getCurrentFile();
             if (file != null) {
-                MediaNotification.showUpdate(service, getCurrentFile(), service.getMediaSession());
+                MediaNotification.showUpdate(service);
             }
         }
     }
@@ -223,7 +222,7 @@ public class MediaManager implements MediaPlayer.OnCompletionListener, CurrentPl
         if (service != null) {
             File file = getCurrentFile();
             if (file != null) {
-                MediaNotification.showUpdate(service, getCurrentFile(), service.getMediaSession());
+                MediaNotification.showUpdate(service);
             }
         }
     }

@@ -23,10 +23,12 @@ import android.widget.Toast;
 
 import com.reallynourl.nourl.fmpfoldermusicplayer.R;
 import com.reallynourl.nourl.fmpfoldermusicplayer.backend.MediaManager;
+import com.reallynourl.nourl.fmpfoldermusicplayer.backend.MediaService;
 import com.reallynourl.nourl.fmpfoldermusicplayer.ui.fragment.FileBrowserFragment;
 import com.reallynourl.nourl.fmpfoldermusicplayer.ui.fragment.IMainContent;
 import com.reallynourl.nourl.fmpfoldermusicplayer.ui.fragment.MusicPlayingFragment;
 import com.reallynourl.nourl.fmpfoldermusicplayer.ui.fragment.SettingsFragment;
+import com.reallynourl.nourl.fmpfoldermusicplayer.ui.notifications.MediaNotification;
 import com.reallynourl.nourl.fmpfoldermusicplayer.utility.MyUncaughtExceptionHandler;
 import com.reallynourl.nourl.fmpfoldermusicplayer.utility.Util;
 
@@ -187,16 +189,18 @@ public class MainActivity extends AppCompatActivity
         }
         sInstance = this;
         sIsStarted = true;
-        super.onStart();
-    }
 
-    @Override
-    protected void onResume() {
         if (Util.hasStoragePermission(this)) {
             loadUi();
         } else {
             Util.requestStoragePermission(this, REQUEST_PERMISSION_STORAGE);
         }
+
+        super.onStart();
+    }
+
+    @Override
+    protected void onResume() {
         super.onResume();
     }
 
@@ -222,15 +226,19 @@ public class MainActivity extends AppCompatActivity
     @Override
     protected void onStop() {
         sIsStarted = false;
-        MediaManager mediaManager = MediaManager.getInstance();
-        if (mediaManager != null) {
-            mediaManager.onMainActivityClosed();
+        MediaService mediaService = MediaService.getInstance();
+        if (mediaService != null && mediaService.getCurrentFile() != null) {
+            MediaNotification.showUpdate(mediaService);
         }
         super.onStop();
     }
 
     @Override
     protected void onDestroy() {
+        MediaManager mediaManager = MediaManager.getInstance();
+        if (mediaManager != null) {
+            mediaManager.onMainActivityClosed();
+        }
         sInstance = null;
         super.onDestroy();
     }

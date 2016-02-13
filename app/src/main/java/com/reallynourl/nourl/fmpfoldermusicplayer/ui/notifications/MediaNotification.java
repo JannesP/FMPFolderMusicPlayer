@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.support.annotation.DrawableRes;
+import android.support.annotation.NonNull;
 import android.support.v4.app.NotificationManagerCompat;
 import android.support.v4.media.MediaMetadataCompat;
 import android.support.v4.media.session.MediaSessionCompat;
@@ -16,6 +17,7 @@ import android.support.v7.app.NotificationCompat;
 import com.reallynourl.nourl.fmpfoldermusicplayer.R;
 import com.reallynourl.nourl.fmpfoldermusicplayer.backend.MediaIntentReceiver;
 import com.reallynourl.nourl.fmpfoldermusicplayer.backend.MediaManager;
+import com.reallynourl.nourl.fmpfoldermusicplayer.backend.MediaService;
 import com.reallynourl.nourl.fmpfoldermusicplayer.ui.activity.MainActivity;
 import com.reallynourl.nourl.fmpfoldermusicplayer.ui.fragment.MusicPlayingFragment;
 import com.reallynourl.nourl.fmpfoldermusicplayer.utility.Util;
@@ -46,8 +48,7 @@ public final class MediaNotification {
     private static final int INTENT_CANCEL_ID = 3000;
 
 
-    public static void showUpdate(Service service, ExtendedFile track,
-                                    MediaSessionCompat mediaSession) {
+    public static void showUpdate(@NonNull MediaService service) {
         Bundle b = new Bundle(1);
         b.putString(MainActivity.FRAGMENT_EXTRA, MusicPlayingFragment.NAME);
         PendingIntent pi = PendingIntent.getActivity(service, 0,
@@ -60,11 +61,19 @@ public final class MediaNotification {
         NotificationCompat.Action nextAction = createNextAction(service);
         NotificationCompat.Action prevAction = createPreviousAction(service);
 
+        ExtendedFile currentFile = service.getCurrentFile();
+        String mediaName = "MEDIA_NAME";
+        String folder = "FOLDER";
+        if (currentFile != null) {
+            mediaName = currentFile.getNameWithoutExtension();
+            folder = currentFile.getParentFile().getName();
+        }
+
         android.support.v4.app.NotificationCompat.Builder notificationBuilder =
                 new NotificationCompat.Builder(service)
                 .setSmallIcon(R.drawable.ic_play_arrow)
-                .setContentTitle(track.getNameWithoutExtension())
-                .setContentText(track.getParentFile().getName())
+                .setContentTitle(mediaName)
+                .setContentText(folder)
                 .setContentIntent(pi)
                 .setLargeIcon(
                         BitmapFactory.decodeResource(service.getResources(), R.mipmap.ic_launcher));
@@ -82,7 +91,7 @@ public final class MediaNotification {
 
         PendingIntent cancelIntent = createCancelIntent(service);
         NotificationCompat.MediaStyle style = new NotificationCompat.MediaStyle()
-                .setMediaSession(mediaSession.getSessionToken())
+                .setMediaSession(service.getMediaSession().getSessionToken())
                 .setShowCancelButton(true)
                 .setCancelButtonIntent(cancelIntent);
         switch (addedActions) {
@@ -106,7 +115,7 @@ public final class MediaNotification {
         } else {
             service.startForeground(NOTIFICATION_ID, notificationBuilder.build());
         }
-        updateMediaSession(mediaSession);
+        updateMediaSession(service.getMediaSession());
     }
 
     public static void remove(Service service) {

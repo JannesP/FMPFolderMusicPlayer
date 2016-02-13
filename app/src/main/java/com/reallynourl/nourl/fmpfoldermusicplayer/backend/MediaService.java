@@ -161,7 +161,7 @@ public class MediaService extends Service implements MediaPlayer.OnPreparedListe
             mp.setOnCompletionListener(this);
             mMediaSession.setActive(true);
             mIsPreparedToPlay = true;
-            MediaNotification.showUpdate(this, mCurrentFile, mMediaSession);
+            MediaNotification.showUpdate(this);
         }
     }
 
@@ -174,7 +174,7 @@ public class MediaService extends Service implements MediaPlayer.OnPreparedListe
             stopSelf();
         } else {
             MediaManager.getInstance().onCompletion(mp);
-            MediaNotification.showUpdate(this, mCurrentFile, mMediaSession);
+            MediaNotification.showUpdate(this);
         }
     }
 
@@ -251,21 +251,21 @@ public class MediaService extends Service implements MediaPlayer.OnPreparedListe
     public void pause() {
         if (mMediaPlayer != null && mIsPreparedToPlay && mMediaPlayer.isPlaying()) {
             mMediaPlayer.pause();
-            MediaNotification.showUpdate(this, mCurrentFile, mMediaSession);
+            MediaNotification.showUpdate(this);
         }
     }
 
     public void play() {
         if (mMediaPlayer != null && mIsPreparedToPlay && !mMediaPlayer.isPlaying()) {
             mMediaPlayer.start();
-            MediaNotification.showUpdate(this, mCurrentFile, mMediaSession);
+            MediaNotification.showUpdate(this);
         }
     }
 
     public void seekTo(int msec) {
         if (mMediaPlayer != null && mIsPreparedToPlay && mMediaPlayer.getDuration() > msec) {
             mMediaPlayer.seekTo(msec);
-            MediaNotification.showUpdate(this, mCurrentFile, mMediaSession);
+            MediaNotification.showUpdate(this);
         }
     }
 
@@ -307,6 +307,7 @@ public class MediaService extends Service implements MediaPlayer.OnPreparedListe
         return true;
     }
 
+    @Nullable
     public ExtendedFile getCurrentFile() {
         return mCurrentFile;
     }

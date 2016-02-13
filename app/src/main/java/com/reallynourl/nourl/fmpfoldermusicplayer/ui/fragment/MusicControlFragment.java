@@ -88,19 +88,29 @@ public class MusicControlFragment extends Fragment implements View.OnClickListen
     }
 
     @Override
-    public void onResume() {
+    public void onStart() {
         setupReferences();
         addListeners();
+        super.onStart();
+    }
+
+    @Override
+    public void onResume() {
         startRefresh();
         super.onResume();
     }
 
     @Override
     public void onPause() {
-        removeListeners();
         mRefreshThread.interrupt();
-        destroyReferences();
         super.onPause();
+    }
+
+    @Override
+    public void onStop() {
+        removeListeners();
+        destroyReferences();
+        super.onStop();
     }
 
     @Override
