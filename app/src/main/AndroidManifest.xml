@@ -25,12 +25,6 @@
             </intent-filter>
         </activity>
 
-        <activity android:name=".ui.activity.SettingsActivity"
-                  android:label="FMP Settings"
-                  android:theme="@style/AppTheme.NoActionBar"
-                  android:parentActivityName=".ui.activity.MainActivity"
-            tools:ignore="UnusedAttribute" />
-
         <service android:name=".backend.MediaService" />
 
         <receiver android:name=".backend.MediaIntentReceiver">

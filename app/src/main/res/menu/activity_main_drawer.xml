@@ -18,14 +18,14 @@
             android:id="@+id/nav_playlists"
             android:icon="@drawable/ic_nav_playlist"
             android:title="@string/playlists"/>
+        <item
+            android:id="@+id/nav_settings"
+            android:icon="@drawable/ic_nav_settings"
+            android:title="@string/settings"/>
     </group>
 
     <item android:title="@string/other">
         <menu>
-            <item
-                android:id="@+id/nav_settings"
-                android:icon="@drawable/ic_nav_settings"
-                android:title="@string/settings"/>
             <item
                 android:id="@+id/nav_recommend"
                 android:icon="@drawable/ic_nav_share"

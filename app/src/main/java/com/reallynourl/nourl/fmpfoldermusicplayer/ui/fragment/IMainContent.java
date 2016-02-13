@@ -18,23 +18,24 @@ import android.app.Fragment;
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-public abstract class MainContentFragment extends Fragment {
-    private String mName = "";
+public interface IMainContent {
 
-    MainContentFragment(String name) {
-        this.mName = name;
-    }
-
-    public String getName() {
-        return mName;
-    }
+    /**
+     * Gets a unique name for the fragment contained by the class.
+     * @return a unique name
+     */
+    String getName();
 
     /**
      * Called when the back button is pressed and the Fragment is loaded as main content.
      * @return if the back press was handled by the fragment.
      */
-    public boolean onBackPressed() {
-        return false;
-    }
+    boolean onBackPressed();
+
+    /**
+     * Gets the Fragment which should be displayed when accessed.
+     * @return a Fragment contained by the class
+     */
+    Fragment getFragment();
 
 }

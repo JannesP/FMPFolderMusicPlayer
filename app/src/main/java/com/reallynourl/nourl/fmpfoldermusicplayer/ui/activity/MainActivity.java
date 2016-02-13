@@ -24,8 +24,9 @@ import android.widget.Toast;
 import com.reallynourl.nourl.fmpfoldermusicplayer.R;
 import com.reallynourl.nourl.fmpfoldermusicplayer.backend.MediaManager;
 import com.reallynourl.nourl.fmpfoldermusicplayer.ui.fragment.FileBrowserFragment;
-import com.reallynourl.nourl.fmpfoldermusicplayer.ui.fragment.MainContentFragment;
+import com.reallynourl.nourl.fmpfoldermusicplayer.ui.fragment.IMainContent;
 import com.reallynourl.nourl.fmpfoldermusicplayer.ui.fragment.MusicPlayingFragment;
+import com.reallynourl.nourl.fmpfoldermusicplayer.ui.fragment.SettingsFragment;
 import com.reallynourl.nourl.fmpfoldermusicplayer.utility.MyUncaughtExceptionHandler;
 import com.reallynourl.nourl.fmpfoldermusicplayer.utility.Util;
 
@@ -52,7 +53,7 @@ public class MainActivity extends AppCompatActivity
     public static final String FRAGMENT_EXTRA = "fragment";
     private static MainActivity sInstance;
     private Snackbar mCloseSnackBar = null;
-    private MainContentFragment mActiveFragment;
+    private IMainContent mActiveContent;
     private static boolean sIsStarted = false;
 
     @Override
@@ -137,9 +138,9 @@ public class MainActivity extends AppCompatActivity
             } else {
                 mCloseSnackBar = Snackbar.make(findViewById(android.R.id.content), "Press again to exit ...", Snackbar.LENGTH_SHORT);
             }
-            if (mActiveFragment != null) {
-                if (!mActiveFragment.onBackPressed()) {
-                    switch (mActiveFragment.getName()) {
+            if (mActiveContent != null) {
+                if (!mActiveContent.onBackPressed()) {
+                    switch (mActiveContent.getName()) {
                         case MusicPlayingFragment.NAME:
                             setNavigationItem(R.id.nav_file_browser);
                             break;
@@ -163,8 +164,8 @@ public class MainActivity extends AppCompatActivity
                 Log.d("Navigation", "Loading file browser fragment!");
                 break;
             case R.id.nav_settings:
-                Intent intent = new Intent(this, SettingsActivity.class);
-                startActivity(intent);
+                loadFragmentToContent(new SettingsFragment());
+                Log.d("Navigation", "Loading Settings fragment");
                 break;
             case R.id.nav_currently_playing:
                 loadFragmentToContent(new MusicPlayingFragment());
@@ -234,15 +235,15 @@ public class MainActivity extends AppCompatActivity
         super.onDestroy();
     }
 
-    private void loadFragmentToContent(MainContentFragment fragment) {
+    private void loadFragmentToContent(IMainContent content) {
         FragmentManager fm = getFragmentManager();
         FragmentTransaction ft = fm.beginTransaction();
-        ft.replace(R.id.content_panel, fragment);
+        ft.replace(R.id.content_panel, content.getFragment());
         ft.commit();
         SharedPreferences.Editor edit = PreferenceManager.getDefaultSharedPreferences(this).edit();
-        edit.putString(getString(R.string.pref_last_main_content_fragment), fragment.getName());
+        edit.putString(getString(R.string.pref_last_main_content_fragment), content.getName());
         edit.apply();
-        mActiveFragment = fragment;
+        mActiveContent = content;
     }
 
     private void setNavigationItem(@IdRes int id) {

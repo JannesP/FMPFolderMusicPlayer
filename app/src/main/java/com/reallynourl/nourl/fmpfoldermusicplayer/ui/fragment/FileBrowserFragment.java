@@ -1,5 +1,6 @@
 package com.reallynourl.nourl.fmpfoldermusicplayer.ui.fragment;
 
+import android.app.Fragment;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Environment;
@@ -49,7 +50,7 @@ import java.util.List;
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-public class FileBrowserFragment extends MainContentFragment implements
+public class FileBrowserFragment extends Fragment implements IMainContent,
         AdapterView.OnItemClickListener,
         OptionView.OnOptionsClickedListener, PopupMenu.OnMenuItemClickListener {
     public static final String NAME = "file_browser";
@@ -61,8 +62,16 @@ public class FileBrowserFragment extends MainContentFragment implements
     private MusicBrowserListItem mCurrentMenuItem;
     private ExtendedFile mCurrentPath;
 
-    public FileBrowserFragment() {
-        super(NAME);
+    public FileBrowserFragment() {}
+
+    @Override
+    public String getName() {
+        return NAME;
+    }
+
+    @Override
+    public Fragment getFragment() {
+        return this;
     }
 
     @Override

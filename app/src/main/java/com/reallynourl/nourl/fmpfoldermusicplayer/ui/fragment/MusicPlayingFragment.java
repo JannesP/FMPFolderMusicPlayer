@@ -1,5 +1,6 @@
 package com.reallynourl.nourl.fmpfoldermusicplayer.ui.fragment;
 
+import android.app.Fragment;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
@@ -24,17 +25,30 @@ import com.reallynourl.nourl.fmpfoldermusicplayer.R;
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-public class MusicPlayingFragment extends MainContentFragment {
+public class MusicPlayingFragment extends Fragment implements IMainContent {
     public static final String NAME = "music_playing";
 
-    public MusicPlayingFragment() {
-        super(NAME);
-    }
+    public MusicPlayingFragment() {}
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         //inflate layout for fragment
         return inflater.inflate(R.layout.fragment_music_playback, container, false);
+    }
+
+    @Override
+    public String getName() {
+        return NAME;
+    }
+
+    @Override
+    public Fragment getFragment() {
+        return this;
+    }
+
+    @Override
+    public boolean onBackPressed() {
+        return false;
     }
 }
