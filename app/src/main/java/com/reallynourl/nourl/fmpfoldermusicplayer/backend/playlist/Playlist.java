@@ -24,42 +24,67 @@ import java.util.List;
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+//TODO: Implement multiple of the same file.
 public class Playlist {
     protected final ArrayList<PlaylistItem> mItems;
+    private final List<OnItemsChangedListener> mOnItemsChangedListeners;
 
     public Playlist() {
         this.mItems = new ArrayList<>();
+        mOnItemsChangedListeners = new ArrayList<>(3);
+    }
+
+    public int append(ExtendedFile item) {
+        PlaylistItem pItem = new PlaylistItem(item);
+        return append(pItem);
     }
 
     public int append(PlaylistItem item) {
         mItems.add(item);
+        item.setPlaylist(this);
+        itemsChanged();
         return mItems.size() - 1;
     }
 
     public void appendAll(ExtendedFile[] files) {
         for (ExtendedFile file : files) {
-            mItems.add(new PlaylistItem(file));
+            PlaylistItem item = new PlaylistItem(file);
+            mItems.add(item);
+            item.setPlaylist(this);
         }
+        itemsChanged();
     }
 
     public void appendAll(Collection<? extends ExtendedFile> files) {
         for (ExtendedFile file : files) {
-            mItems.add(new PlaylistItem(file));
+            PlaylistItem item = new PlaylistItem(file);
+            mItems.add(item);
+            item.setPlaylist(this);
+        }
+        itemsChanged();
+    }
+
+    public void remove(PlaylistItem file) {
+        boolean removed = mItems.remove(file);
+        if (removed) {
+            itemsChanged();
         }
     }
 
     public void clear() {
         mItems.clear();
+        itemsChanged();
     }
 
     public boolean remove(int index) {
-        boolean result = false;
+        boolean removed = false;
         if (index >= 0 && mItems.size() < index) {
             if (mItems.remove(index) != null) {
-                result = true;
+                removed = true;
             }
         }
-        return result;
+        if (removed) itemsChanged();
+        return removed;
     }
 
     public int addAt(int position, PlaylistItem item) {
@@ -68,6 +93,8 @@ public class Playlist {
         } else if (mItems.isEmpty()) {
             mItems.add(item);
         }
+        item.setPlaylist(this);
+        itemsChanged();
         return position;
     }
 
@@ -87,4 +114,24 @@ public class Playlist {
         return mItems.size();
     }
 
+    private void itemsChanged() {
+        for (OnItemsChangedListener listener : mOnItemsChangedListeners) {
+            listener.onPlaylistItemsChanged(this);
+        }
+    }
+
+    public void removeOnModeChangedListener(OnItemsChangedListener listener) {
+        while (true) {  //could be done without while(true) but looks cleaner this way
+            if (!(mOnItemsChangedListeners.remove(listener))) break;
+        }
+    }
+
+    public void addOnItemsChangedListener(OnItemsChangedListener l) {
+        mOnItemsChangedListeners.remove(l);
+        mOnItemsChangedListeners.add(l);
+    }
+
+    public interface OnItemsChangedListener {
+        void onPlaylistItemsChanged(Playlist playlist);
+    }
 }

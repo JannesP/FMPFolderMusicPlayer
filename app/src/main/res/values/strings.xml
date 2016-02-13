@@ -41,4 +41,6 @@
     <string name="loading_3_dots">loading ...</string>
     <string name="pref_playlist_repeat_mode">pref_playlist_repeat_mode</string>
     <string name="pref_playlist_shuffle">pref_playlist_shuffle</string>
+    <string name="remove">Remove</string>
+    <string name="play">Play</string>
 </resources>

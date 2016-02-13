@@ -6,6 +6,7 @@ import android.media.MediaPlayer;
 import android.util.Log;
 
 import com.reallynourl.nourl.fmpfoldermusicplayer.backend.playlist.CurrentPlaylist;
+import com.reallynourl.nourl.fmpfoldermusicplayer.backend.playlist.Playlist;
 import com.reallynourl.nourl.fmpfoldermusicplayer.backend.playlist.PlaylistItem;
 import com.reallynourl.nourl.fmpfoldermusicplayer.ui.activity.MainActivity;
 import com.reallynourl.nourl.fmpfoldermusicplayer.ui.notifications.MediaNotification;
@@ -29,7 +30,7 @@ import java.io.File;
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-public class MediaManager implements MediaPlayer.OnCompletionListener, CurrentPlaylist.OnItemsChangedListener, CurrentPlaylist.OnModeChangedListener {
+public class MediaManager implements MediaPlayer.OnCompletionListener, Playlist.OnItemsChangedListener, CurrentPlaylist.OnModeChangedListener {
     private static MediaManager sInstance;
     private static final String TAG = "MediaManager";
 
@@ -208,7 +209,7 @@ public class MediaManager implements MediaPlayer.OnCompletionListener, CurrentPl
     }
 
     @Override
-    public void onPlaylistItemsChanged(CurrentPlaylist currentPlaylist) {
+    public void onPlaylistItemsChanged(Playlist playlist) {
         MediaService service = MediaService.getInstance();
         if (service != null) {
             File file = getCurrentFile();
@@ -226,6 +227,15 @@ public class MediaManager implements MediaPlayer.OnCompletionListener, CurrentPl
             if (file != null) {
                 MediaNotification.showUpdate(service);
             }
+        }
+    }
+
+    public void playPlaylistItem(PlaylistItem playlistItem) {
+        MediaService mediaService = MediaService.getInstance();
+        if (mediaService != null) {
+            mediaService.play(playlistItem);
+            mCurrentPlaylist.setCurrent(playlistItem);
+            playlistItem.setPlayed(true);
         }
     }
 }

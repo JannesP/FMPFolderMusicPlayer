@@ -34,7 +34,6 @@ public class CurrentPlaylist extends Playlist {
     private int mCurrentFile;
     private boolean mIsShuffle;
     private RepeatMode mRepeatMode;
-    private final List<OnItemsChangedListener> mOnItemsChangedListeners;
     private final List<OnCurrentItemChangedListener> mOnCurrentItemChangedListeners;
     private final List<OnModeChangedListener> mOnModeChangedListeners;
     private final Context mContext;
@@ -45,7 +44,6 @@ public class CurrentPlaylist extends Playlist {
         mContext = context;
         loadPreferences();
         mCurrentFile = -1;
-        mOnItemsChangedListeners = new ArrayList<>(3);
         mOnCurrentItemChangedListeners = new ArrayList<>(3);
         mOnModeChangedListeners = new ArrayList<>(3);
     }
@@ -70,11 +68,6 @@ public class CurrentPlaylist extends Playlist {
         editor.apply();
     }
 
-    public void addOnItemsChangedListener(OnItemsChangedListener l) {
-        mOnItemsChangedListeners.remove(l);
-        mOnItemsChangedListeners.add(l);
-    }
-
     public void addOnModeChangedListener(OnModeChangedListener l) {
         mOnModeChangedListeners.remove(l);
         mOnModeChangedListeners.add(l);
@@ -91,21 +84,9 @@ public class CurrentPlaylist extends Playlist {
         }
     }
 
-    public void removeOnModeChangedListener(OnItemsChangedListener listener) {
-        while (true) {  //could be done without while(true) but looks cleaner this way
-            if (!(mOnItemsChangedListeners.remove(listener))) break;
-        }
-    }
-
     public void removeOnPlaylistCurrentItemChangedListener(OnCurrentItemChangedListener listener) {
         while (true) {  //could be done without while(true) but looks cleaner this way
             if (!(mOnCurrentItemChangedListeners.remove(listener))) break;
-        }
-    }
-
-    private void itemsChanged() {
-        for (OnItemsChangedListener listener : mOnItemsChangedListeners) {
-            listener.onPlaylistItemsChanged(this);
         }
     }
 
@@ -131,35 +112,6 @@ public class CurrentPlaylist extends Playlist {
             saveShuffle();
             modeChanged();
         }
-    }
-
-    public int append(ExtendedFile file) {
-        super.append(new PlaylistItem(file));
-        itemsChanged();
-        return mItems.size() - 1;
-    }
-
-    public void appendAll(ExtendedFile[] files) {
-        super.appendAll(files);
-        itemsChanged();
-    }
-
-    public void appendAll(Collection<? extends ExtendedFile> files) {
-        super.appendAll(files);
-        itemsChanged();
-    }
-
-    public void clear() {
-        if (!mItems.isEmpty()) {
-            super.clear();
-            itemsChanged();
-        }
-    }
-
-    public boolean remove(int index) {
-        boolean removed = super.remove(index);
-        if (removed) itemsChanged();
-        return removed;
     }
 
     public int appendNext(ExtendedFile file) {
@@ -343,8 +295,12 @@ public class CurrentPlaylist extends Playlist {
         setCurrent(-1);
     }
 
-    public interface OnItemsChangedListener {
-        void onPlaylistItemsChanged(CurrentPlaylist currentPlaylist);
+    public void setCurrent(PlaylistItem playlistItem) {
+        for (int i = 0; i < mItems.size(); i++) {
+            if (mItems.get(i).getAbsolutePath().equals(playlistItem.getAbsolutePath())) {
+                setCurrent(i);
+            }
+        }
     }
 
     public interface OnCurrentItemChangedListener {

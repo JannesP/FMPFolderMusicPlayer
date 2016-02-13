@@ -1,5 +1,6 @@
 package com.reallynourl.nourl.fmpfoldermusicplayer.ui.listadapter;
 
+import android.annotation.SuppressLint;
 import android.graphics.Color;
 import android.os.Process;
 import android.view.View;
@@ -8,10 +9,12 @@ import android.widget.BaseAdapter;
 
 import com.reallynourl.nourl.fmpfoldermusicplayer.backend.MediaManager;
 import com.reallynourl.nourl.fmpfoldermusicplayer.backend.playlist.CurrentPlaylist;
+import com.reallynourl.nourl.fmpfoldermusicplayer.backend.playlist.Playlist;
 import com.reallynourl.nourl.fmpfoldermusicplayer.backend.playlist.PlaylistItem;
 import com.reallynourl.nourl.fmpfoldermusicplayer.ui.control.OptionView;
 import com.reallynourl.nourl.fmpfoldermusicplayer.ui.listadapter.item.AudioFileListItem;
 import com.reallynourl.nourl.fmpfoldermusicplayer.ui.listadapter.item.ItemData;
+import com.reallynourl.nourl.fmpfoldermusicplayer.ui.listadapter.item.PlaylistListItem;
 import com.reallynourl.nourl.fmpfoldermusicplayer.utility.file.ExtendedFile;
 
 import java.io.File;
@@ -35,7 +38,7 @@ import java.util.concurrent.TimeUnit;
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-public class MusicPlaylistAdapter extends BaseAdapter implements CurrentPlaylist.OnItemsChangedListener, Runnable, CurrentPlaylist.OnCurrentItemChangedListener, OptionView {
+public class MusicPlaylistAdapter extends BaseAdapter implements Playlist.OnItemsChangedListener, Runnable, CurrentPlaylist.OnCurrentItemChangedListener, OptionView {
     private final Object mDataLock = new Object();
     private final Object mDataLoaderLock = new Object();
     private OnOptionsClickedListener mOnItemOptionsClickedListener;
@@ -58,7 +61,7 @@ public class MusicPlaylistAdapter extends BaseAdapter implements CurrentPlaylist
     }
 
     @Override
-    public File getItem(int position) {
+    public PlaylistItem getItem(int position) {
         return MediaManager.getInstance().getPlaylist().getList().get(position);
     }
 
@@ -70,28 +73,22 @@ public class MusicPlaylistAdapter extends BaseAdapter implements CurrentPlaylist
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         mParent = parent;
-        AudioFileListItem audioFileListItem =
-                (AudioFileListItem) AudioFileListItem.create(parent,
-                        MediaManager.getInstance().getPlaylist().getList().get(position));
+        PlaylistListItem playlistListItem = PlaylistListItem.inflate(parent,
+                    MediaManager.getInstance().getPlaylist().getList().get(position));
 
         synchronized (mDataLock) {
             ItemData itemData = mData.get(position);
-            audioFileListItem.setTitle(itemData.getFile().getName());
-            audioFileListItem.setSecondaryData(itemData.getSecondaryData());
+            playlistListItem.setTitle(itemData.getFile().getName());
+            playlistListItem.setSecondaryData(itemData.getSecondaryData());
         }
         if (MediaManager.getInstance().getPlaylist().getCurrentIndex() == position) {
-            audioFileListItem.setBackgroundColor(mAccentColor);
+            playlistListItem.setBackgroundColor(mAccentColor);
         } else {
-            audioFileListItem.setBackgroundColor(Color.TRANSPARENT);
+            playlistListItem.setBackgroundColor(Color.TRANSPARENT);
         }
-        convertView = audioFileListItem;
+        convertView = playlistListItem;
         ((OptionView)convertView).setOnItemOptionsClickedListener(mOnItemOptionsClickedListener);
         return convertView;
-    }
-
-    @Override
-    public void onPlaylistItemsChanged(CurrentPlaylist currentPlaylist) {
-        reloadData();
     }
 
     private void reloadData() {
@@ -170,5 +167,10 @@ public class MusicPlaylistAdapter extends BaseAdapter implements CurrentPlaylist
     public void setOnItemOptionsClickedListener(OnOptionsClickedListener listener) {
         mOnItemOptionsClickedListener = listener;
         notifyDataSetChanged();
+    }
+
+    @Override
+    public void onPlaylistItemsChanged(Playlist playlist) {
+        reloadData();
     }
 }

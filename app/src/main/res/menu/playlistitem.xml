@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:title="@string/play"
+        android:id="@+id/item_play"
+        android:icon="@drawable/ic_play_arrow"
+        />
+    <item
+        android:title="@string/remove"
+        android:id="@+id/item_remove"
+        android:icon="@drawable/ic_close"
+        />
+    <item
+        android:title="Play Next (working on it for shuffle)"
+        android:id="@+id/item_play_next"
+        android:icon="@drawable/ic_skip_next_white"
+        />
+</menu>

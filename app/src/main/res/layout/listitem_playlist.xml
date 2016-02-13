@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.reallynourl.nourl.fmpfoldermusicplayer.ui.listadapter.item.PlaylistListItem xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="?android:attr/listPreferredItemHeight"
+    android:layout_margin="5dp">
+
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_alignParentRight="true"
+        android:paddingLeft="3dp"
+        android:paddingRight="3dp"
+        android:scaleType="center"
+        android:id="@+id/imageViewOptionsIcon"
+        android:src="@drawable/ic_more_vert"
+        android:contentDescription="@string/options"/>
+
+    <RelativeLayout
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_toLeftOf="@id/imageViewOptionsIcon"
+        android:id="@+id/listItemPartMain">
+
+        <ImageView
+            android:layout_width="?android:attr/listPreferredItemHeight"
+            android:layout_height="match_parent"
+            android:layout_margin="5dp"
+            android:id="@+id/imageViewListItemIcon"
+            android:src="@drawable/ic_music_file"
+            android:contentDescription="@string/file_icons"/>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:layout_marginLeft="5dp"
+            android:layout_toRightOf="@id/imageViewListItemIcon">
+
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:textStyle="bold"
+                android:textSize="@dimen/text_size_medium_material"
+                android:layout_weight="0.9"
+                android:gravity="center_vertical"
+                android:id="@+id/textViewListItemTitle"
+                android:text="@string/long_example_text"/>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="0.1"
+                android:gravity="center_vertical"
+                android:id="@+id/textViewListItemMoreInfo"
+                android:text="@string/more_info_example"/>
+        </LinearLayout>
+
+    </RelativeLayout>
+</com.reallynourl.nourl.fmpfoldermusicplayer.ui.listadapter.item.PlaylistListItem>

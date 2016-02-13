@@ -23,6 +23,7 @@ import java.net.URI;
  */
 public class PlaylistItem extends ExtendedFile {
     private boolean mIsPlayed = false;
+    private Playlist mPlaylist = null;
 
     public PlaylistItem(File dir, String name) {
         super(dir, name);
@@ -44,11 +45,25 @@ public class PlaylistItem extends ExtendedFile {
         super(file.getAbsolutePath());
     }
 
+    public Playlist getPlaylist() {
+        return mPlaylist;
+    }
+
+    public void setPlaylist(Playlist playlist) {
+        this.mPlaylist = playlist;
+    }
+
     public boolean isPlayed() {
         return mIsPlayed;
     }
 
     public void setPlayed(boolean played) {
         mIsPlayed = played;
+    }
+
+    public void removeFromPlaylist() {
+        if (mPlaylist != null) {
+            mPlaylist.remove(this);
+        }
     }
 }
