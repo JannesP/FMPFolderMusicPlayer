@@ -141,8 +141,6 @@ public class MediaService extends Service implements MediaPlayer.OnPreparedListe
         sInstance = null;
         mMediaSession.release();
         mMediaSession = null;
-        MediaManager mediaManager = MediaManager.getInstance();
-        if (mediaManager != null) mediaManager.release();
         MediaNotification.remove(this);
         mMediaEventReceiver = null;
         Log.d("Media Service", "Media Service stopped!");

@@ -34,19 +34,24 @@ import com.reallynourl.nourl.fmpfoldermusicplayer.backend.MediaManager;
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 public class MusicPlaylistFragment extends Fragment implements AdapterView.OnItemClickListener, OptionView.OnOptionsClickedListener {
+    private static final String LIST_NAME = "lv_playlist";
+    private View mRootView;
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         //inflate layout for fragment
-        View rootView = inflater.inflate(R.layout.fragment_music_playlist, container, false);
-        OptionsListView lv = (OptionsListView) rootView.findViewById(R.id.listViewPlaylist);
+        mRootView = inflater.inflate(R.layout.fragment_music_playlist, container, false);
+        OptionsListView lv = (OptionsListView) mRootView.findViewById(R.id.listViewPlaylist);
         int mAccentColor = Util.getAccentColor(getActivity());
         MusicPlaylistAdapter mpa = new MusicPlaylistAdapter(mAccentColor);
         lv.setAdapter(mpa);
         lv.setOnItemClickListener(this);
         lv.setOnItemOptionsClickedListener(this);
-        return rootView;
+        if (savedInstanceState != null) {
+            Util.loadScrollPositionFromBundle(savedInstanceState, lv, LIST_NAME);
+        }
+        return mRootView;
     }
 
     @Override
@@ -57,5 +62,12 @@ public class MusicPlaylistFragment extends Fragment implements AdapterView.OnIte
     @Override
     public void onItemOptionsClicked(View view, View anchor) {
         Toast.makeText(getActivity(), "Clicked on options for:\n" + ((AudioFileListItem)view).getFile().getName(), Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        OptionsListView lv = (OptionsListView) mRootView.findViewById(R.id.listViewPlaylist);
+        Util.saveScrollPositionToBundle(outState, lv, LIST_NAME);
+        super.onSaveInstanceState(outState);
     }
 }

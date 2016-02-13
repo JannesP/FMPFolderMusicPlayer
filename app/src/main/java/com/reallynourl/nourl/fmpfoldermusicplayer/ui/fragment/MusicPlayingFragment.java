@@ -1,5 +1,6 @@
 package com.reallynourl.nourl.fmpfoldermusicplayer.ui.fragment;
 
+import android.animation.Animator;
 import android.app.Fragment;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -28,7 +29,21 @@ import com.reallynourl.nourl.fmpfoldermusicplayer.R;
 public class MusicPlayingFragment extends Fragment implements IMainContent {
     public static final String NAME = "music_playing";
 
+    private boolean mIsCreated = false;
+
     public MusicPlayingFragment() {}
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        mIsCreated = true;
+        super.onCreate(savedInstanceState);
+    }
+
+    @Override
+    public void onDestroy() {
+        mIsCreated = false;
+        super.onDestroy();
+    }
 
     @Nullable
     @Override
@@ -45,6 +60,11 @@ public class MusicPlayingFragment extends Fragment implements IMainContent {
     @Override
     public Fragment getFragment() {
         return this;
+    }
+
+    @Override
+    public boolean isCreated() {
+        return mIsCreated;
     }
 
     @Override

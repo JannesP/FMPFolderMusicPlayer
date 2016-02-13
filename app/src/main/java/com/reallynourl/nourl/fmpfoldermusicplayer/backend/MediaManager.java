@@ -31,6 +31,7 @@ import java.io.File;
  */
 public class MediaManager implements MediaPlayer.OnCompletionListener, CurrentPlaylist.OnItemsChangedListener, CurrentPlaylist.OnModeChangedListener {
     private static MediaManager sInstance;
+    private static final String TAG = "MediaManager";
 
     private CurrentPlaylist mCurrentPlaylist;
     private Context mContext;
@@ -40,6 +41,7 @@ public class MediaManager implements MediaPlayer.OnCompletionListener, CurrentPl
         this.mCurrentPlaylist = new CurrentPlaylist(mContext);
         this.mCurrentPlaylist.addOnItemsChangedListener(this);
         this.mCurrentPlaylist.addOnModeChangedListener(this);
+        Log.v(TAG, "Created MediaManager, starting service ...");
         mContext.startService(new Intent(mContext, MediaService.class));
     }
 
@@ -185,7 +187,7 @@ public class MediaManager implements MediaPlayer.OnCompletionListener, CurrentPl
         sInstance = null;
         mCurrentPlaylist = null;
         mContext = null;
-        Log.v("MediaManager", "MediaManager released!");
+        Log.v(TAG, "MediaManager released!");
     }
 
     public ExtendedFile getCurrentFile() {

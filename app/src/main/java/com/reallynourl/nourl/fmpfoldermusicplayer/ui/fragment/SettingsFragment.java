@@ -24,6 +24,7 @@ import com.reallynourl.nourl.fmpfoldermusicplayer.R;
  */
 public class SettingsFragment extends PreferenceFragment implements IMainContent {
     public static final String NAME = "settings";
+    private boolean mIsCreated = false;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -31,6 +32,14 @@ public class SettingsFragment extends PreferenceFragment implements IMainContent
 
         addPreferencesFromResource(R.xml.pref_general);
         addPreferencesFromResource(R.xml.pref_file_browser);
+
+        mIsCreated = true;
+    }
+
+    @Override
+    public void onDestroy() {
+        mIsCreated = false;
+        super.onDestroy();
     }
 
     @Override
@@ -46,5 +55,10 @@ public class SettingsFragment extends PreferenceFragment implements IMainContent
     @Override
     public Fragment getFragment() {
         return this;
+    }
+
+    @Override
+    public boolean isCreated() {
+        return false;
     }
 }

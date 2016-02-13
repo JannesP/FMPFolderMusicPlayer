@@ -38,4 +38,6 @@ public interface IMainContent {
      */
     Fragment getFragment();
 
+    boolean isCreated();
+
 }

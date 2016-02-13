@@ -24,6 +24,7 @@ import com.reallynourl.nourl.fmpfoldermusicplayer.ui.control.OptionView;
 import com.reallynourl.nourl.fmpfoldermusicplayer.ui.control.OptionsListView;
 import com.reallynourl.nourl.fmpfoldermusicplayer.ui.listadapter.MusicBrowserAdapter;
 import com.reallynourl.nourl.fmpfoldermusicplayer.ui.listadapter.item.MusicBrowserListItem;
+import com.reallynourl.nourl.fmpfoldermusicplayer.utility.Util;
 import com.reallynourl.nourl.fmpfoldermusicplayer.utility.file.AudioFileFilter;
 import com.reallynourl.nourl.fmpfoldermusicplayer.utility.file.ExtendedFile;
 import com.reallynourl.nourl.fmpfoldermusicplayer.utility.file.FileType;
@@ -55,6 +56,7 @@ public class FileBrowserFragment extends Fragment implements IMainContent,
         OptionView.OnOptionsClickedListener, PopupMenu.OnMenuItemClickListener {
     public static final String NAME = "file_browser";
     private static final String TAG = "FileBrowserFragment";
+    private static final String LIST_VIEW_NAME = "fb_list_view";
 
     private boolean mIsCreated = false;
 
@@ -72,6 +74,11 @@ public class FileBrowserFragment extends Fragment implements IMainContent,
     @Override
     public Fragment getFragment() {
         return this;
+    }
+
+    @Override
+    public boolean isCreated() {
+        return mIsCreated;
     }
 
     @Override
@@ -98,6 +105,7 @@ public class FileBrowserFragment extends Fragment implements IMainContent,
                     "Please allow this app storage access before using.", Toast.LENGTH_LONG).show();
         }
         mCurrentPath = startPath;
+        mIsCreated = true;
     }
 
     @Nullable
@@ -105,17 +113,31 @@ public class FileBrowserFragment extends Fragment implements IMainContent,
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         //inflate layout for fragment
-        if (!mIsCreated && mCurrentPath != null) {
+        if (mRootView == null && mCurrentPath != null) {
             mIsCreated = true;
             mRootView = inflater.inflate(R.layout.fragment_file_browser, container, false);
         }
+
+        populateFileBrowser();
+        if (savedInstanceState != null) {
+            OptionsListView lv = (OptionsListView) mRootView.findViewById(R.id.listViewBrowser);
+            if (lv != null) {
+                Util.loadScrollPositionFromBundle(savedInstanceState, lv, LIST_VIEW_NAME);
+            }
+        }
+
         return mRootView;
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        OptionsListView lv = (OptionsListView) mRootView.findViewById(R.id.listViewBrowser);
+        Util.saveScrollPositionToBundle(outState, lv, LIST_VIEW_NAME);
     }
 
     @Override
     public void onResume() {
         addListeners();
-        populateFileBrowser();
         super.onResume();
     }
 
@@ -238,7 +260,6 @@ public class FileBrowserFragment extends Fragment implements IMainContent,
 
     }
 
-    @NonNull
     private OptionsListView getListView() {
         return (OptionsListView) mRootView.findViewById(R.id.listViewBrowser);
     }

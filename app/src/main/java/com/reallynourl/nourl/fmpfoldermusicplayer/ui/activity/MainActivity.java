@@ -52,10 +52,14 @@ import com.reallynourl.nourl.fmpfoldermusicplayer.utility.Util;
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
     private static final int REQUEST_PERMISSION_STORAGE = 123;
+    private static final String SAVED_INSTANCE_FRAGMENT = "last_loaded_fragment";
+    private static final String CONTENT_FRAGMENT_TAG = "content_fragment";
+
     public static final String FRAGMENT_EXTRA = "fragment";
     private static MainActivity sInstance;
     private Snackbar mCloseSnackBar = null;
     private IMainContent mActiveContent;
+    private String mActiveContentSavedName = null;
     private static boolean sIsStarted = false;
 
     @Override
@@ -80,6 +84,10 @@ public class MainActivity extends AppCompatActivity
 
         if (MediaManager.getInstance() == null) {
             MediaManager.create(getApplicationContext());
+        }
+
+        if (savedInstanceState != null) {
+            mActiveContentSavedName = savedInstanceState.getString(SAVED_INSTANCE_FRAGMENT, null);
         }
     }
 
@@ -122,12 +130,6 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
-    public static void close() {
-        if (sInstance != null) {
-            sInstance.finish();
-        }
-    }
-
     @Override
     public void onBackPressed() {
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -160,26 +162,50 @@ public class MainActivity extends AppCompatActivity
         // Handle navigation view item clicks here.
         int id = item.getItemId();
 
+        FragmentManager fm = getFragmentManager();
+        IMainContent fragment = (IMainContent) fm.findFragmentByTag(CONTENT_FRAGMENT_TAG);
+        if (fragment != null) mActiveContent = fragment;
         switch (id) {
             case R.id.nav_file_browser:
-                loadFragmentToContent(new FileBrowserFragment());
-                Log.d("Navigation", "Loading file browser fragment!");
+                if (mActiveContent == null || !mActiveContent.getName().equals(FileBrowserFragment.NAME) || !mActiveContent.isCreated()) {
+                    if (mActiveContentSavedName == null || !mActiveContentSavedName.equals(FileBrowserFragment.NAME)) {
+                        loadFragmentToContent(new FileBrowserFragment());
+                        Log.d("Navigation", "Loading file browser fragment!");
+                    }
+                }
                 break;
             case R.id.nav_settings:
-                loadFragmentToContent(new SettingsFragment());
-                Log.d("Navigation", "Loading Settings fragment");
+                if (mActiveContent == null || !mActiveContent.getName().equals(SettingsFragment.NAME)) {
+                    if (mActiveContentSavedName == null || !mActiveContentSavedName.equals(SettingsFragment.NAME)) {
+                        loadFragmentToContent(new SettingsFragment());
+                        Log.d("Navigation", "Loading Settings fragment");
+                    }
+                }
                 break;
             case R.id.nav_currently_playing:
-                loadFragmentToContent(new MusicPlayingFragment());
-                Log.d("Navigation", "Loading Player fragment");
+                if (mActiveContent == null || !mActiveContent.getName().equals(MusicPlayingFragment.NAME)) {
+                    if (mActiveContentSavedName == null || !mActiveContentSavedName.equals(MusicPlayingFragment.NAME)) {
+                        loadFragmentToContent(new MusicPlayingFragment());
+                        Log.d("Navigation", "Loading Player fragment");
+                    }
+                }
                 break;
             default:
                 Log.e("Navigation", "Navigation button has no action, id: " + id + " text: " + item.getTitle());
         }
 
+        mActiveContentSavedName = null;
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        if (mActiveContent != null) {
+            outState.putString(SAVED_INSTANCE_FRAGMENT, mActiveContent.getName());
+        }
+        super.onSaveInstanceState(outState);
     }
 
     @Override
@@ -246,7 +272,7 @@ public class MainActivity extends AppCompatActivity
     private void loadFragmentToContent(IMainContent content) {
         FragmentManager fm = getFragmentManager();
         FragmentTransaction ft = fm.beginTransaction();
-        ft.replace(R.id.content_panel, content.getFragment());
+        ft.replace(R.id.content_panel, content.getFragment(), CONTENT_FRAGMENT_TAG);
         ft.commit();
         SharedPreferences.Editor edit = PreferenceManager.getDefaultSharedPreferences(this).edit();
         edit.putString(getString(R.string.pref_last_main_content_fragment), content.getName());
