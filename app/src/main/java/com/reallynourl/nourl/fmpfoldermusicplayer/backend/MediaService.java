@@ -90,6 +90,19 @@ public class MediaService extends Service implements MediaPlayer.OnPreparedListe
                 mMediaPlayer.stop();
             }
             return false;
+        } else {
+            mMediaPlayer.setVolume(1.0f, 1.0f);
+        }
+        return true;
+    }
+
+    private boolean abandonAudioFocus() {
+        AudioManager audioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
+        int result = audioManager.abandonAudioFocus(this);
+        if (result != AudioManager.AUDIOFOCUS_REQUEST_GRANTED) {
+            Toast.makeText(getApplicationContext(),
+                    "Failed to remove audio focus.", Toast.LENGTH_LONG).show();
+            return false;
         }
         return true;
     }
@@ -154,13 +167,8 @@ public class MediaService extends Service implements MediaPlayer.OnPreparedListe
 
     @Override
     public void onPrepared(MediaPlayer mp) {
-        if (requestAudioFocus()) {
-            mp.start();
-            mp.setOnCompletionListener(this);
-            mMediaSession.setActive(true);
-            mIsPreparedToPlay = true;
-            MediaNotification.showUpdate(this);
-        }
+        mIsPreparedToPlay = true;
+        play();
     }
 
     @Override
@@ -214,11 +222,11 @@ public class MediaService extends Service implements MediaPlayer.OnPreparedListe
         switch (focusChange) {
             case AudioManager.AUDIOFOCUS_GAIN:
                 if (mMediaPlayer != null) {
-                    play();
                     mMediaPlayer.setVolume(1.0f, 1.0f);
                 }
                 break;
             case AudioManager.AUDIOFOCUS_LOSS:
+                abandonAudioFocus();
                 if (mMediaPlayer != null) {
                     releasePlayer();
                 }
@@ -228,7 +236,7 @@ public class MediaService extends Service implements MediaPlayer.OnPreparedListe
                 break;
             case AudioManager.AUDIOFOCUS_LOSS_TRANSIENT_CAN_DUCK:
                 if (mMediaPlayer != null && mMediaPlayer.isPlaying()) {
-                    mMediaPlayer.setVolume(0.1f, 0.1f);
+                    mMediaPlayer.setVolume(0.15f, 0.15f);
                 }
                 break;
         }
@@ -250,13 +258,18 @@ public class MediaService extends Service implements MediaPlayer.OnPreparedListe
         if (mMediaPlayer != null && mIsPreparedToPlay && mMediaPlayer.isPlaying()) {
             mMediaPlayer.pause();
             MediaNotification.showUpdate(this);
+            abandonAudioFocus();
         }
     }
 
     public void play() {
         if (mMediaPlayer != null && mIsPreparedToPlay && !mMediaPlayer.isPlaying()) {
-            mMediaPlayer.start();
-            MediaNotification.showUpdate(this);
+            if (requestAudioFocus()) {
+                mMediaPlayer.start();
+                mMediaPlayer.setOnCompletionListener(this);
+                mMediaSession.setActive(true);
+                MediaNotification.showUpdate(this);
+            }
         }
     }
 
@@ -289,6 +302,7 @@ public class MediaService extends Service implements MediaPlayer.OnPreparedListe
         if (mMediaPlayer != null && mIsPreparedToPlay) {
             mIsPreparedToPlay = false;
             if (mMediaPlayer.isPlaying()) mMediaPlayer.stop();
+            abandonAudioFocus();
             releasePlayer();
             MediaNotification.remove(this);
         }
