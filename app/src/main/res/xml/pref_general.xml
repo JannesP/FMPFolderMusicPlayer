@@ -7,10 +7,17 @@
 
         <CheckBoxPreference
             android:key="@string/pref_general_use_light_theme"
-            android:title="Use Light Theme"
-            android:summary="You need to restart the app."
+            android:title="@string/use_light_theme"
+            android:summary="@string/need_to_restart"
             android:defaultValue="false"
             android:enabled="false" />
+
+        <CheckBoxPreference
+            android:key="@string/pref_general_save_current_playlist"
+            android:title="@string/always_save_current_list"
+            android:summary="@string/may_slow_down_on_loading"
+            android:defaultValue="true"
+            android:enabled="true" />
 
     </PreferenceCategory>
 

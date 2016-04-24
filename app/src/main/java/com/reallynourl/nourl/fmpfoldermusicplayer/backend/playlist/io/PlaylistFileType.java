@@ -17,7 +17,7 @@ package com.reallynourl.nourl.fmpfoldermusicplayer.backend.playlist.io;
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 public enum PlaylistFileType {
-    M3U("m3u"), M3U8("m3u8");
+    M3U("m3u");
 
     private final String mExtension;
 

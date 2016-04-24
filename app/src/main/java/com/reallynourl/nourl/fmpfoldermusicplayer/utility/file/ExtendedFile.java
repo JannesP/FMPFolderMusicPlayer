@@ -5,6 +5,7 @@ import android.util.Log;
 
 import java.io.File;
 import java.io.FileFilter;
+import java.io.FileNotFoundException;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -65,7 +66,7 @@ public class ExtendedFile extends File {
 
     public static String getExtension(File file) {
         String result = "";
-        if (file.isFile()) {
+        if (file.isFile() || !file.exists()) {
             String[] parts = file.getAbsolutePath().split("\\.");
             if (parts.length > 1) {
                 result = parts[parts.length - 1];

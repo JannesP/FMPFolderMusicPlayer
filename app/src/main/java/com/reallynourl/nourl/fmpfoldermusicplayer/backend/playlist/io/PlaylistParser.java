@@ -8,6 +8,7 @@ import com.reallynourl.nourl.fmpfoldermusicplayer.utility.file.FileUtil;
 
 import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.List;
@@ -34,7 +35,6 @@ public abstract class PlaylistParser {
         PlaylistParser parser;
         switch (type) {
             case M3U:
-            case M3U8:
                 parser = new M3uPlaylistParser();
                 break;
             default:
@@ -61,9 +61,12 @@ public abstract class PlaylistParser {
                 bw.write(line);
                 bw.write(lineSeparator);
             }
+            bw.flush();
             bw.close();
         } catch (IOException e) {
-            bw.close();
+            try {
+                bw.close();
+            } catch (Exception ignored){ }
             throw e;
         }
 
@@ -73,7 +76,8 @@ public abstract class PlaylistParser {
             PlaylistFileFormatNotSupportedException,
             PlaylistFileFormatCorruptedException, IOException {
         Playlist result;
-
+        if (!destination.exists())
+            throw new FileNotFoundException("The file: " + destination.getAbsolutePath() + "doesn't exist!");
         String extension = destination.getExtension();
         PlaylistFileType type;
         try {
@@ -84,7 +88,6 @@ public abstract class PlaylistParser {
         PlaylistParser parser;
         switch (type) {
             case M3U:
-            case M3U8:
                 parser = new M3uPlaylistParser();
                 break;
             default:

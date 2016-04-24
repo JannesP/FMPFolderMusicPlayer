@@ -43,7 +43,7 @@ public final class FileUtil {
                 Environment.MEDIA_MOUNTED_READ_ONLY.equals(state);
     }
 
-    public static List<String> readAllLines(File file) throws IOException {
+    public static List<String> readAllLines(File file) throws FileNotFoundException, IOException{
         List<String> lines = new ArrayList<>();
         BufferedReader br = null;
         try {
@@ -55,15 +55,31 @@ public final class FileUtil {
                 line = br.readLine();
             }
             br.close();
-        } catch (Exception e) {
+        } finally {
             if (br != null) {
                 try {
                     br.close();
                 } catch (Exception ignored) {}
             }
-            throw e;
         }
         return lines;
+    }
+
+    public static String combinePaths(String ... paths) {
+        File file = null;
+        if (paths.length > 0) {
+            file = new File(paths[0]);
+
+            for (int i = 1; i < paths.length; i++) {
+                file = new File(file, paths[i]);
+            }
+        }
+
+        String res = "";
+        if (file != null) {
+            res = file.getPath();
+        }
+        return res;
     }
 
     public static void clearFile(File file) throws IOException {

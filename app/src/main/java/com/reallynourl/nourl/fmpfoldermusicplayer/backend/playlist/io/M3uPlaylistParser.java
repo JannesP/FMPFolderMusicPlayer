@@ -32,12 +32,10 @@ public class M3uPlaylistParser extends PlaylistParser {
     private static final char EXTENDED_MARKER = '#';
 
     @Override
-    @Nullable
     protected List<String> parsePlaylist(@NonNull Playlist playlist) {
-        List<String> lines;
+        List<String> lines = new ArrayList<>(playlist.size());
 
-        if (playlist.size() == 0) {
-            lines = new ArrayList<>(playlist.size());
+        if (playlist.size() > 0) {
             List<PlaylistItem> files = playlist.getList();
             for (File file : files) {
                 lines.add(file.getAbsolutePath());
@@ -64,6 +62,6 @@ public class M3uPlaylistParser extends PlaylistParser {
             }
         }
 
-        return null;
+        return result;
     }
 }

@@ -43,4 +43,10 @@
     <string name="pref_playlist_shuffle">pref_playlist_shuffle</string>
     <string name="remove">Remove</string>
     <string name="play">Play</string>
+    <string name="pref_general_save_current_playlist">pref_general_save_current_playlist</string>
+    <string name="use_light_theme">Use Light Theme</string>
+    <string name="need_to_restart">You need to restart the app.</string>
+    <string name="always_save_current_list">Always Save Current Playlist</string>
+    <string name="may_slow_down_on_loading">MAY slow down loading if current list is very long.</string>
+    <string name="pref_playlist_current_item">pref_playlist_current_item</string>
 </resources>

@@ -3,8 +3,12 @@ package com.reallynourl.nourl.fmpfoldermusicplayer.utility;
 import android.Manifest;
 import android.app.Activity;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
+import android.support.annotation.IdRes;
+import android.support.annotation.StringRes;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.util.Log;
@@ -14,6 +18,7 @@ import android.widget.ListView;
 
 import com.reallynourl.nourl.fmpfoldermusicplayer.ui.activity.MainActivity;
 
+import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -37,7 +42,7 @@ public final class Util {
     private Util() {}
 
     public static String getDurationString(int msec) {
-        String time = String.format("%d:%02d",
+        String time = String.format(Locale.US, "%d:%02d",
                 TimeUnit.MILLISECONDS.toMinutes(msec),
                 TimeUnit.MILLISECONDS.toSeconds(msec) -
                         TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(msec))
@@ -45,10 +50,32 @@ public final class Util {
         return time;
     }
 
+    /**
+     * Returns the accent color for the app set in xml.
+     * If needed often it's more efficient to cache it locally.
+     * @param context the current context
+     * @return the color as rgb
+     */
     public static int getAccentColor(final Context context) {
         final TypedValue value = new TypedValue();
         context.getTheme().resolveAttribute(android.support.design.R.attr.colorAccent, value, true);
         return value.data;
+    }
+
+    public static boolean getSharedPrefBool(Context context, @StringRes int id, boolean defVal) {
+        return PreferenceManager.getDefaultSharedPreferences(context)
+                .getBoolean(context.getResources().getString(id), defVal);
+    }
+
+    public static int getSharedPrefInt(Context context, @StringRes int id, int defVal) {
+        return PreferenceManager.getDefaultSharedPreferences(context)
+                .getInt(context.getResources().getString(id), defVal);
+    }
+
+    public static void storeSharedPrefInt(Context context, @StringRes int id, int value) {
+        SharedPreferences.Editor editor = PreferenceManager.getDefaultSharedPreferences(context).edit();
+        editor.putInt(context.getResources().getString(id), value);
+        editor.apply();
     }
 
     public static boolean hasStoragePermission(Context context) {
